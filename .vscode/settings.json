@@ -51,5 +51,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "Eternal_Peak.sln"
+    "dotnet.defaultSolution": "Eternal_Peak_Local_Project.sln"
 }
