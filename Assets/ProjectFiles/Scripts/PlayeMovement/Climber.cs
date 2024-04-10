@@ -3,127 +3,352 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.InputSystem;
+
+[System.Serializable]
 
 public class Climber : MonoBehaviour
 {
+	
+	private CustomControls customControls;
 
-    public Rigidbody leftHandRigidbody;
-    public Rigidbody bodyRigidbody;
-    public Transform bodyPivot;
-    private float forceMagnitude = 10f;
-    public float maxDistance = 2f;
-    public float minDistance = 2f;
-    public float velocityDamping = 0.95f;
+	[Header ("===== Player GameObject =====")]
+	[Space (10)]
 
-    public float maxYDifference = 1f;
+	public GameObject player;
 
-    private Quaternion targetRotation;
-    private bool needsNewTarget = true;
+	[Header ("===== Lef Hand =====")]
+	[Space (10)]
 
-    // Update is called once per frame
-    void Update()
-    {
+	public Rigidbody leftHandRigidbody;
+	public GameObject leftHand;
+	public GameObject lefArmRig;
+	public GameObject leftHandInitialPosition;
 
-        inputLeftHandMovement();
-        ConstraintBody();
-        ApplyRotation();  
-        
-    }
+	[Header ("===== Right Hand =====")]	
+	[Space (10)]
 
-    // Manage the input for the Left Hand and apply the forces
-    void inputLeftHandMovement()
-    {
-        if (Input.GetKey(KeyCode.LeftArrow))
-        {
-            Debug.Log("A pressed");
-            Vector3 force = new Vector3(-forceMagnitude, 0, 0);
-            leftHandRigidbody.AddForce(force, ForceMode.Force);
+	public Rigidbody rightHandRigidbody;
+	public GameObject rightHand;
+	public GameObject rightArmRig;
+	public GameObject rightHandInitialPosition;
 
-            PullBody();
-            
-        }
-        else
-        {
-            leftHandRigidbody.velocity = Vector3.zero;
-            StopPulling();
-            
+	[Header ("===== Body =====")]
+	[Space (10)]
 
-        }
-    }
+	public Rigidbody bodyRigidbody;
 
-    // Pull the body towards the left hand
-    void PullBody()
-    {
-        Vector3 directionToPull = leftHandRigidbody.position - bodyRigidbody.position;
-        directionToPull.y = 0;
-        float currentDistance = Vector3.Distance(leftHandRigidbody.position, bodyRigidbody.position);
+	[Header ("===== Controlled Hand =====")]
+	[Space (10)]
 
-        if (currentDistance < minDistance || currentDistance > maxDistance)
-        {
+	public Rigidbody controlledHandRigidbody;
+	private bool isLeftHandControlled = true;
+	private bool isConctrolledHandGrabbing = false;
+	private bool canMovecontrolledHand = true;
 
-            bodyRigidbody.AddForce(directionToPull.normalized * forceMagnitude, ForceMode.Force);
-            
-        }
-    }
+	private bool isRisingHand = false;
 
-    // Stop pulling the body
-    void StopPulling()
-    {
-        leftHandRigidbody.velocity *= velocityDamping;
-        bodyRigidbody.velocity *= velocityDamping;
+	private float forceMagnitude = 5f;
+	private float maxDistance = 3f;
 
-        if (leftHandRigidbody.velocity.magnitude < 0.01f)
-        {
-            leftHandRigidbody.velocity = Vector3.zero;
-        }
-        if (bodyRigidbody.velocity.magnitude < 0.01f)
-        {
-            bodyRigidbody.velocity = Vector3.zero;
-        }
-    }
-    // Constraint the body to the left hand
-    void ConstraintBody()
-    {
-        float yDifference = leftHandRigidbody.position.y - bodyRigidbody.position.y;
+	[Header ("===== Body Constraints =====")]
+	[Space (10)]
+	public float velocityDamping = 0.95f;
+	public float maxYDifference = 1f;
 
-        if (yDifference > maxYDifference)
-        {
+	[Header ("===== Forces =====")]
+	[Space (10)]
+	public float handUpdwardForce = 2f;
+	private float maxHandHeight;
 
-            float verticalVelocity = bodyRigidbody.velocity.y;
+	public float limiteYfromBody = 2f;
+	public float adjustReichValue = 1f;
+	private Vector3 initialHandPosition;
 
-            if (verticalVelocity < 0)
-            {
-                Vector3 upwardforce = new Vector3(0, forceMagnitude, 0);
-                bodyRigidbody.AddForce(upwardforce, ForceMode.Force);
+	[Header ("===== Climbing Holds =====")]
+	[Space (10)]
+	public GameObject rightHoldedClimb;
+	public GameObject leftHoldedClimb;
+	public bool areTwoHandsHolding = false;
 
-            }
+	[Header ("===== Hands Rotation Limits =====")]
+	[Space (10)]
+	public float maxAngle = 60f;
+	public float minAngle = -60f;
+	public float circleRadius = 0.2f;
 
-            else
-            {
-                float reducedForced = forceMagnitude * (1 - Mathf.Clamp(verticalVelocity / 10, 0, 1));
-                Vector3 upwardForce = new Vector3(0, reducedForced, 0);
-                bodyRigidbody.AddForce(upwardForce, ForceMode.Force);
-            }
-            
-        }
+	[Header ("=====  mouse sensitivity =====")]
+	[Space (10)]
 
-    }
+	public float mouseSensitivity = 1.0f;
 
-    //make a pendulum effect
-    void ApplyRotation()
-    {
+	[Header ("===== Hand Movement =====")]
+	[Space (10)]
+	public float minXLimit = -2f;
+	public float maxXLimit = 2f;
+	private float minLimitFromControlledHand;
+	private float maxLimitFromControlledHand;
+		
+	public float handSpeed = 10.0f;
 
-        float maxRotationAngle = 30f;
-        float period = 3f;
-        float speedRotation = 0.25f;
+	private bool hasBeenInitialized = false;
 
-        float xAngle = maxRotationAngle * Mathf.Sin(Time.time * speedRotation / period * Mathf.PI *2);
-        float yAngle = maxRotationAngle * Mathf.Sin((Time.time * speedRotation / period * Mathf.PI *2) + (2 * Mathf.PI / 3));
-        float zAngle = maxRotationAngle * Mathf.Sin((Time.time * speedRotation / period * Mathf.PI *2) + (4 * Mathf.PI / 3));
-        
-        Quaternion pendulumRotation = Quaternion.Euler(xAngle, yAngle, zAngle);
 
-        bodyPivot.rotation = Quaternion.Lerp(bodyPivot.rotation, pendulumRotation, Time.deltaTime * speedRotation);
+	void Awake()
+	{
+		customControls = new CustomControls();
+		
+	}
 
-    }
+	void OnEnable()
+	{
+		customControls.Enable();
+		customControls.PlayerMap.RiseHand.performed += ctx => onInputPerformed(ctx);
+		customControls.PlayerMap.RiseHand.canceled += ctx => onInputCanceled(ctx);
+	}
+
+	void OnDisable()
+	{
+		customControls.Disable();
+		customControls.PlayerMap.RiseHand.performed -= ctx => onInputPerformed(ctx);
+		customControls.PlayerMap.RiseHand.canceled -= ctx => onInputCanceled(ctx);
+		
+	}
+
+	void onInputPerformed(InputAction.CallbackContext ctx)
+	{
+		Debug.Log("Input Performed");
+		Debug.Log("maxHandHeight: " + maxHandHeight);
+		isRisingHand = true;		
+	}
+	void onInputCanceled(InputAction.CallbackContext ctx)
+	{
+		isRisingHand = false;
+	}
+
+	void Start()
+	{	
+		PlaceHandOnStart();
+		SetMovementLimits();
+		//Lock Cursor
+		Cursor.lockState = CursorLockMode.Locked;
+
+		//freeze the position y of controlled hand
+
+		controlledHandRigidbody = leftHandRigidbody;
+		controlledHandRigidbody.constraints = RigidbodyConstraints.FreezePositionY;
+		calculate_maxHandHeight();
+		hasBeenInitialized = true;	
+			
+	}
+
+	// Update is called once per frame
+	void Update()
+	{
+		LimitHandMovement();
+		ApplyForceOnControlledHand();
+		ConstraintBody();
+		pullBody();
+		HandleMouseClick();
+	//	UpdateArmPos();
+	}
+	
+	// Manage the input for the Left Hand and apply the forces
+	
+	// Constraint the body to the left hand
+
+	void PlaceHandOnStart()
+	{
+		leftHandRigidbody.position = leftHandInitialPosition.transform.position;
+		rightHandRigidbody.position = rightHandInitialPosition.transform.position;
+		Debug.Log("place both hands on start");
+
+	}
+	void SetMovementLimits()
+	{
+		minLimitFromControlledHand = controlledHandRigidbody.transform.localPosition.x + minXLimit;
+		maxLimitFromControlledHand = controlledHandRigidbody.transform.localPosition.x + maxXLimit;
+	}
+
+	void calculate_maxHandHeight()
+	{
+		maxHandHeight = bodyRigidbody.transform.localPosition.y + limiteYfromBody;
+	}
+	void ConstraintBody()
+	{
+		if (hasBeenInitialized)
+		{
+			float midPointX = (leftHandRigidbody.position.x + rightHandRigidbody.position.x) / 2;
+
+			Vector3 targetPosition = new Vector3(midPointX, bodyRigidbody.position.y, bodyRigidbody.position.z);
+
+			float smoothSpeed = 5f;
+			Vector3 smoothedPosition = Vector3.Lerp(bodyRigidbody.position, targetPosition, smoothSpeed * Time.deltaTime);
+			bodyRigidbody.MovePosition(smoothedPosition);
+
+		}
+		
+	}
+
+	void pullBody()
+	{
+
+		float midPointY = (leftHandRigidbody.position.y + rightHandRigidbody.position.y) / 2;
+		float distanceToMidPointY = midPointY - bodyRigidbody.position.y;
+		Vector3 forceDirectionY = new Vector3(0, distanceToMidPointY, 0).normalized;
+
+		float forceMuliplierY = Mathf.Clamp01(Mathf.Abs(distanceToMidPointY) / maxDistance);
+		Vector3 pullForceY = forceDirectionY * forceMagnitude * forceMuliplierY;
+		bodyRigidbody.AddForce(pullForceY, ForceMode.Force);
+
+		Vector3 dampingForce = -bodyRigidbody.velocity * velocityDamping;
+		bodyRigidbody.AddForce(dampingForce, ForceMode.Force);
+	}
+
+	void HandleMouseClick()
+	{
+		if (Input.GetMouseButtonDown(0))
+			{		
+				Debug.Log("Mouse Clicked");
+				controlledHandRigidbody.isKinematic = true;
+				isRisingHand = false;
+				canMovecontrolledHand = false;
+				maxHandHeight += controlledHandRigidbody.transform.localPosition.y;
+				calculate_maxHandHeight();
+				ToggleHandSwitch();				
+			}
+	}
+
+	// public void OnClimberGrabbing()
+	// {
+	// 	if (rightHandScript.isGrabbing)
+	// 	{
+	// 		Debug.Log(" Right Hand call On Climber Grabbing");
+	// 		rightHandRigidbody.isKinematic = true;
+	// 		rightHandRigidbody.position = rightHandScript.holdingClimb.transform.position + new Vector3(0, 0, -0.5f);			
+	// 	}
+	// 	if (leftHandScript.isGrabbing)
+	// 	{
+	// 		Debug.Log(" Left Hand call On Climber Grabbing");
+	// 		leftHandRigidbody.isKinematic = true;
+	// 		leftHandRigidbody.position = leftHandScript.holdingClimb.transform.position + new Vector3(0, 0, -0.5f);
+	// 		canMovecontrolledHand = false;
+	// 	}
+	// }
+
+	void ToggleHandSwitch()
+	{
+		isLeftHandControlled = !isLeftHandControlled;
+
+		if (isLeftHandControlled)
+		{
+			controlledHandRigidbody = leftHandRigidbody;
+			rightHandRigidbody.isKinematic = true;
+			leftHandRigidbody.isKinematic = false;
+		
+		}
+		else
+		{
+			controlledHandRigidbody = rightHandRigidbody;
+			leftHandRigidbody.isKinematic = true;
+			rightHandRigidbody.isKinematic = false;
+
+		}
+
+		controlledHandRigidbody.isKinematic = false;
+		canMovecontrolledHand = true;
+		UpdateMovementLimits();
+	}
+
+	void ApplyForceOnControlledHand()
+	{
+
+		if(canMovecontrolledHand)
+		{
+			if (isRisingHand)
+			{
+				initialHandPosition.y = bodyRigidbody.transform.localPosition.y - 1f;
+				controlledHandRigidbody.isKinematic = false;
+				controlledHandRigidbody.constraints &= ~RigidbodyConstraints.FreezePositionY;
+
+				if(controlledHandRigidbody.transform.localPosition.y < maxHandHeight)
+				{
+				
+					controlledHandRigidbody.AddForce(Vector3.up * handUpdwardForce, ForceMode.Force);
+
+				}
+				else
+				{
+					Vector3 antiGravityForce = -Physics.gravity * controlledHandRigidbody.mass;
+					controlledHandRigidbody.AddForce(antiGravityForce, ForceMode.Force);
+
+					controlledHandRigidbody.transform.localPosition =
+					new Vector3(controlledHandRigidbody.transform.localPosition.x,
+					maxHandHeight,
+					controlledHandRigidbody.transform.localPosition.z);
+					
+				}				
+			}	
+			else 
+			{
+				
+				controlledHandRigidbody.velocity = new Vector3(controlledHandRigidbody.velocity.x, +Physics.gravity.y * controlledHandRigidbody.mass
+				, controlledHandRigidbody.velocity.z);
+
+				if (controlledHandRigidbody.transform.localPosition.y < initialHandPosition.y)
+				{
+					float dampingFactor = 0.95f;
+					Vector3 dampingForce = -controlledHandRigidbody.velocity * dampingFactor;
+					controlledHandRigidbody.AddForce(dampingForce, ForceMode.Force);
+
+					if(controlledHandRigidbody.velocity.y < 0.05f)
+					{
+						controlledHandRigidbody.constraints = RigidbodyConstraints.FreezePositionY;
+					}
+
+				}
+				
+			}		
+			
+		}
+		
+	
+	}
+
+	void LimitHandMovement()
+	{
+		if(hasBeenInitialized)
+		{
+			if(canMovecontrolledHand)
+			{
+				float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
+
+				Vector3 newPosition = controlledHandRigidbody.transform.localPosition + new Vector3(mouseX, 0, 0) * handSpeed;
+				newPosition.x = Mathf.Clamp(newPosition.x, minLimitFromControlledHand, maxLimitFromControlledHand);
+
+				controlledHandRigidbody.transform.localPosition = newPosition;
+				
+			}		
+		}
+	}
+
+	void UpdateMovementLimits()
+	{
+		float handPositionX = controlledHandRigidbody.transform.localPosition.x;
+		minLimitFromControlledHand = handPositionX + minXLimit;
+		maxLimitFromControlledHand = handPositionX + maxXLimit;
+	}
+
+	void UpdateArmPos()
+	{
+		// lefArmRig.transform.position = leftHandRigidbody.transform.position;
+		// rightArmRig.transform.position = rightHandRigidbody.transform.position;
+
+	}
+
+	void SetupClimber()
+	{
+		
+	}
+	
 }

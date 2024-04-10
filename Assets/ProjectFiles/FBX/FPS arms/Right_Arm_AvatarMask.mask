@@ -1,0 +1,87 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!319 &31900000
+AvatarMask:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Right_Arm_AvatarMask
+  m_Mask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+  m_Elements:
+  - m_Path: 
+    m_Weight: 1
+  - m_Path: Right Arm
+    m_Weight: 0
+  - m_Path: Right_Arm_Rig
+    m_Weight: 0
+  - m_Path: Right_Arm_Rig/Right_Arm.Ctrllr
+    m_Weight: 0
+  - m_Path: Right_Arm_Rig/Right_Arm.Ctrllr/Right_Elbow.IK.Ctrllr
+    m_Weight: 0
+  - m_Path: Right_Arm_Rig/Right_Arm.Ctrllr/Right_Elbow.IK.Ctrllr/Right_Elbow.IK.Ctrllr_end
+    m_Weight: 0
+  - m_Path: Right_Arm_Rig/Right_Arm.Ctrllr/Right_Hand_Ik.Ctrllr
+    m_Weight: 0
+  - m_Path: Right_Arm_Rig/Right_Arm.Ctrllr/Right_Hand_Ik.Ctrllr/Right_Hand_Ik
+    m_Weight: 0
+  - m_Path: Right_Arm_Rig/Right_Arm.Ctrllr/Right_Hand_Ik.Ctrllr/Right_Hand_Ik/Right_Hand
+    m_Weight: 1
+  - m_Path: Right_Arm_Rig/Right_Arm.Ctrllr/Right_Hand_Ik.Ctrllr/Right_Hand_Ik/Right_Hand/Right_Index.01
+    m_Weight: 1
+  - m_Path: Right_Arm_Rig/Right_Arm.Ctrllr/Right_Hand_Ik.Ctrllr/Right_Hand_Ik/Right_Hand/Right_Index.01/Right_Index.02
+    m_Weight: 1
+  - m_Path: Right_Arm_Rig/Right_Arm.Ctrllr/Right_Hand_Ik.Ctrllr/Right_Hand_Ik/Right_Hand/Right_Index.01/Right_Index.02/Right_Index.03
+    m_Weight: 1
+  - m_Path: Right_Arm_Rig/Right_Arm.Ctrllr/Right_Hand_Ik.Ctrllr/Right_Hand_Ik/Right_Hand/Right_Index.01/Right_Index.02/Right_Index.03/Right_Index.Ctrllr
+    m_Weight: 1
+  - m_Path: Right_Arm_Rig/Right_Arm.Ctrllr/Right_Hand_Ik.Ctrllr/Right_Hand_Ik/Right_Hand/Right_Index.01/Right_Index.02/Right_Index.03/Right_Index.Ctrllr/Right_Index.Ctrllr_end
+    m_Weight: 1
+  - m_Path: Right_Arm_Rig/Right_Arm.Ctrllr/Right_Hand_Ik.Ctrllr/Right_Hand_Ik/Right_Hand/Right_Middle.01
+    m_Weight: 1
+  - m_Path: Right_Arm_Rig/Right_Arm.Ctrllr/Right_Hand_Ik.Ctrllr/Right_Hand_Ik/Right_Hand/Right_Middle.01/Right_Middle.02
+    m_Weight: 1
+  - m_Path: Right_Arm_Rig/Right_Arm.Ctrllr/Right_Hand_Ik.Ctrllr/Right_Hand_Ik/Right_Hand/Right_Middle.01/Right_Middle.02/Right_Middle.03
+    m_Weight: 1
+  - m_Path: Right_Arm_Rig/Right_Arm.Ctrllr/Right_Hand_Ik.Ctrllr/Right_Hand_Ik/Right_Hand/Right_Middle.01/Right_Middle.02/Right_Middle.03/Right_Middle.Ctrllr
+    m_Weight: 1
+  - m_Path: Right_Arm_Rig/Right_Arm.Ctrllr/Right_Hand_Ik.Ctrllr/Right_Hand_Ik/Right_Hand/Right_Middle.01/Right_Middle.02/Right_Middle.03/Right_Middle.Ctrllr/Right_Middle.Ctrllr_end
+    m_Weight: 1
+  - m_Path: Right_Arm_Rig/Right_Arm.Ctrllr/Right_Hand_Ik.Ctrllr/Right_Hand_Ik/Right_Hand/Right_Pinky.01
+    m_Weight: 1
+  - m_Path: Right_Arm_Rig/Right_Arm.Ctrllr/Right_Hand_Ik.Ctrllr/Right_Hand_Ik/Right_Hand/Right_Pinky.01/Right_Pinky.02
+    m_Weight: 1
+  - m_Path: Right_Arm_Rig/Right_Arm.Ctrllr/Right_Hand_Ik.Ctrllr/Right_Hand_Ik/Right_Hand/Right_Pinky.01/Right_Pinky.02/Right_Pinky.03
+    m_Weight: 1
+  - m_Path: Right_Arm_Rig/Right_Arm.Ctrllr/Right_Hand_Ik.Ctrllr/Right_Hand_Ik/Right_Hand/Right_Pinky.01/Right_Pinky.02/Right_Pinky.03/Right_Pinky.Ctrllr
+    m_Weight: 1
+  - m_Path: Right_Arm_Rig/Right_Arm.Ctrllr/Right_Hand_Ik.Ctrllr/Right_Hand_Ik/Right_Hand/Right_Pinky.01/Right_Pinky.02/Right_Pinky.03/Right_Pinky.Ctrllr/Right_Pinky.Ctrllr_end
+    m_Weight: 1
+  - m_Path: Right_Arm_Rig/Right_Arm.Ctrllr/Right_Hand_Ik.Ctrllr/Right_Hand_Ik/Right_Hand/Right_Ring.01
+    m_Weight: 1
+  - m_Path: Right_Arm_Rig/Right_Arm.Ctrllr/Right_Hand_Ik.Ctrllr/Right_Hand_Ik/Right_Hand/Right_Ring.01/Right_Ring.02
+    m_Weight: 1
+  - m_Path: Right_Arm_Rig/Right_Arm.Ctrllr/Right_Hand_Ik.Ctrllr/Right_Hand_Ik/Right_Hand/Right_Ring.01/Right_Ring.02/Right_Ring.03
+    m_Weight: 1
+  - m_Path: Right_Arm_Rig/Right_Arm.Ctrllr/Right_Hand_Ik.Ctrllr/Right_Hand_Ik/Right_Hand/Right_Ring.01/Right_Ring.02/Right_Ring.03/Right_Ring.Ctrllr
+    m_Weight: 1
+  - m_Path: Right_Arm_Rig/Right_Arm.Ctrllr/Right_Hand_Ik.Ctrllr/Right_Hand_Ik/Right_Hand/Right_Ring.01/Right_Ring.02/Right_Ring.03/Right_Ring.Ctrllr/Right_Ring.Ctrllr_end
+    m_Weight: 1
+  - m_Path: Right_Arm_Rig/Right_Arm.Ctrllr/Right_Hand_Ik.Ctrllr/Right_Hand_Ik/Right_Hand/Right_Thumb.01
+    m_Weight: 1
+  - m_Path: Right_Arm_Rig/Right_Arm.Ctrllr/Right_Hand_Ik.Ctrllr/Right_Hand_Ik/Right_Hand/Right_Thumb.01/Right_Thumb.02
+    m_Weight: 1
+  - m_Path: Right_Arm_Rig/Right_Arm.Ctrllr/Right_Hand_Ik.Ctrllr/Right_Hand_Ik/Right_Hand/Right_Thumb.01/Right_Thumb.02/Right_Thumb.03
+    m_Weight: 1
+  - m_Path: Right_Arm_Rig/Right_Arm.Ctrllr/Right_Hand_Ik.Ctrllr/Right_Hand_Ik/Right_Hand/Right_Thumb.01/Right_Thumb.02/Right_Thumb.03/Right_Thumber.Ctrllr
+    m_Weight: 1
+  - m_Path: Right_Arm_Rig/Right_Arm.Ctrllr/Right_Hand_Ik.Ctrllr/Right_Hand_Ik/Right_Hand/Right_Thumb.01/Right_Thumb.02/Right_Thumb.03/Right_Thumber.Ctrllr/Right_Thumber.Ctrllr_end
+    m_Weight: 1
+  - m_Path: Right_Arm_Rig/Right_Arm.Ctrllr/Right_UpperArm.Ctrllr
+    m_Weight: 0
+  - m_Path: Right_Arm_Rig/Right_Arm.Ctrllr/Right_UpperArm.Ctrllr/Right_UpperArm
+    m_Weight: 0
+  - m_Path: Right_Arm_Rig/Right_Arm.Ctrllr/Right_UpperArm.Ctrllr/Right_UpperArm/Right_Forearm
+    m_Weight: 0
+  - m_Path: Right_Arm_Rig/Right_Arm.Ctrllr/Right_UpperArm.Ctrllr/Right_UpperArm/Right_Forearm/Right_Forearm_end
+    m_Weight: 0
