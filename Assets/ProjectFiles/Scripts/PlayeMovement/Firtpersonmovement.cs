@@ -35,7 +35,17 @@ public class Firtpersonmovement : MonoBehaviour
 	public GameObject leftArm;
 	public GameObject leftArmPos;
 	public GameObject leftHandPos;
-	public GameObject IKLeftHand;
+	public GameObject IkLeftOriginalPosition;
+	public GameObject IkLeftTarget;
+	public GameObject leftHandCtrllr;
+	
+	public bool leftHandIsGrabbing = false;
+	public bool leftHandIsClimbing = false;
+
+	[Header("==== Left Arm Rig Layer ====")]
+
+	public Rig leftArmRigLayer;
+
 
 	[Header("==== Right Arm ====")]
 	[Space(10)]
@@ -49,6 +59,7 @@ public class Firtpersonmovement : MonoBehaviour
 	public GameObject rightHandClimbingHold;
 
 	public bool rightHandIsGrabbing = false;
+	public bool rightHandIsClimbing = false;
 
 	[Header("==== Right Arm Rig Layer ====")]
 	[Space(10)]
@@ -81,8 +92,10 @@ public class Firtpersonmovement : MonoBehaviour
 		cam = GetComponentInChildren<Camera>();
 		Cursor.lockState = CursorLockMode.Locked;
 		rightArmRigLayer.weight = 0f;
+		leftArmRigLayer.weight = 0f;
 		
 	}
+
 
 	// Update is called once per frame
 	void Update()
@@ -152,6 +165,31 @@ public class Firtpersonmovement : MonoBehaviour
 		// when the right mouse button is pressed, the ik controller will move the right hand
 		// the rig layer will be set to 1 with interpolation
 
+		if (Input.GetMouseButton(0))
+		{
+			leftArmRigLayer.weight = 1;
+			returnToOriginalPos = false;
+			Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+			Vector3 rayPoint = ray.GetPoint(1f);
+			Vector3 newPos = rayPoint;
+			isClimbing = true;
+			leftHandCtrllr.transform.localRotation = Quaternion.Euler(70f, 60f, 65f);
+
+			if (leftHandIsGrabbing)
+			{
+				IkLeftTarget.transform.position = leftHandPos.transform.position + new Vector3(0f, 0f, 1f);
+						
+			}
+			else
+			{
+				IkLeftTarget.transform.position = newPos;			
+			}
+		}
+		if (Input.GetMouseButtonUp(0))
+		{
+			isClimbing = false;			
+		}
+
 		if (Input.GetMouseButton(1))
 		{	
 			rightArmRigLayer.weight = 1;
@@ -200,7 +238,7 @@ public class Firtpersonmovement : MonoBehaviour
 	{
 
 		//if we're not climbing, we can move the player
-		if (rightHandIsGrabbing == false)
+		if (rightHandIsClimbing == false || leftHandIsClimbing == false)
 		{
 			
 			float x = Input.GetAxis("Horizontal");
