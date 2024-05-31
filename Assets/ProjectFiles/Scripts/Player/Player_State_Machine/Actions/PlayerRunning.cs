@@ -1,14 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.TextCore.Text;
 
 public class PlayerRunning : PlayerMove
 {
-
-    public static new void Move (CharacterController controller, float Runspeed)
+    public static new void Move (CharacterController controller, Vector2 moveDirection, float Runspeed)
     {
-        PlayerMove.Move(controller, Runspeed);
-    }
- 
+        PlayerMove.Move(controller, moveDirection, Runspeed);
+    } 
 }
