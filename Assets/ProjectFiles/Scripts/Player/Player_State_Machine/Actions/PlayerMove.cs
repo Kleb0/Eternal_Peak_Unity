@@ -4,13 +4,11 @@ using UnityEngine;
 
 public class PlayerMove
 {
-	public static void Move(CharacterController controller, float speed)
+	public static void Move(CharacterController controller, Vector2 moveDirection, float speed)
 	{
-		float x = Input.GetAxis("Horizontal");
-		float z = Input.GetAxis("Vertical");
-
-		Vector3 move = controller.transform.right * x + controller.transform.forward * z;
-
+		
+		
+		Vector3 move = controller.transform.right * moveDirection.x + controller.transform.forward * moveDirection.y;
 		controller.Move(move * speed * Time.deltaTime);
 		
 	}

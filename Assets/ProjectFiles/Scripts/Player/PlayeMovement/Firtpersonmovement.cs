@@ -20,6 +20,8 @@ public class Firtpersonmovement : MonoBehaviour
 
 	public bool isClimbing = false;
 
+	private Vector2 moveDirection;
+
 	private Vector3 currentVelocity;
 
 	//gravity is equal to one defined in project settings
@@ -67,6 +69,11 @@ public class Firtpersonmovement : MonoBehaviour
 		OnChangeState();				
 	}
 
+	public void SetMoveDirection(Vector2 direction)
+	{
+		moveDirection = direction;
+	}
+
 	void applyGravity()
 	{
 		if (controller.isGrounded)
@@ -108,8 +115,9 @@ public class Firtpersonmovement : MonoBehaviour
 
 		float currentSpeed = 0f;		
 
-		if (Input.GetAxis("Horizontal") != 0f || Input.GetAxis("Vertical") != 0f)
-		{		
+		if (moveDirection != Vector2.zero)
+		{	
+			
 			currentSpeed = walkSpeed;		
 		}
 
@@ -125,7 +133,7 @@ public class Firtpersonmovement : MonoBehaviour
 			// We pass the controller and the sprint speed or the walk speed to the Move method depending
 			// if we are walking or sprinting		
 	
-			newState = new PlayerState_Running(controller, sprintSpeed);
+			newState = new PlayerState_Running(controller, moveDirection, sprintSpeed);
 			velocity = RunWalkBlending(velocity, acceleration, 1f);	
 			playerAnimation.SetRunning(velocity);	
 			
@@ -136,7 +144,7 @@ public class Firtpersonmovement : MonoBehaviour
 		else if (currentSpeed > 0f)
 		{					
 
-			newState = new PlayerState_Walking(controller, walkSpeed);
+			newState = new PlayerState_Walking(controller, moveDirection, walkSpeed);
 			velocity = RunWalkBlending(velocity, -deceleration, 0f);
 			playerAnimation.SetWalking(true);
 			playerAnimation.SetRunning(velocity);		
