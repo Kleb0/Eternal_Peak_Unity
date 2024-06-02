@@ -8,7 +8,7 @@ public class PlayerState : IPlayerState
 {
     public string stateName { get; set; } = "PlayerState";
 
-    public virtual void EnterState() {  Debug.Log("Enter " + stateName + " State"); }
+    public virtual void EnterState() {  /* Debug.Log("Enter " + stateName + " State"); */ }
     public virtual void ExecuteState() {/* State Logic here */}
-    public virtual void ExitState() { Debug.Log("Exit " + stateName + " State"); }
+    public virtual void ExitState() { /* Debug.Log("Exit " + stateName + " State"); */ }
 }

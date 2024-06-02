@@ -2,24 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerState_Running : PlayerState
+public class PlayerState_Running : PlayerState_Moving
 {
-    
-    private CharacterController controller;
-    private Vector2 moveDirection;
-    private float speed;
-
-    public PlayerState_Running(CharacterController controller,  Vector2 moveDirection, float speed)
+    public PlayerState_Running(CharacterController controller, Vector2 moveDirection, float speed, 
+        Vector2 combinedMovement, Vector2 fowardBackward, Vector2 rightLeft) 
+        : base(controller, moveDirection, speed, combinedMovement, fowardBackward, rightLeft)
     {
-        this.controller = controller;
-        this.moveDirection = moveDirection;
-        this.speed = speed;
         stateName = "Running";
     }
-    
     public override void ExecuteState()
     {
-        PlayerRunning.Move(controller, moveDirection, speed);
+        PlayerRunning.Move(controller, moveDirection, speed, forwardBackward, rightLeft);
     }
      
 }

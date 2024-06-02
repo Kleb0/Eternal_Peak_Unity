@@ -44,24 +44,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
-                },
-                {
-                    ""name"": ""Diagonal_East"",
-                    ""type"": ""Button"",
-                    ""id"": ""8b0cceb4-9d44-4828-998b-202793d20488"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""Diagonal_West"",
-                    ""type"": ""Button"",
-                    ""id"": ""8a4aec90-3265-4551-a73d-68e6aac1de46"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -99,17 +81,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": true
                 },
                 {
-                    ""name"": """",
-                    ""id"": ""b48eb059-27f2-4b7b-b6c4-efec01a4f4c3"",
-                    ""path"": ""<Keyboard>/e"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Diagonal_East"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
                     ""name"": ""1D Axis"",
                     ""id"": ""bbf89334-8424-4adc-ab1e-a4f607b72f14"",
                     ""path"": ""1DAxis"",
@@ -141,17 +112,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""action"": ""RightLeft"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""a8c82a67-bd74-45d5-bb37-ed5a583c533e"",
-                    ""path"": ""<Keyboard>/q"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Diagonal_West"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -162,8 +122,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_PlayerInputMap = asset.FindActionMap("PlayerInputMap", throwIfNotFound: true);
         m_PlayerInputMap_ForwardBackward = m_PlayerInputMap.FindAction("ForwardBackward", throwIfNotFound: true);
         m_PlayerInputMap_RightLeft = m_PlayerInputMap.FindAction("RightLeft", throwIfNotFound: true);
-        m_PlayerInputMap_Diagonal_East = m_PlayerInputMap.FindAction("Diagonal_East", throwIfNotFound: true);
-        m_PlayerInputMap_Diagonal_West = m_PlayerInputMap.FindAction("Diagonal_West", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -227,16 +185,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private List<IPlayerInputMapActions> m_PlayerInputMapActionsCallbackInterfaces = new List<IPlayerInputMapActions>();
     private readonly InputAction m_PlayerInputMap_ForwardBackward;
     private readonly InputAction m_PlayerInputMap_RightLeft;
-    private readonly InputAction m_PlayerInputMap_Diagonal_East;
-    private readonly InputAction m_PlayerInputMap_Diagonal_West;
     public struct PlayerInputMapActions
     {
         private @PlayerControls m_Wrapper;
         public PlayerInputMapActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
         public InputAction @ForwardBackward => m_Wrapper.m_PlayerInputMap_ForwardBackward;
         public InputAction @RightLeft => m_Wrapper.m_PlayerInputMap_RightLeft;
-        public InputAction @Diagonal_East => m_Wrapper.m_PlayerInputMap_Diagonal_East;
-        public InputAction @Diagonal_West => m_Wrapper.m_PlayerInputMap_Diagonal_West;
         public InputActionMap Get() { return m_Wrapper.m_PlayerInputMap; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -252,12 +206,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @RightLeft.started += instance.OnRightLeft;
             @RightLeft.performed += instance.OnRightLeft;
             @RightLeft.canceled += instance.OnRightLeft;
-            @Diagonal_East.started += instance.OnDiagonal_East;
-            @Diagonal_East.performed += instance.OnDiagonal_East;
-            @Diagonal_East.canceled += instance.OnDiagonal_East;
-            @Diagonal_West.started += instance.OnDiagonal_West;
-            @Diagonal_West.performed += instance.OnDiagonal_West;
-            @Diagonal_West.canceled += instance.OnDiagonal_West;
         }
 
         private void UnregisterCallbacks(IPlayerInputMapActions instance)
@@ -268,12 +216,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @RightLeft.started -= instance.OnRightLeft;
             @RightLeft.performed -= instance.OnRightLeft;
             @RightLeft.canceled -= instance.OnRightLeft;
-            @Diagonal_East.started -= instance.OnDiagonal_East;
-            @Diagonal_East.performed -= instance.OnDiagonal_East;
-            @Diagonal_East.canceled -= instance.OnDiagonal_East;
-            @Diagonal_West.started -= instance.OnDiagonal_West;
-            @Diagonal_West.performed -= instance.OnDiagonal_West;
-            @Diagonal_West.canceled -= instance.OnDiagonal_West;
         }
 
         public void RemoveCallbacks(IPlayerInputMapActions instance)
@@ -295,7 +237,5 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     {
         void OnForwardBackward(InputAction.CallbackContext context);
         void OnRightLeft(InputAction.CallbackContext context);
-        void OnDiagonal_East(InputAction.CallbackContext context);
-        void OnDiagonal_West(InputAction.CallbackContext context);
     }
 }

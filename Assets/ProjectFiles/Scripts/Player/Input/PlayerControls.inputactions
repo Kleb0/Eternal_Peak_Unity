@@ -22,24 +22,6 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
-                },
-                {
-                    "name": "Diagonal_East",
-                    "type": "Button",
-                    "id": "8b0cceb4-9d44-4828-998b-202793d20488",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Diagonal_West",
-                    "type": "Button",
-                    "id": "8a4aec90-3265-4551-a73d-68e6aac1de46",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -77,17 +59,6 @@
                     "isPartOfComposite": true
                 },
                 {
-                    "name": "",
-                    "id": "b48eb059-27f2-4b7b-b6c4-efec01a4f4c3",
-                    "path": "<Keyboard>/e",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Diagonal_East",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
                     "name": "1D Axis",
                     "id": "bbf89334-8424-4adc-ab1e-a4f607b72f14",
                     "path": "1DAxis",
@@ -119,17 +90,6 @@
                     "action": "RightLeft",
                     "isComposite": false,
                     "isPartOfComposite": true
-                },
-                {
-                    "name": "",
-                    "id": "a8c82a67-bd74-45d5-bb37-ed5a583c533e",
-                    "path": "<Keyboard>/q",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Diagonal_West",
-                    "isComposite": false,
-                    "isPartOfComposite": false
                 }
             ]
         }

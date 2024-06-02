@@ -3,23 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class PlayerState_Walking : PlayerState
+public class PlayerState_Walking : PlayerState_Moving
 {
-    private CharacterController controller;
-    private Vector2 moveDirection;
-    private float speed;
-    public PlayerState_Walking(CharacterController controller, Vector2 moveDirection, float speed)
+    public PlayerState_Walking(CharacterController controller, Vector2 moveDirection, float speed, Vector2 combinedMovement, Vector2 fowardBackward, Vector2 rightLeft) 
+    : base(controller, moveDirection, speed , combinedMovement, fowardBackward, rightLeft)
     {
-        this.controller = controller;
-        this.moveDirection = moveDirection;
-        this.speed = speed;
         stateName = "Walking";
     }
-    public override void ExecuteState()
-    {
-        // here we implement the logic for the walking state, as PlayerState_Walking is a subclass of PlayerState
-        // we don't need to implement the EnterState and ExitState methods as they already have been implemented in the PlayerState class 
-        PlayerMove.Move(controller, moveDirection, speed);   
-    }
-
+   
 }

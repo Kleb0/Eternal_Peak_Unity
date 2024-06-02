@@ -1,12 +1,15 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Animations.Rigging;
 
-public class Firtpersonmovement : MonoBehaviour
+// This script took instructions from the InputConnect script, and transmit to playerStateManager the current state of the player 
+// modified by the input on the keyboard. The script also manage the player's movement and the camera rotation.
+// It also uses the PlayerAnimation script to manage the player's animation controller.
+
+public class Firstpersonmovement : MonoBehaviour
 {
 	public GameObject playerMeshRig;
 	private CharacterController controller;
@@ -14,7 +17,7 @@ public class Firtpersonmovement : MonoBehaviour
 	private Collider coll;
 	private float walkSpeed = 2f;
 	private float sprintSpeed = 5f;
-	private float speedTransitionRate = 200f;
+
 	private float mouseSensitivity = 300f;
 	private float jumpForce = 5f;
 
@@ -22,15 +25,15 @@ public class Firtpersonmovement : MonoBehaviour
 
 	private Vector2 moveDirection;
 
-	private Vector3 currentVelocity;
+	private Vector2 forwardDirection;
+	private Vector2 rightDirection;
+
 
 	//gravity is equal to one defined in project settings
 	private float gravity = Physics.gravity.y;
 	private float xRotation;
 
 	private float verticalVelocity;
-	private float xRotationSmooth = 0f;
-	private float rotationSmoothTime = 0.01f;
 
 
 	// ------- States management (privates variables) ------ //
@@ -72,6 +75,27 @@ public class Firtpersonmovement : MonoBehaviour
 	public void SetMoveDirection(Vector2 direction)
 	{
 		moveDirection = direction;
+	}
+
+	public void SetForwardDirection(Vector2 fDirection)
+	{
+		forwardDirection = fDirection;
+		//Debug.Log("Forward Direction: " + forwardDirection);
+	}
+
+	public void SetRightDirection(Vector2 rDirection)
+	{
+		rightDirection = rDirection;
+		
+	}
+	public void UpdateCurrentStateDirections(Vector2 forward, Vector2 right)
+	{
+		
+		if (currentState is PlayerState_Moving movingState)
+		{
+			Debug.Log("Update Directions");
+			movingState.UpdateDirections(forward, right);
+		}
 	}
 
 	void applyGravity()
@@ -116,10 +140,11 @@ public class Firtpersonmovement : MonoBehaviour
 		float currentSpeed = 0f;		
 
 		if (moveDirection != Vector2.zero)
-		{	
+		{			
+			currentSpeed = walkSpeed;	
 			
-			currentSpeed = walkSpeed;		
 		}
+		
 
 		// --> the newState is null at first to be sure that the we define a new state
 		PlayerState newState = null;
@@ -132,11 +157,12 @@ public class Firtpersonmovement : MonoBehaviour
 			// The running script script inherits from the walking script
 			// We pass the controller and the sprint speed or the walk speed to the Move method depending
 			// if we are walking or sprinting		
-	
-			newState = new PlayerState_Running(controller, moveDirection, sprintSpeed);
+
+			newState = new PlayerState_Running(controller, moveDirection, sprintSpeed, moveDirection, forwardDirection, rightDirection) ;
+
+
 			velocity = RunWalkBlending(velocity, acceleration, 1f);	
-			playerAnimation.SetRunning(velocity);	
-			
+			playerAnimation.SetRunning(velocity);		
 				
 		}
 
@@ -144,10 +170,11 @@ public class Firtpersonmovement : MonoBehaviour
 		else if (currentSpeed > 0f)
 		{					
 
-			newState = new PlayerState_Walking(controller, moveDirection, walkSpeed);
+			newState = new PlayerState_Walking(controller, moveDirection, walkSpeed, moveDirection, forwardDirection, rightDirection);
 			velocity = RunWalkBlending(velocity, -deceleration, 0f);
 			playerAnimation.SetWalking(true);
-			playerAnimation.SetRunning(velocity);		
+			playerAnimation.SetRunning(velocity);
+	
 		}
 
 		// we are in the idle state if the player is not moving
@@ -195,7 +222,7 @@ public class Firtpersonmovement : MonoBehaviour
 		{
 			playerStateManager.SetState(currentState);
 			canChangeState = false;
-			Debug.Log("New State type is: " + currentState.GetType());
+			//Debug.Log("New State type is: " + currentState.GetType());
 		}
 	}
 }
