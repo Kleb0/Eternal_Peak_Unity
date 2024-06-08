@@ -1892,11 +1892,15 @@ GameObject:
   m_Component:
   - component: {fileID: 1073958753}
   - component: {fileID: 1073958754}
+  - component: {fileID: 1073958760}
+  - component: {fileID: 1073958761}
+  - component: {fileID: 1073958766}
   - component: {fileID: 1073958755}
   - component: {fileID: 1073958756}
-  - component: {fileID: 1073958759}
-  - component: {fileID: 1073958761}
-  - component: {fileID: 1073958760}
+  - component: {fileID: 1073958762}
+  - component: {fileID: 1073958765}
+  - component: {fileID: 1073958764}
+  - component: {fileID: 1073958763}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -1960,6 +1964,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerMeshRig: {fileID: 919132148829565140}
   isClimbing: 0
+  playerStateUI: {fileID: 667712957}
+  uiDebugActive: 1
 --- !u!114 &1073958756
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1972,21 +1978,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7aae605cf67ffb48a4f730e38020d71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentStateText: {fileID: 481552267}
-  currentStateName: 
---- !u!114 &1073958759
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1073958752}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d3780c88aad781469d80a82fe84974e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  animator: {fileID: 919132148829565141}
 --- !u!114 &1073958760
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2030,6 +2021,78 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32829e5d24f0818499f976bee720820a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  forwardBackward: 0
+  rightLeft: 0
+--- !u!114 &1073958762
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1073958752}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f657332c4c0d65c499178c2cd790c011, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1073958763
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1073958752}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0fae7c2ceab8b1846956f57aa0b102e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1073958764
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1073958752}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b5a1ac161435a142814c8ab36ff1605, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  debugUI: {fileID: 667712957}
+  playerController: {fileID: 1073958755}
+  currentPLayerStateStatusText: {fileID: 481552267}
+  currentPlayerStateString: 
+  currentLeftHandStateStatusText: {fileID: 638712204}
+  currentLeftHandStateString: 
+  currentRightHandStateStatusText: {fileID: 248315497}
+  currentRightHandStateString: 
+--- !u!114 &1073958765
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1073958752}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d3780c88aad781469d80a82fe84974e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animator: {fileID: 919132148829565141}
+--- !u!114 &1073958766
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1073958752}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d7d3ea256e4fd94a861ad8253edd370, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerController: {fileID: 1073958755}
 --- !u!1 &1273198784
 GameObject:
   m_ObjectHideFlags: 0

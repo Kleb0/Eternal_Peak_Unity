@@ -44,6 +44,24 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""LeftHand"",
+                    ""type"": ""Value"",
+                    ""id"": ""a4fedfab-7024-4fa6-b3e5-873a8d3f92dc"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""RightHand"",
+                    ""type"": ""Value"",
+                    ""id"": ""704645ae-e45d-4276-9897-15ce338ad368"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -112,6 +130,28 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""action"": ""RightLeft"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""36615bab-4d95-4c0e-851c-9aa994d4655e"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""LeftHand"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""41f8e9da-d731-4c0f-8892-018cb38e8f2d"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""RightHand"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -122,6 +162,8 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_PlayerInputMap = asset.FindActionMap("PlayerInputMap", throwIfNotFound: true);
         m_PlayerInputMap_ForwardBackward = m_PlayerInputMap.FindAction("ForwardBackward", throwIfNotFound: true);
         m_PlayerInputMap_RightLeft = m_PlayerInputMap.FindAction("RightLeft", throwIfNotFound: true);
+        m_PlayerInputMap_LeftHand = m_PlayerInputMap.FindAction("LeftHand", throwIfNotFound: true);
+        m_PlayerInputMap_RightHand = m_PlayerInputMap.FindAction("RightHand", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -185,12 +227,16 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private List<IPlayerInputMapActions> m_PlayerInputMapActionsCallbackInterfaces = new List<IPlayerInputMapActions>();
     private readonly InputAction m_PlayerInputMap_ForwardBackward;
     private readonly InputAction m_PlayerInputMap_RightLeft;
+    private readonly InputAction m_PlayerInputMap_LeftHand;
+    private readonly InputAction m_PlayerInputMap_RightHand;
     public struct PlayerInputMapActions
     {
         private @PlayerControls m_Wrapper;
         public PlayerInputMapActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
         public InputAction @ForwardBackward => m_Wrapper.m_PlayerInputMap_ForwardBackward;
         public InputAction @RightLeft => m_Wrapper.m_PlayerInputMap_RightLeft;
+        public InputAction @LeftHand => m_Wrapper.m_PlayerInputMap_LeftHand;
+        public InputAction @RightHand => m_Wrapper.m_PlayerInputMap_RightHand;
         public InputActionMap Get() { return m_Wrapper.m_PlayerInputMap; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -206,6 +252,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @RightLeft.started += instance.OnRightLeft;
             @RightLeft.performed += instance.OnRightLeft;
             @RightLeft.canceled += instance.OnRightLeft;
+            @LeftHand.started += instance.OnLeftHand;
+            @LeftHand.performed += instance.OnLeftHand;
+            @LeftHand.canceled += instance.OnLeftHand;
+            @RightHand.started += instance.OnRightHand;
+            @RightHand.performed += instance.OnRightHand;
+            @RightHand.canceled += instance.OnRightHand;
         }
 
         private void UnregisterCallbacks(IPlayerInputMapActions instance)
@@ -216,6 +268,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @RightLeft.started -= instance.OnRightLeft;
             @RightLeft.performed -= instance.OnRightLeft;
             @RightLeft.canceled -= instance.OnRightLeft;
+            @LeftHand.started -= instance.OnLeftHand;
+            @LeftHand.performed -= instance.OnLeftHand;
+            @LeftHand.canceled -= instance.OnLeftHand;
+            @RightHand.started -= instance.OnRightHand;
+            @RightHand.performed -= instance.OnRightHand;
+            @RightHand.canceled -= instance.OnRightHand;
         }
 
         public void RemoveCallbacks(IPlayerInputMapActions instance)
@@ -237,5 +295,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     {
         void OnForwardBackward(InputAction.CallbackContext context);
         void OnRightLeft(InputAction.CallbackContext context);
+        void OnLeftHand(InputAction.CallbackContext context);
+        void OnRightHand(InputAction.CallbackContext context);
     }
 }

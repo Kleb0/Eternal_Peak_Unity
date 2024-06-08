@@ -4,7 +4,7 @@ using UnityEngine;
 
 // this class is the base class for all the states of the player
 
-public class PlayerState : IPlayerState
+public class State : IState
 {
     public string stateName { get; set; } = "PlayerState";
 

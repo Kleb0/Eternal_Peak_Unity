@@ -9,7 +9,7 @@ using UnityEngine.Animations.Rigging;
 // modified by the input on the keyboard. The script also manage the player's movement and the camera rotation.
 // It also uses the PlayerAnimation script to manage the player's animation controller.
 
-public class Firstpersonmovement : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
 	public GameObject playerMeshRig;
 	private CharacterController controller;
@@ -39,27 +39,53 @@ public class Firstpersonmovement : MonoBehaviour
 	// ------- States management (privates variables) ------ //
 	private PlayerAnimation playerAnimation;
 	private PlayerStateManager playerStateManager;
-	private PlayerState initialState;
-	private PlayerState currentState;
+	private State playerInitialState;
+	public State currentPlayerState;
 	private bool canChangeState = false;
 
 	float velocity = 0f;
 	float acceleration = 1.0f;
 	float deceleration = 0.5f;
 
-	// 
+	// --- HandsStateController --- //
+	private HandsStateController handsStateController;
+	private UIDEBUG uiDebug;
+	public GameObject playerStateUI;
+	public bool uiDebugActive;
+
+	private LeftHandState previousLeftHandState;
+	private PlayerSetDirection playerSetDirection;
+
+	private InputConnect inputConnect;	
 	// Start is called before the first frame update
 	void Start()
 	{
-
+		
 		playerAnimation = GetComponent<PlayerAnimation>();
 		playerStateManager = GetComponent<PlayerStateManager>();
-		initialState = new PlayerState_Idle();
-		currentState = initialState;
+		handsStateController = GetComponent<HandsStateController>();
+		playerSetDirection = GetComponent<PlayerSetDirection>();
+		inputConnect = GetComponent<InputConnect>();
+
+
+		playerInitialState = new PlayerState_Idle();
+		currentPlayerState = playerInitialState;
+		handsStateController.ChangeLeftHandState(new LeftHandState_DoNothing());
+
 		playerStateManager.SetState(new PlayerState_Idle());
 		controller = GetComponent<CharacterController>();
 		cam = GetComponentInChildren<Camera>();	
 		Cursor.lockState = CursorLockMode.Locked;
+		
+		uiDebug = GetComponent<UIDEBUG>();
+		uiDebug.setUiDebugActive(uiDebugActive);
+
+		if (uiDebugActive)
+		{
+		uiDebug.UpdatePlayerStateUI(currentPlayerState.stateName);		
+		uiDebug.UpdateLeftHandStateUI(handsStateController.GetCurrentLeftHandState().stateName);			
+		}
+		
 	}
 
 
@@ -68,34 +94,8 @@ public class Firstpersonmovement : MonoBehaviour
 	{
 		Move();		
 		Look();	
-		applyGravity();
-		OnChangeState();				
-	}
-
-	public void SetMoveDirection(Vector2 direction)
-	{
-		moveDirection = direction;
-	}
-
-	public void SetForwardDirection(Vector2 fDirection)
-	{
-		forwardDirection = fDirection;
-		//Debug.Log("Forward Direction: " + forwardDirection);
-	}
-
-	public void SetRightDirection(Vector2 rDirection)
-	{
-		rightDirection = rDirection;
-		
-	}
-	public void UpdateCurrentStateDirections(Vector2 forward, Vector2 right)
-	{
-		
-		if (currentState is PlayerState_Moving movingState)
-		{
-			Debug.Log("Update Directions");
-			movingState.UpdateDirections(forward, right);
-		}
+		applyGravity();	
+				
 	}
 
 	void applyGravity()
@@ -136,18 +136,20 @@ public class Firstpersonmovement : MonoBehaviour
 	
 	void Move()
 	{
+		// here we read the input from the keyboard that give a value between -1 and 1 used to defined a vector 
+		// that will be used to move the player in the world space
 
+		moveDirection = new Vector2(inputConnect.rightLeft, inputConnect.forwardBackward);
 		float currentSpeed = 0f;		
 
+		// if the move direction is not equal to zero, the player is moving
 		if (moveDirection != Vector2.zero)
-		{			
-			currentSpeed = walkSpeed;	
-			
+		{
+			currentSpeed = walkSpeed;
 		}
-		
 
 		// --> the newState is null at first to be sure that the we define a new state
-		PlayerState newState = null;
+		State newPlayerState = null;
 		
 		// we are in the running state if the player is sprinting by pressing the left shift key
 		if (Input.GetKey(KeyCode.LeftShift) && currentSpeed > 0f)
@@ -158,10 +160,10 @@ public class Firstpersonmovement : MonoBehaviour
 			// We pass the controller and the sprint speed or the walk speed to the Move method depending
 			// if we are walking or sprinting		
 
-			newState = new PlayerState_Running(controller, moveDirection, sprintSpeed, moveDirection, forwardDirection, rightDirection) ;
+			newPlayerState = new PlayerState_Running(controller, playerSetDirection.GetMoveDirection(), sprintSpeed, 
+			playerSetDirection.GetMoveDirection(),playerSetDirection.GetForwardDirection(), playerSetDirection.GetRightDirection());
 
-
-			velocity = RunWalkBlending(velocity, acceleration, 1f);	
+			velocity = playerAnimation.RunWalkBlending(velocity, acceleration, 1f);	
 			playerAnimation.SetRunning(velocity);		
 				
 		}
@@ -170,8 +172,10 @@ public class Firstpersonmovement : MonoBehaviour
 		else if (currentSpeed > 0f)
 		{					
 
-			newState = new PlayerState_Walking(controller, moveDirection, walkSpeed, moveDirection, forwardDirection, rightDirection);
-			velocity = RunWalkBlending(velocity, -deceleration, 0f);
+			newPlayerState = new PlayerState_Walking(controller, playerSetDirection.GetMoveDirection(), walkSpeed, 
+			playerSetDirection.GetMoveDirection(), playerSetDirection.GetForwardDirection(),  playerSetDirection.GetRightDirection());
+
+			velocity = playerAnimation.RunWalkBlending(velocity, -deceleration, 0f);
 			playerAnimation.SetWalking(true);
 			playerAnimation.SetRunning(velocity);
 	
@@ -181,8 +185,8 @@ public class Firstpersonmovement : MonoBehaviour
 		else
 		{		
 			
-			newState = new PlayerState_Idle();
-			velocity = RunWalkBlending(velocity, -deceleration, 0f);
+			newPlayerState = new PlayerState_Idle();
+			velocity = playerAnimation.RunWalkBlending(velocity, -deceleration, 0f);			
 			playerAnimation.SetWalking(false);
 			playerAnimation.SetRunning(velocity);
 		}	
@@ -190,39 +194,27 @@ public class Firstpersonmovement : MonoBehaviour
 		// if the new state type is different from the current state type, we get the type of the new state 
 		// we set the current state to the new state and we can change the state	
 
-		if (currentState == null || newState.GetType() != currentState.GetType())
+		if (currentPlayerState == null || newPlayerState.GetType() != currentPlayerState.GetType())
 		{
-			currentState = newState;
 			canChangeState = true;
+			currentPlayerState = newPlayerState;		
+			OnPlayerStateChange();
+			if (uiDebugActive)
+			{
+				uiDebug.UpdatePlayerStateUI(newPlayerState.stateName);
+			}
+						
 		}
 
 	}
 
-	public float RunWalkBlending(float currentVelocity, float rate, float target)
-	{
-		
-		currentVelocity += rate * Time.deltaTime;
-
-		// if the rate is positive, we return the minimum value between the current velocity and the target
-		// if the rate is negative, we return the maximum value between the current velocity and the target
-
-		if (rate> 0)
-		{
-			return Mathf.Min(currentVelocity, target);
-		}
-		else
-		{
-			return Mathf.Max(currentVelocity, target);
-		}
-	}
-
-	void OnChangeState()
+	void OnPlayerStateChange()
 	{
 		if (canChangeState)
 		{
-			playerStateManager.SetState(currentState);
-			canChangeState = false;
-			//Debug.Log("New State type is: " + currentState.GetType());
+			playerStateManager.SetState(currentPlayerState);
+			canChangeState = false;		
 		}
 	}
+	
 }

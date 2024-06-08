@@ -5,11 +5,7 @@ using TMPro;
 
 public class PlayerStateManager : MonoBehaviour
 {
-    [Header("Player State DEBUG UI ")] 
-    public TextMeshProUGUI currentStateText;
-    public string currentStateName;
-
-    private PlayerState currentState;
+    private State currentState;
 
     // Start is called before the first frame update
     void Start()
@@ -25,15 +21,13 @@ public class PlayerStateManager : MonoBehaviour
     }
 
 
-    public void SetState(PlayerState newState)
+    public void SetState(State newState)
     {
         if(currentState != null)
         {
             currentState.ExitState();
         }
-        currentState = newState;
-        currentStateText.text = currentState.stateName;
-        currentStateName = currentState.stateName;
+        currentState = newState;     
         currentState.EnterState();
     }
 
