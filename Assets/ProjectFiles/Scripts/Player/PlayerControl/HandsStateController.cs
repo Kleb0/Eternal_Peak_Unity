@@ -8,6 +8,7 @@ public class HandsStateController : MonoBehaviour
     private LeftHandState currentLeftHandState;
     private RightHandState currentRightHandState;
     private LeftHandState previousLeftHandState;
+    private RightHandState previousRightHandState;
     public void Start()
     {
         uiDebug = GetComponent<UIDEBUG>();
@@ -30,7 +31,7 @@ public class HandsStateController : MonoBehaviour
         }
         currentLeftHandState = newLeftHandState;
         currentLeftHandState.EnterState();     
-        Debug.Log(" Current Left Hand State TEST: " + currentLeftHandState.stateName);
+        
         if (uiDebug != null)
         {
             uiDebug.UpdateLeftHandStateUI(currentLeftHandState.stateName);
@@ -41,8 +42,7 @@ public class HandsStateController : MonoBehaviour
     public void ChangeLeftHandState(LeftHandState newLeftHandState)
     {
         previousLeftHandState = currentLeftHandState;
-        SetLeftHandState(newLeftHandState);
-        Debug.Log("Left Hand State: " + newLeftHandState.stateName);
+        SetLeftHandState(newLeftHandState);        
     }
 
     public void RevertLeftHandState()
@@ -66,7 +66,7 @@ public class HandsStateController : MonoBehaviour
         }
         currentRightHandState = newRightHandState;
         currentRightHandState.EnterState();
-        Debug.Log(" Current Right Hand State TEST: " + currentRightHandState.stateName);
+        
         if (uiDebug != null)
         {
             uiDebug.UpdateRightHandStateUI(currentRightHandState.stateName);
@@ -77,6 +77,19 @@ public class HandsStateController : MonoBehaviour
     {
         return currentRightHandState;
     }
+
+    public void ChangeRightHandState(RightHandState newRightHandState)
+    {
+        previousRightHandState = currentRightHandState;
+        SetRightHandState(newRightHandState);       
+    }
+
+    public void RevertRightHandState()
+    {
+        SetRightHandState(previousRightHandState);
+    }
+
+
 
     // The principle is merely simple : We have a state machine for the hands of the player, 
     //and we can change the state of the hands of the player by calling the SetLeftHandState and SetRightHandState methods.$

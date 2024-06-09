@@ -71,6 +71,7 @@ public class PlayerController : MonoBehaviour
 		playerInitialState = new PlayerState_Idle();
 		currentPlayerState = playerInitialState;
 		handsStateController.ChangeLeftHandState(new LeftHandState_DoNothing());
+		handsStateController.ChangeRightHandState(new RightHandState_DoNothing());
 
 		playerStateManager.SetState(new PlayerState_Idle());
 		controller = GetComponent<CharacterController>();
@@ -83,7 +84,8 @@ public class PlayerController : MonoBehaviour
 		if (uiDebugActive)
 		{
 		uiDebug.UpdatePlayerStateUI(currentPlayerState.stateName);		
-		uiDebug.UpdateLeftHandStateUI(handsStateController.GetCurrentLeftHandState().stateName);			
+		uiDebug.UpdateLeftHandStateUI(handsStateController.GetCurrentLeftHandState().stateName);
+		uiDebug.UpdateRightHandStateUI(handsStateController.GetCurrentRightHandState().stateName);			
 		}
 		
 	}

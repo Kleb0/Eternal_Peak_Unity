@@ -72,6 +72,7 @@ public class InputConnect : MonoBehaviour
 	private void OnLeftHandAction(InputAction.CallbackContext context)
 	{
 		leftHand = context.phase == InputActionPhase.Performed ? context.ReadValue<float>() : 0f;
+		Debug.Log("Left Hand Action ");
 
 		if (context.phase == InputActionPhase.Performed)
 		{
@@ -90,9 +91,21 @@ public class InputConnect : MonoBehaviour
 	
 	private void OnRightHandAction(InputAction.CallbackContext context)
 	{
-		rightHand = context.phase == InputActionPhase.Performed ? context.ReadValue<float>() : 0f;      
+		rightHand = context.phase == InputActionPhase.Performed ? context.ReadValue<float>() : 0f; 
+		Debug.Log("Right Hand Action ");
+
+		if (context.phase == InputActionPhase.Performed)
+		{
+			handsStateController.ChangeRightHandState(new RightHandState_IsRisingUp());
+		}
+
+		if (context.phase == InputActionPhase.Canceled)
+		{
+			handsStateController.RevertRightHandState();
+		}     
 
 	}
+
 	private void UpdateMovement()
 	{
 		Vector2 moveDirection = new Vector2(rightLeft, forwardBackward);
@@ -105,7 +118,7 @@ public class InputConnect : MonoBehaviour
 
 	private void OnLeftHandActionCompleted()
 	{
-		Debug.Log("Left Hand action completed ");
+		
 		handsStateController.RevertLeftHandState();
 	} 
  
