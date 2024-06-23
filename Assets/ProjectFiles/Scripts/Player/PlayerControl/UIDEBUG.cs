@@ -5,6 +5,7 @@ using TMPro;
 
 public class UIDEBUG : MonoBehaviour
 {
+
         [Header("Debug UI gameobject")]
         public GameObject debugUI;
         public PlayerController playerController;
@@ -22,7 +23,6 @@ public class UIDEBUG : MonoBehaviour
         public TextMeshProUGUI currentRightHandStateStatusText;
         public string currentRightHandStateString;
 
-  
 
         public void UpdatePlayerStateUI(string currentPlayerState)
         {      

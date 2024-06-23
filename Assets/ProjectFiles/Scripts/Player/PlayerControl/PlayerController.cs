@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Animations.Rigging;
+using RootMotion.FinalIK;
 
 // This script took instructions from the InputConnect script, and transmit to playerStateManager the current state of the player 
 // modified by the input on the keyboard. The script also manage the player's movement and the camera rotation.
@@ -11,6 +12,8 @@ using UnityEngine.Animations.Rigging;
 
 public class PlayerController : MonoBehaviour
 {
+	public GameObject player;
+	public GameObject playerMesh;
 	public GameObject playerMeshRig;
 	private CharacterController controller;
 	private Camera cam;
@@ -37,7 +40,7 @@ public class PlayerController : MonoBehaviour
 
 
 	// ------- States management (privates variables) ------ //
-	private PlayerAnimation playerAnimation;
+	public PlayerAnimation playerAnimation;
 	private PlayerStateManager playerStateManager;
 	private State playerInitialState;
 	public State currentPlayerState;
@@ -56,48 +59,89 @@ public class PlayerController : MonoBehaviour
 	private LeftHandState previousLeftHandState;
 	private PlayerSetDirection playerSetDirection;
 
-	private InputConnect inputConnect;	
+	private InputConnect inputConnect;
+
+	// --- Access the IK solver properties --- //
+
+	[Header("IK Solvers")]
+	// Header space 
+	[Space(10)]
+	public IKSolverArm leftIKSolverArm;
+	public ArmIK leftArmIK;
+	public GameObject leftArmIKTarget;
+	public IKSolverArm RightIKSolverArm;
+	public ArmIK rightArmIK;
+
+	public GameObject rightArmIKTarget;
+	public float reachingSpeed;
+
+
 	// Start is called before the first frame update
 	void Start()
 	{
-		
+		// get the 
 		playerAnimation = GetComponent<PlayerAnimation>();
 		playerStateManager = GetComponent<PlayerStateManager>();
 		handsStateController = GetComponent<HandsStateController>();
 		playerSetDirection = GetComponent<PlayerSetDirection>();
 		inputConnect = GetComponent<InputConnect>();
+		controller = GetComponent<CharacterController>();
+		cam = GetComponentInChildren<Camera>();	
+		uiDebug = GetComponent<UIDEBUG>();
 
+		// get the ArmIK component from the player object
+
+		foreach (ArmIK armIK in player.GetComponents<ArmIK>())
+		{
+			if (armIK.solver.isLeft)
+			{
+				Debug.Log("Left Arm IK found");
+				leftArmIK = armIK;
+		
+			}
+			else
+			{
+				Debug.Log("Right Arm IK found");
+				rightArmIK = armIK;
+	
+			}
+		}
+		// initialization of the player state with its hand states at the start of the game
 
 		playerInitialState = new PlayerState_Idle();
 		currentPlayerState = playerInitialState;
+
 		handsStateController.ChangeLeftHandState(new LeftHandState_DoNothing());
 		handsStateController.ChangeRightHandState(new RightHandState_DoNothing());
 
+		// we set the player state to the initial state
 		playerStateManager.SetState(new PlayerState_Idle());
-		controller = GetComponent<CharacterController>();
-		cam = GetComponentInChildren<Camera>();	
-		Cursor.lockState = CursorLockMode.Locked;
-		
-		uiDebug = GetComponent<UIDEBUG>();
+		// setup the UI Debug
+
 		uiDebug.setUiDebugActive(uiDebugActive);
 
 		if (uiDebugActive)
 		{
-		uiDebug.UpdatePlayerStateUI(currentPlayerState.stateName);		
-		uiDebug.UpdateLeftHandStateUI(handsStateController.GetCurrentLeftHandState().stateName);
-		uiDebug.UpdateRightHandStateUI(handsStateController.GetCurrentRightHandState().stateName);			
+			uiDebug.UpdatePlayerStateUI(currentPlayerState.stateName);		
+			uiDebug.UpdateLeftHandStateUI(handsStateController.GetCurrentLeftHandState().stateName);
+			uiDebug.UpdateRightHandStateUI(handsStateController.GetCurrentRightHandState().stateName);			
 		}
-		
-	}
 
+		leftArmIK.enabled = false;
+		leftArmIKTarget.SetActive(false);
+
+		rightArmIK.enabled = false;
+		rightArmIKTarget.SetActive(false);
+
+		Cursor.lockState = CursorLockMode.Locked;
+	}
 
 	// Update is called once per frame
 	void Update()
 	{
 		Move();		
 		Look();	
-		applyGravity();	
-				
+		applyGravity();					
 	}
 
 	void applyGravity()
@@ -122,7 +166,7 @@ public class PlayerController : MonoBehaviour
 			verticalVelocity = jumpForce;
 		}		
 	}
-
+	
 	void Look()
 	{
 	
@@ -135,7 +179,8 @@ public class PlayerController : MonoBehaviour
 		playerMeshRig.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
 		transform.Rotate(Vector3.up * mouseX);	
 	}
-	
+
+	#region  Movement
 	void Move()
 	{
 		// here we read the input from the keyboard that give a value between -1 and 1 used to defined a vector 
@@ -210,6 +255,9 @@ public class PlayerController : MonoBehaviour
 
 	}
 
+	#endregion	
+	
+
 	void OnPlayerStateChange()
 	{
 		if (canChangeState)
@@ -218,5 +266,6 @@ public class PlayerController : MonoBehaviour
 			canChangeState = false;		
 		}
 	}
-	
+
+	// control here the hands of the player
 }

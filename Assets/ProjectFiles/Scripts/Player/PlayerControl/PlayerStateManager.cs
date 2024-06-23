@@ -10,8 +10,7 @@ public class PlayerStateManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        SetState(new PlayerState_Idle());
-        
+        SetState(new PlayerState_Idle());        
     }
 
     // Update is called once per frame
@@ -19,8 +18,6 @@ public class PlayerStateManager : MonoBehaviour
     {
         ExecuteState();        
     }
-
-
     public void SetState(State newState)
     {
         if(currentState != null)
@@ -30,7 +27,6 @@ public class PlayerStateManager : MonoBehaviour
         currentState = newState;     
         currentState.EnterState();
     }
-
     public void ExecuteState()
     {
         if(currentState != null)

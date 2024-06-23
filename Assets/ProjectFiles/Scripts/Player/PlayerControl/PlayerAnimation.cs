@@ -6,7 +6,15 @@ public class PlayerAnimation : MonoBehaviour
 {
 
     public Animator animator;
-    // Start is called before the first frame update
+	public Avatar avatar;
+
+	public GameObject LeftArmIkTarget;
+
+    void Start()
+	{
+
+
+	}
 
     public void SetWalking(bool walking)
     {
@@ -35,6 +43,5 @@ public class PlayerAnimation : MonoBehaviour
 			return Mathf.Max(currentVelocity, target);
 		}
 	}
-
 
 }
