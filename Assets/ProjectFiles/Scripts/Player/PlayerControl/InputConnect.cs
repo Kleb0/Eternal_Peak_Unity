@@ -80,8 +80,11 @@ public class InputConnect : MonoBehaviour
 
 		if (context.phase == InputActionPhase.Performed)
 		{
+			float initialIkWeight = 0f;
+			float initialIkRotationWeight = 0f;
 			// leftArmIK = playerController.leftArmIK;
-			leftHandStateRishingUP = new LeftHandState_IsRisingUp();
+			playerController.ChangeIKWeight(1f);
+			leftHandStateRishingUP = new LeftHandState_IsRisingUp(playerController, playerController.leftArmIKTarget, playerController.leftArmIK, playerController.leftIKSolverArm, initialIkWeight, initialIkRotationWeight);
 			handsStateController.ChangeLeftHandState(leftHandStateRishingUP);
 
 		
@@ -117,7 +120,7 @@ public class InputConnect : MonoBehaviour
 
 		if (handsStateController != null)
 		{
-			handsStateController.RevertLeftHandState(new LeftHandState_DoNothing());
+			handsStateController.RevertLeftHandState(new LeftHandState_DoNothing(playerController, playerController.leftArmIKTarget, playerController.leftArmIK));
 		}
 	
 	

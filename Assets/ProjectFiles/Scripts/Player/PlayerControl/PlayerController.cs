@@ -111,7 +111,7 @@ public class PlayerController : MonoBehaviour
 		playerInitialState = new PlayerState_Idle();
 		currentPlayerState = playerInitialState;
 
-		handsStateController.ChangeLeftHandState(new LeftHandState_DoNothing());
+		handsStateController.ChangeLeftHandState(new LeftHandState_DoNothing(this, leftArmIKTarget, leftArmIK));
 		handsStateController.ChangeRightHandState(new RightHandState_DoNothing());
 
 		// we set the player state to the initial state
@@ -265,6 +265,12 @@ public class PlayerController : MonoBehaviour
 			playerStateManager.SetState(currentPlayerState);
 			canChangeState = false;		
 		}
+	}
+
+	public void ChangeIKWeight(float weight)
+	{
+		leftIKSolverArm.IKPositionWeight = weight;
+		leftIKSolverArm.IKRotationWeight = weight;
 	}
 
 	// control here the hands of the player

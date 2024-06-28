@@ -5,55 +5,52 @@ using UnityEngine;
 
 public class LeftHandState_IsRisingUp : LeftHandState
 {
-    public override string stateName { get; protected set; } = "Is rising up";
+	public override string stateName { get; protected set; } = "Is rising up";
 
-    // gets this state a parameter with the class ArmIK
-    protected PlayerController playerController;
-    protected ArmIK LeftArmIK;    // solver arm
-    protected IKSolverArm LeftIKSolverArm;
-    protected float reachingSpeed;
-    protected GameObject leftArmIkTarget;
-    protected PlayerAnimation playerAnimation;
+	// gets this state a parameter with the class ArmIK
+	protected PlayerController playerController;
+	protected ArmIK LeftArmIK;    // solver arm
+	protected IKSolverArm LeftIKSolverArm;
+	protected float reachingSpeed;
+	protected GameObject leftArmIkTarget;
+	protected PlayerAnimation playerAnimation;
 
-    protected float IKWeight = 0f;
-    protected float IKRotationWeight;
+	protected float IKWeight = 0f;
+	protected float IKRotationWeight;
+	private float rate = 1f;
+	protected float target = 1f;
 
-    private float rate = 1f;
-    protected float target = 1f;
+	// the constructor will take the playerController, the leftArmIkTarget, the leftArmIK, the leftIKSolverArm, the IKWeight and the IKRotationWeight
+	// from the playerController
+	// and initialize them in the state
+	 public LeftHandState_IsRisingUp(PlayerController playerController, GameObject LeftArmIkTarget, ArmIK leftArmIk, IKSolverArm leftIKSolverArm, float IKWeight, float IKRotationWeight)
+	{
+		this.playerController = playerController;
+		this.leftArmIkTarget = playerController.leftArmIKTarget;
+		this.LeftArmIK = playerController.leftArmIK;
+		this.LeftIKSolverArm = playerController.leftIKSolverArm;
+		this.IKWeight = playerController.leftIKSolverArm.IKPositionWeight;
+		this.IKRotationWeight = playerController.leftIKSolverArm.IKRotationWeight;
+		
+	  
+		// As we are using here a special constructor, we just set the stateName to "Moving" here without the need to override it in the derived classes.
+	}
 
+	// when we enter in the state, we enable the target of the left arm, and the left arm itself
 
-    // to enable the state, will pass the playerController, the left Arm itself, the left arm solver, the reaching speed 
-    // use a function to be able to change the target of the left arm
-    public LeftHandState_IsRisingUp() 
-    {
-       
+	public override void EnterState()
+	{
+		IKArmsControl.EnableIKTarget(leftArmIkTarget);
+		IKArmsControl.EnableIkArm(LeftArmIK);
 
-        //here we enable the Left Arm IK at the creation of the state
-    }
+	}
 
-    public override void ExecuteState()
-    {
-        Debug.Log("Left hand state Rising Up is executed");
-        
-        
-        // IKWeight = RiseHand.IncrementIKWeight(IKWeight, rate);
-        // Debug.Log("IKWeight value: " + IKWeight);
-    }
+	// to enable the state, will pass the playerController, the left Arm itself, the left arm solver, the reaching speed 
+	// use a function to be able to change the target of the left arm
 
-    public override void ExitState()
-    {
-      
-        // RiseHand.DisableTarget(leftArmIkTarget);
-        IKWeight = 0f;
-    }
+	public override void ExecuteState()
+	{
+		IKArmsControl.IncrementIkWeight(LeftArmIK, ref IKWeight, ref IKRotationWeight, rate);
 
-    public float incrementationThroughTime( float incrementedweight)
-    {
-        incrementedweight += 0.1f * Time.deltaTime;
-        return incrementedweight;
-
-    }
-
-
+	}
 }
-
