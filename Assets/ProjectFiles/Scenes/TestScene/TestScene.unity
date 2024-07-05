@@ -2672,9 +2672,10 @@ MonoBehaviour:
   playerMesh: {fileID: 1555197501567370167}
   playerMeshRig: {fileID: 919132148793657597}
   isClimbing: 0
+  playerAnimation: {fileID: 0}
   playerStateUI: {fileID: 667712957}
   uiDebugActive: 1
-  LeftIKSolverArm:
+  leftIKSolverArm:
     executedInEditor: 0
     IKPosition: {x: 0, y: 0, z: 0}
     IKPositionWeight: 1
@@ -2741,7 +2742,7 @@ MonoBehaviour:
         m_RotationOrder: 4
   leftArmIK: {fileID: 0}
   leftArmIKTarget: {fileID: 1686975017}
-  RightIKSolverArm:
+  rightIKSolverArm:
     executedInEditor: 0
     IKPosition: {x: 0, y: 0, z: 0}
     IKPositionWeight: 1
@@ -2808,6 +2809,7 @@ MonoBehaviour:
         m_RotationOrder: 4
   rightArmIK: {fileID: 0}
   rightArmIKTarget: {fileID: 1605426700}
+  reachingSpeed: 0
 --- !u!114 &1073958756
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2911,6 +2913,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animator: {fileID: 712111535}
   avatar: {fileID: 0}
+  LeftArmIkTarget: {fileID: 0}
 --- !u!114 &1073958766
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3155,14 +3158,14 @@ MonoBehaviour:
       target: {fileID: 1605426701}
       positionWeight: 1
       rotationWeight: 1
-      shoulderRotationWeight: 1
+      shoulderRotationWeight: 0
       shoulderRotationMode: 0
       shoulderTwistWeight: 1
       shoulderYawOffset: 45
       shoulderPitchOffset: -30
       bendGoal: {fileID: 0}
       bendGoalWeight: 0
-      swivelOffset: 60
+      swivelOffset: 45
       wristToPalmAxis: {x: 0, y: 0, z: 0}
       palmToThumbAxis: {x: 0, y: 0, z: 0}
       armLengthMlp: 1

@@ -69,7 +69,7 @@ public class PlayerController : MonoBehaviour
 	public IKSolverArm leftIKSolverArm;
 	public ArmIK leftArmIK;
 	public GameObject leftArmIKTarget;
-	public IKSolverArm RightIKSolverArm;
+	public IKSolverArm rightIKSolverArm;
 	public ArmIK rightArmIK;
 
 	public GameObject rightArmIKTarget;
@@ -112,7 +112,7 @@ public class PlayerController : MonoBehaviour
 		currentPlayerState = playerInitialState;
 
 		handsStateController.ChangeLeftHandState(new LeftHandState_DoNothing(this, leftArmIKTarget, leftArmIK));
-		handsStateController.ChangeRightHandState(new RightHandState_DoNothing());
+		handsStateController.ChangeRightHandState(new RightHandState_DoNothing(this, rightArmIKTarget, rightArmIK));
 
 		// we set the player state to the initial state
 		playerStateManager.SetState(new PlayerState_Idle());
@@ -267,10 +267,16 @@ public class PlayerController : MonoBehaviour
 		}
 	}
 
-	public void ChangeIKWeight(float weight)
+	public void ChangeLeftIKWeight(float weight)
 	{
 		leftIKSolverArm.IKPositionWeight = weight;
 		leftIKSolverArm.IKRotationWeight = weight;
+	}
+
+	public void ChangeRightIKWeight(float weight)
+	{
+		rightIKSolverArm.IKPositionWeight = weight;
+		rightIKSolverArm.IKRotationWeight = weight;
 	}
 
 	// control here the hands of the player

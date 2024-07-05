@@ -7,6 +7,5 @@ public class LeftHandState_ComingBack : LeftHandState
     public override string stateName { get; protected set; } = "Coming back";
 
     public GameObject leftHandIKTarget;
-
     
 }

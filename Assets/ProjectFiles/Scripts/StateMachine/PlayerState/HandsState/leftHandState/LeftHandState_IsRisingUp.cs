@@ -13,7 +13,6 @@ public class LeftHandState_IsRisingUp : LeftHandState
 	protected IKSolverArm LeftIKSolverArm;
 	protected float reachingSpeed;
 	protected GameObject leftArmIkTarget;
-	protected PlayerAnimation playerAnimation;
 
 	protected float IKWeight = 0f;
 	protected float IKRotationWeight;
@@ -50,7 +49,7 @@ public class LeftHandState_IsRisingUp : LeftHandState
 
 	public override void ExecuteState()
 	{
-		IKArmsControl.IncrementIkWeight(LeftArmIK, ref IKWeight, ref IKRotationWeight, rate);
+		IKArmsControl.IncrementLeftIkWeight(LeftArmIK, ref IKWeight, ref IKRotationWeight, rate);
 
 	}
 }

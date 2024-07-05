@@ -15,6 +15,8 @@ public class InputConnect : MonoBehaviour
 	private PlayerSetDirection playerSetDirection;
 	private LeftHandState leftHandStateRishingUP;
 
+	private RightHandState rightHandStateRishingUP;
+
 	private ArmIK leftArmIK;
 	private ArmIK rightArmIK;
 	public float forwardBackward;
@@ -33,7 +35,6 @@ public class InputConnect : MonoBehaviour
 
 		// leftHandStateRishingUP = new LeftHandState_IsRisingUp(playerController, playerController.LeftIKSolverArm);
 
-	
 		controls = new PlayerControls();
 
 		controls.PlayerInputMap.ForwardBackward.performed += ctx => OnForwardMovement(ctx);
@@ -80,11 +81,11 @@ public class InputConnect : MonoBehaviour
 
 		if (context.phase == InputActionPhase.Performed)
 		{
-			float initialIkWeight = 0f;
-			float initialIkRotationWeight = 0f;
+			float initialLeftIkWeight = 0f;
+			float initialLeftIkRotationWeight = 0f;
 			// leftArmIK = playerController.leftArmIK;
-			playerController.ChangeIKWeight(1f);
-			leftHandStateRishingUP = new LeftHandState_IsRisingUp(playerController, playerController.leftArmIKTarget, playerController.leftArmIK, playerController.leftIKSolverArm, initialIkWeight, initialIkRotationWeight);
+			playerController.ChangeLeftIKWeight(1f);
+			leftHandStateRishingUP = new LeftHandState_IsRisingUp(playerController, playerController.leftArmIKTarget, playerController.leftArmIK, playerController.leftIKSolverArm, initialLeftIkWeight, initialLeftIkRotationWeight);
 			handsStateController.ChangeLeftHandState(leftHandStateRishingUP);
 
 		
@@ -92,7 +93,8 @@ public class InputConnect : MonoBehaviour
 
 		if (context.phase == InputActionPhase.Canceled)
 		{
-			OnLeftHandActionCompleted();	
+			OnLeftHandActionCompleted();
+				
 		}    
 
 	}
@@ -101,7 +103,22 @@ public class InputConnect : MonoBehaviour
 	private void OnRightHandAction(InputAction.CallbackContext context)
 	{
 		rightHand = context.phase == InputActionPhase.Performed ? context.ReadValue<float>() : 0f; 
-		Debug.Log("Right Hand Action ");
+
+		if (context.phase == InputActionPhase.Performed)
+		{
+			float initialRightIkWeight = 0f;
+			float initialRightIkRotationWeight = 0f;
+			playerController.ChangeRightIKWeight(1f);
+			rightHandStateRishingUP = 
+			new RightHandState_IsRisingUp(playerController, playerController.rightArmIKTarget, playerController.rightArmIK, playerController.rightIKSolverArm, initialRightIkWeight, initialRightIkRotationWeight);
+			handsStateController.ChangeRightHandState(rightHandStateRishingUP);				
+		
+		}
+
+		if (context.phase == InputActionPhase.Canceled)
+		{
+			OnRightHandActionCompleted();
+		}
 		
 	}
 
@@ -128,7 +145,11 @@ public class InputConnect : MonoBehaviour
 
 	private void OnRightHandActionCompleted()
 	{
-		handsStateController.RevertRightHandState();
+		if (handsStateController != null)
+		{
+			handsStateController.RevertRightHandState(new RightHandState_DoNothing(playerController, playerController.rightArmIKTarget, playerController.rightArmIK));
+		}
+		
 		//playerController.OnPlayerRiseRightArmBack();
 	} 
  
