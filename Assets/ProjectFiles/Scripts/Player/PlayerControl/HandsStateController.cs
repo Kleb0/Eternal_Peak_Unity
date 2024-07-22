@@ -80,6 +80,11 @@ public class HandsStateController : MonoBehaviour
 		}   
 	}
 
+	public void ChangeLeftHandStateToHoldingGrip()
+	{
+		Debug.Log("Changing Left Hand State to Holding Grip");
+	}
+
 	public void ChangeLeftHandState(LeftHandState newLeftHandState)
 	{
 		previousLeftHandState = currentLeftHandState;
@@ -128,7 +133,7 @@ public class HandsStateController : MonoBehaviour
 
 
 	// ------- Right Hand State Management ------- //
-
+#region RightHandStateManagement
 	public void PlayRightHandLoop()
 	{
 		if (currentRightHandState is RightHandState_ComingBack)
@@ -191,5 +196,7 @@ public class HandsStateController : MonoBehaviour
 	// The principle is merely simple : We have a state machine for the hands of the player, 
 	//and we can change the state of the hands of the player by calling the SetLeftHandState and SetRightHandState methods.$
 	//Then we can get the current state of the hands of the player by calling the GetCurrentLeftHandState and GetCurrentRightHandState methods.
+
+	#endregion
 
 }

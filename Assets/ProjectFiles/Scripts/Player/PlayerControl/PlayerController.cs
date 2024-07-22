@@ -57,9 +57,11 @@ public class PlayerController : MonoBehaviour
 	public bool uiDebugActive;
 
 	private LeftHandState previousLeftHandState;
+
+	private LeftHandState currentLeftHandState;
 	private PlayerSetDirection playerSetDirection;
 
-	private InputConnect inputConnect;
+	
 
 	// --- Access the IK solver properties --- //
 
@@ -74,6 +76,9 @@ public class PlayerController : MonoBehaviour
 
 	public GameObject rightArmIKTarget;
 	public float reachingSpeed;
+
+	private InputConnect inputConnect;
+
 
 
 	// Start is called before the first frame update

@@ -27,6 +27,10 @@ public class InputConnect : MonoBehaviour
 	private float rightHand;   
 	private bool combinedInput;
 
+	private bool isLeftHandActionActive = false;
+
+	private bool isRightHandActionActive = false;
+
 	private void Awake()
 	{
 		playerController = GetComponent<PlayerController>();  
@@ -76,48 +80,54 @@ public class InputConnect : MonoBehaviour
 	}
 	// Left Hand Action
 	private void OnLeftHandAction(InputAction.CallbackContext context)
-	{
-		leftHand = context.phase == InputActionPhase.Performed ? context.ReadValue<float>() : 0f;
+	{	
 
 		if (context.phase == InputActionPhase.Performed)
 		{
-			float initialLeftIkWeight = 0f;
-			float initialLeftIkRotationWeight = 0f;
-			// leftArmIK = playerController.leftArmIK;
-			playerController.ChangeLeftIKWeight(1f);
-			leftHandStateRishingUP = new LeftHandState_IsRisingUp(playerController, playerController.leftArmIKTarget, playerController.leftArmIK, playerController.leftIKSolverArm, initialLeftIkWeight, initialLeftIkRotationWeight);
-			handsStateController.ChangeLeftHandState(leftHandStateRishingUP);
 
+			if (isLeftHandActionActive)
+			{
+				OnLeftHandActionCompleted();
+				isLeftHandActionActive = false;
+			}
+			else
+			{
+				float initialLeftIkWeight = 0f;
+				float initialLeftIkRotationWeight = 0f;
+				// leftArmIK = playerController.leftArmIK;
+				playerController.ChangeLeftIKWeight(1f);
+				leftHandStateRishingUP = new LeftHandState_IsRisingUp(playerController, playerController.leftArmIKTarget, playerController.leftArmIK, playerController.leftIKSolverArm, initialLeftIkWeight, initialLeftIkRotationWeight);
+				handsStateController.ChangeLeftHandState(leftHandStateRishingUP);
+				isLeftHandActionActive = true;
+			}
 		
 		} 
-
-		if (context.phase == InputActionPhase.Canceled)
-		{
-			OnLeftHandActionCompleted();
-				
-		}    
-
+	
 	}
 	
 	// Right Hand Action
 	private void OnRightHandAction(InputAction.CallbackContext context)
 	{
-		rightHand = context.phase == InputActionPhase.Performed ? context.ReadValue<float>() : 0f; 
 
 		if (context.phase == InputActionPhase.Performed)
 		{
-			float initialRightIkWeight = 0f;
-			float initialRightIkRotationWeight = 0f;
-			playerController.ChangeRightIKWeight(1f);
-			rightHandStateRishingUP = 
-			new RightHandState_IsRisingUp(playerController, playerController.rightArmIKTarget, playerController.rightArmIK, playerController.rightIKSolverArm, initialRightIkWeight, initialRightIkRotationWeight);
-			handsStateController.ChangeRightHandState(rightHandStateRishingUP);				
-		
-		}
 
-		if (context.phase == InputActionPhase.Canceled)
-		{
-			OnRightHandActionCompleted();
+			if (isRightHandActionActive)
+			{
+				OnRightHandActionCompleted();
+				isRightHandActionActive = false;
+			}
+			else
+			{
+
+				float initialRightIkWeight = 0f;
+				float initialRightIkRotationWeight = 0f;
+				playerController.ChangeRightIKWeight(1f);
+				rightHandStateRishingUP = new RightHandState_IsRisingUp(playerController, playerController.rightArmIKTarget, playerController.rightArmIK, playerController.rightIKSolverArm, initialRightIkWeight, initialRightIkRotationWeight);
+				handsStateController.ChangeRightHandState(rightHandStateRishingUP);
+				isRightHandActionActive = true;		
+			}
+		
 		}
 		
 	}
