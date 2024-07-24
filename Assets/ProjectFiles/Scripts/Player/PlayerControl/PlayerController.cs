@@ -72,6 +72,8 @@ public class PlayerController : MonoBehaviour
 	public ArmIK leftArmIK;
 	public GameObject leftArmIKTarget;
 	public IKSolverArm rightIKSolverArm;
+
+	public GameObject leftHandHoldingGrip;
 	public ArmIK rightArmIK;
 
 	public GameObject rightArmIKTarget;
@@ -186,7 +188,7 @@ public class PlayerController : MonoBehaviour
 	}
 
 	#region  Movement
-	void Move()
+				void Move()
 	{
 		// here we read the input from the keyboard that give a value between -1 and 1 used to defined a vector 
 		// that will be used to move the player in the world space
@@ -232,6 +234,9 @@ public class PlayerController : MonoBehaviour
 			playerAnimation.SetRunning(velocity);
 	
 		}
+
+
+		// here we call the walking against wall State
 
 		// we are in the idle state if the player is not moving
 		else
@@ -283,6 +288,7 @@ public class PlayerController : MonoBehaviour
 		rightIKSolverArm.IKPositionWeight = weight;
 		rightIKSolverArm.IKRotationWeight = weight;
 	}
+
 
 	// control here the hands of the player
 }

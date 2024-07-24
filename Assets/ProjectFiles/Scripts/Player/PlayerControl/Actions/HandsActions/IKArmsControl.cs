@@ -19,6 +19,21 @@ public class IKArmsControl : MonoBehaviour
 		armIK.enabled = true;	
 	}
 
+	// we will use this func to change 
+	public static void ChangeIKarmTarget(ArmIK armIK, GameObject newtarget, GameObject previousTarget)
+	{
+		armIK.solver.arm.target = newtarget.transform;
+		Debug.Log("New target is " + newtarget.name);
+		Debug.Log("Previous target is " + previousTarget.name);
+		previousTarget.SetActive(false);
+	}
+
+	public static void ResetFPSTarget(ArmIK armIK, GameObject FPStarget)
+	{
+		FPStarget.SetActive(false);
+		armIK.solver.arm.target = FPStarget.transform;
+	}
+
 	public static void DisableIkArm(ArmIK armIK)
 	{
 		armIK.enabled = false;
