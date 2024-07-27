@@ -65,19 +65,26 @@ public class PlayerController : MonoBehaviour
 
 	// --- Access the IK solver properties --- //
 
-	[Header("IK Solvers")]
+	[Header("IK Solvers Left")]
 	// Header space 
 	[Space(10)]
 	public IKSolverArm leftIKSolverArm;
 	public ArmIK leftArmIK;
 	public GameObject leftArmIKTarget;
-	public IKSolverArm rightIKSolverArm;
+	
 
 	public GameObject leftHandHoldingGrip;
+
+	[Header("IK Solvers Right")]
+	// Header space 
+	[Space(10)]
+
+	public IKSolverArm rightIKSolverArm;
 	public ArmIK rightArmIK;
 
 	public GameObject rightArmIKTarget;
-	public float reachingSpeed;
+
+	public GameObject rightHandHoldingGrip;
 
 	private InputConnect inputConnect;
 
@@ -188,7 +195,8 @@ public class PlayerController : MonoBehaviour
 	}
 
 	#region  Movement
-				void Move()
+	
+	void Move()
 	{
 		// here we read the input from the keyboard that give a value between -1 and 1 used to defined a vector 
 		// that will be used to move the player in the world space
