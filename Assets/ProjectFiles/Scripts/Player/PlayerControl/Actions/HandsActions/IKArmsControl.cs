@@ -97,4 +97,3 @@ public class IKArmsControl : MonoBehaviour
 		return IKWeight == 0 && IKRotationWeight == 0;
 	}
 }
-

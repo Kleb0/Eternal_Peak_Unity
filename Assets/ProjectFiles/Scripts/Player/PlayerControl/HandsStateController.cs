@@ -51,7 +51,6 @@ public class HandsStateController : MonoBehaviour
 		currentRightIkWeight = 0f;
 		currentRightIkRotationWeight = 0f;
 	}
-
 	public void Update()
 	{
 		// here we execute the action of the current active state
@@ -86,15 +85,14 @@ public class HandsStateController : MonoBehaviour
 		Debug.Log("Changing Left Hand State to Holding Grip");
 		ChangeLeftHandState(new LeftHandState_IsHoldingAGrip());
 		IKArmsControl.ChangeIKarmTarget(playerController.leftArmIK, playerController.leftHandHoldingGrip, playerController.leftArmIKTarget);		
-			}
-
+	
+	}
 	public void ChangeLeftHandState(LeftHandState newLeftHandState)
 	{
 		previousLeftHandState = currentLeftHandState;
 		SetLeftHandState(newLeftHandState);
 		isLeftHandLoopEnded = false;        
 	}
-
 	public void RevertLeftHandState(LeftHandState currentLeftHandState)
 	{   
 		IKArmsControl.ResetFPSTarget(playerController.leftArmIK, playerController.leftArmIKTarget);        
@@ -102,19 +100,16 @@ public class HandsStateController : MonoBehaviour
 		isLeftHandLoopEnded = false;       
 
 	}
-
 	public void EndLeftHandLoop()
 	{
 		ChangeLeftHandState	(new LeftHandState_DoNothing(playerController, playerController.leftArmIKTarget, playerController.leftArmIK));
 		isLeftHandLoopEnded = false;
 
 	}
-
 	public LeftHandState GetCurrentLeftHandState()
 	{
 		return currentLeftHandState;
 	}
-
 	public void PlayLeftHandLoop()
 	{
 			if (currentLeftHandState is LeftHandState_ComingBack)
@@ -133,10 +128,8 @@ public class HandsStateController : MonoBehaviour
 				bool completed = IKArmsControl.IncrementLeftIkWeight(playerController.leftArmIK, ref currentLeftIkWeight, ref currentLeftIkRotationWeight, 2f);
 
 			}
-	}
-
-
-	// ------- Right Hand State Management ------- //
+	}	
+// ------- Right Hand State Management ------- //
 #region RightHandStateManagement
 	public void PlayRightHandLoop()
 	{
@@ -157,8 +150,7 @@ public class HandsStateController : MonoBehaviour
 
 		}
 	}
-
-	public void SetRightHandState(RightHandState newRightHandState)
+		public void SetRightHandState(RightHandState newRightHandState)
 	{
 		if (currentRightHandState != null)
 		{
@@ -172,7 +164,6 @@ public class HandsStateController : MonoBehaviour
 			uiDebug.UpdateRightHandStateUI(currentRightHandState.stateName);
 		}
 	}
-
 	public void ChangeRightHandStateToHoldingGrip()
 	{
 		Debug.Log("Changing Right Hand State to Holding Grip");
@@ -183,21 +174,18 @@ public class HandsStateController : MonoBehaviour
 	{
 		return currentRightHandState;
 	}
-
 	public void ChangeRightHandState(RightHandState newRightHandState)
 	{
 		previousRightHandState = currentRightHandState;
 		SetRightHandState(newRightHandState);
 		isRightHandLoopEnded = false;       
 	}
-
 	public void RevertRightHandState(RightHandState currentRightHandState)
 	{
 		IKArmsControl.ResetFPSTarget(playerController.rightArmIK, playerController.rightArmIKTarget);
 		SetRightHandState(new RightHandState_ComingBack());
 		isRightHandLoopEnded = false;
 	}
-
 	public void EndRightHandLoop()
 	{
 		SetRightHandState(new RightHandState_DoNothing(playerController, playerController.rightArmIKTarget, playerController.rightArmIK));
