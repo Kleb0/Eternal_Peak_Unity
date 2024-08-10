@@ -1,16 +1,11 @@
 <mxfile host="65bd71144e">
     <diagram id="7DH_-FvUjMgmezZa0wnt" name="Page-1">
-        <mxGraphModel dx="3134" dy="779" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+        <mxGraphModel dx="2949" dy="934" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
-                <mxCell id="64" style="edgeStyle=none;sketch=0;hachureGap=4;jiggle=2;curveFitting=1;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;endArrow=oval;endFill=1;" parent="1" source="59" target="177" edge="1">
-                    <mxGeometry relative="1" as="geometry">
-                        <mxPoint x="676.72" y="352.16999999999996" as="targetPoint"/>
-                    </mxGeometry>
-                </mxCell>
                 <mxCell id="59" value="public class PlayerStateManager&lt;br&gt;: Monobehaviour" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=1;rounded=1;glass=0;sketch=0;hachureGap=4;jiggle=2;curveFitting=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=12;fontColor=default;container=0;" parent="1" vertex="1">
-                    <mxGeometry x="560" y="410" width="230" height="240" as="geometry"/>
+                    <mxGeometry x="880" y="540" width="230" height="240" as="geometry"/>
                 </mxCell>
                 <mxCell id="79" value="Eternal Peak - architecture et organisation du code&lt;br&gt;" style="html=1;hachureGap=4;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=20;rounded=1;shadow=0;" parent="1" vertex="1">
                     <mxGeometry x="-380" y="70" width="517.5" height="50" as="geometry"/>
@@ -24,13 +19,13 @@
                     <mxGeometry y="26" width="290" height="60" as="geometry"/>
                 </mxCell>
                 <mxCell id="60" value="- current state text" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;rounded=1;glass=0;sketch=0;hachureGap=4;jiggle=2;curveFitting=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=12;fontColor=default;container=0;" parent="1" vertex="1">
-                    <mxGeometry x="560" y="436" width="230" height="26" as="geometry"/>
+                    <mxGeometry x="880" y="566" width="230" height="26" as="geometry"/>
                 </mxCell>
                 <mxCell id="61" value="- public string currentStateName" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;rounded=1;glass=0;sketch=0;hachureGap=4;jiggle=2;curveFitting=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=12;fontColor=default;container=0;" parent="1" vertex="1">
-                    <mxGeometry x="560" y="462" width="230" height="26" as="geometry"/>
+                    <mxGeometry x="880" y="592" width="230" height="26" as="geometry"/>
                 </mxCell>
                 <mxCell id="62" value="- private playerState&lt;br&gt;&lt;br&gt;- Void Start ()&lt;br&gt;{&lt;br&gt;SetState(Player&lt;br&gt;}&lt;br&gt;&lt;br&gt;void Update" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;rounded=1;glass=0;sketch=0;hachureGap=4;jiggle=2;curveFitting=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=12;fontColor=default;container=0;" parent="1" vertex="1">
-                    <mxGeometry x="560" y="488" width="230" height="162" as="geometry"/>
+                    <mxGeometry x="880" y="618" width="230" height="162" as="geometry"/>
                 </mxCell>
                 <mxCell id="108" value="State Machine principle" style="html=1;hachureGap=4;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=20;rounded=1;shadow=0;container=0;" parent="1" vertex="1">
                     <mxGeometry x="-370.94" y="180" width="482.5" height="50" as="geometry"/>
@@ -247,41 +242,47 @@
                 <mxCell id="175" value="FirstPersonMovement.cs contrôle&amp;nbsp;&lt;br&gt;l'état du joueur" style="rounded=0;whiteSpace=wrap;html=1;comic=0;sketch=0;hachureGap=4;jiggle=2;curveFitting=1;strokeColor=#CC0000;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=14;fillColor=none;" parent="1" vertex="1">
                     <mxGeometry x="-1600" y="1585" width="280" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="177" value="public class PlayerController&lt;br&gt;: Monobehaviour" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=1;rounded=1;glass=0;sketch=0;hachureGap=4;jiggle=2;curveFitting=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=12;fontColor=default;container=0;" parent="1" vertex="1">
-                    <mxGeometry x="560" y="100" width="230" height="240" as="geometry"/>
-                </mxCell>
-                <mxCell id="186" style="edgeStyle=none;sketch=0;hachureGap=4;jiggle=2;curveFitting=1;html=1;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;endArrow=none;endFill=0;" parent="1" source="178" target="185" edge="1">
+                <mxCell id="211" style="edgeStyle=none;sketch=0;hachureGap=4;jiggle=2;curveFitting=1;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#FFFFFF;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;" edge="1" parent="1" source="177" target="59">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="201" style="edgeStyle=none;hachureGap=4;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;" edge="1" parent="1" source="178" target="200">
+                <mxCell id="177" value="public class PlayerController&lt;br&gt;: Monobehaviour" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=1;rounded=1;glass=0;sketch=0;hachureGap=4;jiggle=2;curveFitting=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=12;fontColor=default;container=0;" parent="1" vertex="1">
+                    <mxGeometry x="880" y="240" width="230" height="240" as="geometry"/>
+                </mxCell>
+                <mxCell id="206" style="edgeStyle=none;sketch=0;hachureGap=4;jiggle=2;curveFitting=1;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;" edge="1" parent="1" source="178" target="177">
                     <mxGeometry relative="1" as="geometry">
                         <Array as="points">
-                            <mxPoint x="1040" y="820"/>
-                            <mxPoint x="1180" y="900"/>
+                            <mxPoint x="1160" y="440"/>
+                            <mxPoint x="1160" y="360"/>
                         </Array>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="178" value="public class InputConnect.CS" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=1;rounded=1;glass=0;sketch=0;hachureGap=4;jiggle=2;curveFitting=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=12;fontColor=default;container=0;" parent="1" vertex="1">
-                    <mxGeometry x="910" y="300" width="230" height="240" as="geometry"/>
+                <mxCell id="209" style="edgeStyle=none;sketch=0;hachureGap=4;jiggle=2;curveFitting=1;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;" edge="1" parent="1" source="178" target="185">
+                    <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="181" value="interface" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=#0050ef;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=1;rounded=1;glass=0;sketch=0;hachureGap=4;jiggle=2;curveFitting=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=12;fontColor=#ffffff;strokeColor=#001DBC;container=0;" parent="1" vertex="1">
-                    <mxGeometry x="1200.0019809069213" y="530" width="193.60381861575178" height="200" as="geometry">
+                <mxCell id="210" style="edgeStyle=none;sketch=0;hachureGap=4;jiggle=2;curveFitting=1;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;fillColor=#a20025;strokeColor=#FF0000;" edge="1" parent="1" source="178" target="182">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="178" value="public class InputConnect.CS" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=1;rounded=1;glass=0;sketch=0;hachureGap=4;jiggle=2;curveFitting=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=12;fontColor=default;container=0;" parent="1" vertex="1">
+                    <mxGeometry x="1230" y="320" width="230" height="240" as="geometry"/>
+                </mxCell>
+                <mxCell id="181" value="new input system" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=#0050ef;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=1;rounded=1;glass=0;sketch=0;hachureGap=4;jiggle=2;curveFitting=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=12;fontColor=#ffffff;strokeColor=#001DBC;container=0;" parent="1" vertex="1">
+                    <mxGeometry x="1506.0019809069213" y="330" width="193.60381861575178" height="200" as="geometry">
                         <mxRectangle x="347.5" y="283" width="200" height="30" as="alternateBounds"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="182" value="&lt;span style=&quot;color: rgb(255, 255, 255); font-weight: 700; text-align: center;&quot;&gt;InputConnect.Cs donne&amp;nbsp;&lt;br&gt;les entrées clavier à PlayerController qui gèreensuite l'état du joueur.&lt;br&gt;&lt;/span&gt;" style="text;strokeColor=#001DBC;fillColor=#0050ef;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;rounded=1;glass=0;sketch=0;hachureGap=4;jiggle=2;curveFitting=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=12;fontColor=#ffffff;container=0;" parent="181" vertex="1">
+                <mxCell id="182" value="&lt;span style=&quot;color: rgb(255, 255, 255); font-weight: 700; text-align: center;&quot;&gt;InputConnect.Cs donne&amp;nbsp;&lt;br&gt;les entrées clavier à PlayerController qui gère ensuite l'état du joueur.&lt;br&gt;&lt;br&gt;Les input set la direction&lt;br&gt;qui est ensuite passée&lt;br&gt;au player controlleur du jouer&lt;br&gt;&lt;br&gt;la vitesse ou l'état des mains&lt;br&gt;également l'état du joueur&lt;br&gt;&lt;/span&gt;" style="text;strokeColor=#001DBC;fillColor=#0050ef;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;rounded=1;glass=0;sketch=0;hachureGap=4;jiggle=2;curveFitting=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=12;fontColor=#ffffff;container=0;" parent="181" vertex="1">
                     <mxGeometry y="26" width="193.60381861575178" height="174" as="geometry"/>
                 </mxCell>
-                <mxCell id="183" style="edgeStyle=none;sketch=0;hachureGap=4;jiggle=2;curveFitting=1;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;endArrow=none;endFill=0;fillColor=#a20025;strokeColor=#6F0000;" parent="1" source="182" target="178" edge="1">
+                <mxCell id="208" style="edgeStyle=none;sketch=0;hachureGap=4;jiggle=2;curveFitting=1;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.25;entryDx=0;entryDy=0;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;" edge="1" parent="1" source="185" target="177">
                     <mxGeometry relative="1" as="geometry">
                         <Array as="points">
-                            <mxPoint x="1180" y="650"/>
-                            <mxPoint x="1180" y="420"/>
+                            <mxPoint x="1170" y="180"/>
+                            <mxPoint x="1170" y="300"/>
                         </Array>
                     </mxGeometry>
                 </mxCell>
                 <mxCell id="185" value="Player Set Direction" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=1;rounded=1;glass=0;sketch=0;hachureGap=4;jiggle=2;curveFitting=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=12;fontColor=default;container=0;" parent="1" vertex="1">
-                    <mxGeometry x="1300" y="240" width="230" height="240" as="geometry"/>
+                    <mxGeometry x="1230" y="60" width="230" height="240" as="geometry"/>
                 </mxCell>
                 <mxCell id="187" value="public class substate" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=1;rounded=1;glass=0;sketch=0;hachureGap=4;jiggle=2;curveFitting=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=12;fontColor=default;arcSize=8;container=0;" parent="1" vertex="1">
                     <mxGeometry x="111.5567066825484" y="1159.995390070922" width="228.3532933174516" height="70" as="geometry">
@@ -304,8 +305,16 @@
                 <mxCell id="198" value="&lt;div style=&quot;&quot;&gt;&lt;b&gt;Afin de pouvoir avoir plus états en même temps, et de maintenir la modularité de notre code on va utiliser des objets substates.&amp;nbsp;&lt;/b&gt;&lt;/div&gt;&lt;div style=&quot;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;&quot;&gt;&lt;b&gt;Un état pourra avoir un sous-état avec un booléen&lt;/b&gt;&lt;/div&gt;" style="text;strokeColor=#001DBC;fillColor=#0050ef;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;rounded=1;glass=0;sketch=0;hachureGap=4;jiggle=2;curveFitting=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=12;fontColor=#ffffff;container=0;" parent="1" vertex="1">
                     <mxGeometry x="300" y="1013.5" width="193.6" height="126.5" as="geometry"/>
                 </mxCell>
-                <mxCell id="200" value="HandStateController" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=1;rounded=1;glass=0;sketch=0;hachureGap=4;jiggle=2;curveFitting=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=12;fontColor=default;container=0;" vertex="1" parent="1">
-                    <mxGeometry x="1310" y="800" width="235" height="200" as="geometry">
+                <mxCell id="207" style="edgeStyle=none;sketch=0;hachureGap=4;jiggle=2;curveFitting=1;html=1;exitX=0;exitY=0.25;exitDx=0;exitDy=0;entryX=1;entryY=0.75;entryDx=0;entryDy=0;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;" edge="1" parent="1" source="200" target="177">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="1140" y="640"/>
+                            <mxPoint x="1140" y="420"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="200" value="HandStateController" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=1;rounded=1;glass=0;sketch=0;hachureGap=4;jiggle=2;curveFitting=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=12;fontColor=default;container=0;" parent="1" vertex="1">
+                    <mxGeometry x="1220" y="592" width="235" height="200" as="geometry">
                         <mxRectangle x="1393.61" y="790" width="150" height="30" as="alternateBounds"/>
                     </mxGeometry>
                 </mxCell>
