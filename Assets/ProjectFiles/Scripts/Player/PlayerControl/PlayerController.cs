@@ -212,25 +212,9 @@ public class PlayerController : MonoBehaviour
 
 		// --> the newState is null at first to be sure that the we define a new state
 		State newPlayerState = null;
-
-
-
-
-		bool isLeftHandHoldingGrip = handsStateController.GetCurrentLeftHandState().stateName == "Is Holding A Grip";
-		bool isRightHandHoldingGrip = handsStateController.GetCurrentRightHandState().stateName == "Is Holding A Grip";
-
-
-		// if the player is holding a grip with one of the hands, we are in the walking against wall state
-		if (isLeftHandHoldingGrip || isRightHandHoldingGrip || currentSpeed > 0f || currentSpeed == 0f)
-		{
-			newPlayerState = new PlayerState_WalkingAgainstWall(controller, playerSetDirection.GetMoveDirection(), walkSpeed, 
-			playerSetDirection.GetMoveDirection(), playerSetDirection.GetForwardDirection(), playerSetDirection.GetRightDirection(), 0.5f);
-			velocity = playerAnimation.RunWalkBlending(velocity, acceleration, 1f);	
-			playerAnimation.SetRunning(velocity);	
-		}
 		
 		// we are in the running state if the player is sprinting by pressing the left shift key
-		if (Input.GetKey(KeyCode.LeftShift) && currentSpeed > 0f && !isLeftHandHoldingGrip && !isRightHandHoldingGrip)
+		if (Input.GetKey(KeyCode.LeftShift) && currentSpeed > 0f)
 		{
 
 			// The Move script is called in the PlayerState_Walking state
@@ -247,7 +231,7 @@ public class PlayerController : MonoBehaviour
 		}
 
 		// we are in the walking state if the player is moving and not sprinting
-		else if (currentSpeed > 0f && !isLeftHandHoldingGrip && !isRightHandHoldingGrip)
+		else if (currentSpeed > 0f)
 		{					
 
 			newPlayerState = new PlayerState_Walking(controller, playerSetDirection.GetMoveDirection(), walkSpeed, 
@@ -261,8 +245,9 @@ public class PlayerController : MonoBehaviour
 
 
 		// here we call the walking against wall State
+
 		// we are in the idle state if the player is not moving
-		else if (currentSpeed == 0f && !isLeftHandHoldingGrip && !isRightHandHoldingGrip)
+		else
 		{		
 			
 			newPlayerState = new PlayerState_Idle();

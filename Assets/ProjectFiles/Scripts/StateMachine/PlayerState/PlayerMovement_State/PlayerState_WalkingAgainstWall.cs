@@ -20,7 +20,8 @@ public class PlayerState_WalkingAgainstWall : PlayerState_Moving
         if (armsBendingValue > 0f && armsBendingValue < 1f)
         {
             PlayerMove.Move(controller, moveDirection, speed, forwardBackward, rightLeft);
-        }    
+        }
+     
       
        
     }
