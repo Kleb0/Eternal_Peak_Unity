@@ -117,22 +117,26 @@ public class HandsStateController : MonoBehaviour
 
 	public void PlayLeftHandLoop()
 	{
-			if (currentLeftHandState is LeftHandState_ComingBack)
+		if (currentLeftHandState is LeftHandState_ComingBack)
+		{
+			bool completed = IKArmsControl.DecrementLeftIkWeight(playerController.leftArmIK, ref currentLeftIkWeight, ref currentLeftIkRotationWeight, 2f);
+			uiDebug.UpdateLeftArmBendingValue(currentLeftIkWeight);
+			playerController.leftArmBendingValue = currentLeftIkWeight;
+
+			if (completed && !isLeftHandLoopEnded)
 			{
-				bool completed = IKArmsControl.DecrementLeftIkWeight(playerController.leftArmIK, ref currentLeftIkWeight, ref currentLeftIkRotationWeight, 2f);
-
-				if (completed && !isLeftHandLoopEnded)
-				{
-					EndLeftHandLoop();
-					isLeftHandLoopEnded = true;
-				}
+				EndLeftHandLoop();
+				isLeftHandLoopEnded = true;
 			}
+		}
 
-			else if (currentLeftHandState is LeftHandState_IsRisingUp)
-			{
-				bool completed = IKArmsControl.IncrementLeftIkWeight(playerController.leftArmIK, ref currentLeftIkWeight, ref currentLeftIkRotationWeight, 2f);
+		else if (currentLeftHandState is LeftHandState_IsRisingUp)
+		{
+			bool completed = IKArmsControl.IncrementLeftIkWeight(playerController.leftArmIK, ref currentLeftIkWeight, ref currentLeftIkRotationWeight, 2f);
+			uiDebug.UpdateLeftArmBendingValue(currentLeftIkWeight);
+			playerController.leftArmBendingValue = currentLeftIkWeight;
 
-			}
+		}
 	}
 
 
@@ -143,6 +147,8 @@ public class HandsStateController : MonoBehaviour
 		if (currentRightHandState is RightHandState_ComingBack)
 		{
 			bool completed = IKArmsControl.DecrementRightIkWeight(playerController.rightArmIK, ref currentRightIkWeight, ref currentRightIkRotationWeight, 2f);
+			uiDebug.UpdateRightArmBendingValue(currentRightIkWeight);
+			playerController.rightArmBendingValue = currentLeftIkWeight;
 
 			if (completed && !isRightHandLoopEnded)
 			{
@@ -154,7 +160,8 @@ public class HandsStateController : MonoBehaviour
 		else if (currentRightHandState is RightHandState_IsRisingUp)
 		{
 			bool completed = IKArmsControl.IncrementRightIkWeight(playerController.rightArmIK, ref currentRightIkWeight, ref currentRightIkRotationWeight, 2f);
-
+			uiDebug.UpdateRightArmBendingValue(currentRightIkWeight);
+			playerController.rightArmBendingValue = currentLeftIkWeight;
 		}
 	}
 

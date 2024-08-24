@@ -20,10 +20,8 @@ public class PlayerController : MonoBehaviour
 	private Collider coll;
 	private float walkSpeed = 2f;
 	private float sprintSpeed = 5f;
-
 	private float mouseSensitivity = 300f;
 	private float jumpForce = 5f;
-
 	public bool isClimbing = false;
 
 	private Vector2 moveDirection;
@@ -71,7 +69,8 @@ public class PlayerController : MonoBehaviour
 	public IKSolverArm leftIKSolverArm;
 	public ArmIK leftArmIK;
 	public GameObject leftArmIKTarget;
-	
+
+	public float leftArmBendingValue;	
 
 	public GameObject leftHandHoldingGrip;
 
@@ -81,6 +80,8 @@ public class PlayerController : MonoBehaviour
 
 	public IKSolverArm rightIKSolverArm;
 	public ArmIK rightArmIK;
+
+	public float rightArmBendingValue;
 
 	public GameObject rightArmIKTarget;
 

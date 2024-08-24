@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 
 public class UIDEBUG : MonoBehaviour
 {
@@ -23,6 +24,14 @@ public class UIDEBUG : MonoBehaviour
         public TextMeshProUGUI currentRightHandStateStatusText;
         public string currentRightHandStateString;
 
+        [Header(" Left Arm Bending Value")]
+
+        public Slider leftArmBendingSlider;
+        public float leftArmBendingValue;
+
+        [Header(" Right Arm Bending Value")]
+        public Slider rightArmBendingSlider;
+        public float rightArmBendingValue;
 
         public void UpdatePlayerStateUI(string currentPlayerState)
         {      
@@ -40,6 +49,18 @@ public class UIDEBUG : MonoBehaviour
         {
             currentRightHandStateString = newRightHandState;
             currentRightHandStateStatusText.text = newRightHandState;
+        }
+
+        public void UpdateLeftArmBendingValue(float newLeftArmBendingValue)
+        {
+            leftArmBendingValue = newLeftArmBendingValue;
+            leftArmBendingSlider.value = leftArmBendingValue;
+        }
+
+        public void UpdateRightArmBendingValue(float newRightArmBendingValue)
+        {
+            rightArmBendingValue = newRightArmBendingValue;
+            rightArmBendingSlider.value = rightArmBendingValue;
         }
 
         public void setUiDebugActive(bool value)
