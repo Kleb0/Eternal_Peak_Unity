@@ -120,4 +120,26 @@ public class IKArmsControl : MonoBehaviour
 		
 		return 0f; // if the arm is not left, we don't need to return a distance, so we return 0
 	}
+	public static float CalcDistBetweenRighttHandAndRightShoulder(ArmIK armIK)
+	{
+
+		if (!armIK.solver.isLeft)
+		{
+			
+			Vector3 righthandPosition = armIK.solver.hand.transform.position;
+			Vector3 rightShoulderPosition = armIK.solver.shoulder.transform.position;
+
+			float distance = Vector3.Distance(righthandPosition, rightShoulderPosition);
+
+			float minDistance = 0.30f;
+			float maxDistance = 0.45f;
+
+			// we normalize the distance on a field of 0 to 1
+			float normalizedDistance = Mathf.Clamp01((distance - minDistance) / (maxDistance - minDistance));
+			return normalizedDistance;		
+		}
+		return 0f;
+		
+	} 
 }
+

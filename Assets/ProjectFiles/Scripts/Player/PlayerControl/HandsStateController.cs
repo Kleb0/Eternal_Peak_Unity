@@ -24,7 +24,8 @@ public class HandsStateController : MonoBehaviour
 	private bool isLeftHandLoopEnded = false;
 	private bool isRightHandLoopEnded = false;
 
-	float distanceBetweenLeftHandAndLeftShoulder;    
+	float distanceBetweenLeftHandAndLeftShoulder;
+	float distanceBetweenRightHandAndRightShoulder;    
 
 	// We build a loop for the hand state management :
 	// in the player controller script, the hand state is defined on do nothing at start
@@ -180,6 +181,18 @@ public class HandsStateController : MonoBehaviour
 			bool completed = IKArmsControl.IncrementRightIkWeight(playerController.rightArmIK, ref currentRightIkWeight, ref currentRightIkRotationWeight, 2f);
 			uiDebug.UpdateRightArmBendingValue(currentRightIkWeight);
 			playerController.rightArmBendingValue = currentLeftIkWeight;
+		}
+		if(currentRightHandState.stateName == "Is Holding A Grip" )
+		{
+			distanceBetweenRightHandAndRightShoulder = IKArmsControl.CalcDistBetweenRighttHandAndRightShoulder(playerController.rightArmIK);
+			uiDebug.UpdateRightArmBendingValue(distanceBetweenRightHandAndRightShoulder);
+			playerController.rightArmBendingValue = distanceBetweenRightHandAndRightShoulder;
+		}
+		else
+		{
+			distanceBetweenRightHandAndRightShoulder = 0f;
+			uiDebug.UpdateRightArmBendingValue(distanceBetweenRightHandAndRightShoulder);
+			playerController.rightArmBendingValue = distanceBetweenRightHandAndRightShoulder;
 		}
 	}
 
