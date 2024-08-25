@@ -594,7 +594,7 @@ Transform:
   m_GameObject: {fileID: 136179499}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.033, y: 0, z: 0.447}
+  m_LocalPosition: {x: 0.033, y: 0, z: 0.502}
   m_LocalScale: {x: 0.5346027, y: 0.14934288, z: 0.14934288}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -617,7 +617,7 @@ BoxCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
@@ -4118,6 +4118,7 @@ MonoBehaviour:
         m_RotationOrder: 4
   leftArmIK: {fileID: 0}
   leftArmIKTarget: {fileID: 1686975017}
+  leftArmBendingValue: 0
   leftHandHoldingGrip: {fileID: 0}
   rightIKSolverArm:
     executedInEditor: 0
@@ -4185,6 +4186,7 @@ MonoBehaviour:
         m_PostInfinity: 2
         m_RotationOrder: 4
   rightArmIK: {fileID: 0}
+  rightArmBendingValue: 0
   rightArmIKTarget: {fileID: 1605426700}
   rightHandHoldingGrip: {fileID: 0}
 --- !u!114 &1073958756
@@ -4278,7 +4280,7 @@ MonoBehaviour:
   currentRightHandStateString: 
   leftArmBendingSlider: {fileID: 597375768}
   leftArmBendingValue: 0
-  rightArmBendingSlider: {fileID: 0}
+  rightArmBendingSlider: {fileID: 1955365359}
   rightArmBendingValue: 0
 --- !u!114 &1073958765
 MonoBehaviour:

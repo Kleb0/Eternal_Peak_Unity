@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using RootMotion.FinalIK;
 using Unity.Burst.Intrinsics;
+using System;
 
 public class IKArmsControl : MonoBehaviour
 {
@@ -95,5 +96,28 @@ public class IKArmsControl : MonoBehaviour
 		if (IKRotationWeight < 0) IKRotationWeight = 0;
 
 		return IKWeight == 0 && IKRotationWeight == 0;
+	}
+
+	public static float CalcDistBetweenLeftHandAndLeftShoulder(ArmIK armIK)
+	{
+
+		if (armIK.solver.isLeft)
+		{
+
+			Vector3 lefthandPosition = armIK.solver.hand.transform.position;
+			Vector3 leftShoulderPosition = armIK.solver.shoulder.transform.position;
+
+			float distance = Vector3.Distance(lefthandPosition, leftShoulderPosition);
+
+			float minDistance = 0.30f;
+			float maxDistance = 0.45f;
+
+			// we normalize the distance on a field of 0 to 1
+			float normalizedDistance = Mathf.Clamp01((distance - minDistance) / (maxDistance - minDistance));
+			return normalizedDistance;		
+
+		}
+		
+		return 0f; // if the arm is not left, we don't need to return a distance, so we return 0
 	}
 }

@@ -22,7 +22,9 @@ public class HandsStateController : MonoBehaviour
 	private float currentRightIkRotationWeight;
 
 	private bool isLeftHandLoopEnded = false;
-	private bool isRightHandLoopEnded = false;    
+	private bool isRightHandLoopEnded = false;
+
+	float distanceBetweenLeftHandAndLeftShoulder;    
 
 	// We build a loop for the hand state management :
 	// in the player controller script, the hand state is defined on do nothing at start
@@ -120,8 +122,7 @@ public class HandsStateController : MonoBehaviour
 		if (currentLeftHandState is LeftHandState_ComingBack)
 		{
 			bool completed = IKArmsControl.DecrementLeftIkWeight(playerController.leftArmIK, ref currentLeftIkWeight, ref currentLeftIkRotationWeight, 2f);
-			uiDebug.UpdateLeftArmBendingValue(currentLeftIkWeight);
-			playerController.leftArmBendingValue = currentLeftIkWeight;
+
 
 			if (completed && !isLeftHandLoopEnded)
 			{
@@ -133,10 +134,27 @@ public class HandsStateController : MonoBehaviour
 		else if (currentLeftHandState is LeftHandState_IsRisingUp)
 		{
 			bool completed = IKArmsControl.IncrementLeftIkWeight(playerController.leftArmIK, ref currentLeftIkWeight, ref currentLeftIkRotationWeight, 2f);
-			uiDebug.UpdateLeftArmBendingValue(currentLeftIkWeight);
-			playerController.leftArmBendingValue = currentLeftIkWeight;
-
 		}
+
+		if(currentLeftHandState.stateName == "Is Holding A Grip" )
+		{
+			distanceBetweenLeftHandAndLeftShoulder = IKArmsControl.CalcDistBetweenLeftHandAndLeftShoulder(playerController.leftArmIK);
+			uiDebug.UpdateLeftArmBendingValue(distanceBetweenLeftHandAndLeftShoulder);
+			playerController.leftArmBendingValue = distanceBetweenLeftHandAndLeftShoulder;
+		}
+		else
+		{
+			distanceBetweenLeftHandAndLeftShoulder = 0f;
+			uiDebug.UpdateLeftArmBendingValue(distanceBetweenLeftHandAndLeftShoulder);
+			playerController.leftArmBendingValue = distanceBetweenLeftHandAndLeftShoulder;
+		}
+	}
+
+	public void CalculDistBetweenLeftHandAndLeftShoulder()
+	{
+		float leftArmBendingValue = IKArmsControl.CalcDistBetweenLeftHandAndLeftShoulder(playerController.leftArmIK);
+		uiDebug.UpdateLeftArmBendingValue(leftArmBendingValue);
+		playerController.leftArmBendingValue = leftArmBendingValue;
 	}
 
 

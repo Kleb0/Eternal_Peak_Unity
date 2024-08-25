@@ -213,49 +213,55 @@ public class PlayerController : MonoBehaviour
 
 		// --> the newState is null at first to be sure that the we define a new state
 		State newPlayerState = null;
+		if(currentPlayerState.stateName != "Against Wall")
+		{
+			
+			// we are in the running state if the player is sprinting by pressing the left shift key
+			if (Input.GetKey(KeyCode.LeftShift) && currentSpeed > 0f)
+			{
+
+				// The Move script is called in the PlayerState_Walking state
+				// The running script script inherits from the walking script
+				// We pass the controller and the sprint speed or the walk speed to the Move method depending
+				// if we are walking or sprinting		
+
+				newPlayerState = new PlayerState_Running(controller, playerSetDirection.GetMoveDirection(), sprintSpeed, 
+				playerSetDirection.GetMoveDirection(),playerSetDirection.GetForwardDirection(), playerSetDirection.GetRightDirection());
+
+				velocity = playerAnimation.RunWalkBlending(velocity, acceleration, 1f);	
+				playerAnimation.SetRunning(velocity);		
+					
+			}
+
+			// we are in the walking state if the player is moving and not sprinting
+			else if (currentSpeed > 0f)
+			{					
+
+				newPlayerState = new PlayerState_Walking(controller, playerSetDirection.GetMoveDirection(), walkSpeed, 
+				playerSetDirection.GetMoveDirection(), playerSetDirection.GetForwardDirection(),  playerSetDirection.GetRightDirection());
+
+				velocity = playerAnimation.RunWalkBlending(velocity, -deceleration, 0f);
+				playerAnimation.SetWalking(true);
+				playerAnimation.SetRunning(velocity);
 		
-		// we are in the running state if the player is sprinting by pressing the left shift key
-		if (Input.GetKey(KeyCode.LeftShift) && currentSpeed > 0f)
+			}
+
+
+			else
+			{		
+				
+				newPlayerState = new PlayerState_Idle();
+				velocity = playerAnimation.RunWalkBlending(velocity, -deceleration, 0f);			
+				playerAnimation.SetWalking(false);
+				playerAnimation.SetRunning(velocity);
+			}	
+
+		}
+		else if(currentPlayerState.stateName != "Against Wall")
 		{
 
-			// The Move script is called in the PlayerState_Walking state
-			// The running script script inherits from the walking script
-			// We pass the controller and the sprint speed or the walk speed to the Move method depending
-			// if we are walking or sprinting		
-
-			newPlayerState = new PlayerState_Running(controller, playerSetDirection.GetMoveDirection(), sprintSpeed, 
-			playerSetDirection.GetMoveDirection(),playerSetDirection.GetForwardDirection(), playerSetDirection.GetRightDirection());
-
-			velocity = playerAnimation.RunWalkBlending(velocity, acceleration, 1f);	
-			playerAnimation.SetRunning(velocity);		
-				
 		}
-
-		// we are in the walking state if the player is moving and not sprinting
-		else if (currentSpeed > 0f)
-		{					
-
-			newPlayerState = new PlayerState_Walking(controller, playerSetDirection.GetMoveDirection(), walkSpeed, 
-			playerSetDirection.GetMoveDirection(), playerSetDirection.GetForwardDirection(),  playerSetDirection.GetRightDirection());
-
-			velocity = playerAnimation.RunWalkBlending(velocity, -deceleration, 0f);
-			playerAnimation.SetWalking(true);
-			playerAnimation.SetRunning(velocity);
-	
-		}
-
-
-		// here we call the walking against wall State
-
-		// we are in the idle state if the player is not moving
-		else
-		{		
-			
-			newPlayerState = new PlayerState_Idle();
-			velocity = playerAnimation.RunWalkBlending(velocity, -deceleration, 0f);			
-			playerAnimation.SetWalking(false);
-			playerAnimation.SetRunning(velocity);
-		}	
+		
 			
 		// if the new state type is different from the current state type, we get the type of the new state 
 		// we set the current state to the new state and we can change the state	
