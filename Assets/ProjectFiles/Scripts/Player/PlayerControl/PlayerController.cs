@@ -70,9 +70,8 @@ public class PlayerController : MonoBehaviour
 	public ArmIK leftArmIK;
 	public GameObject leftArmIKTarget;
 
-	public float leftArmBendingValue;	
-
 	public GameObject leftHandHoldingGrip;
+	public float leftArmBendingValue;		
 
 	[Header("IK Solvers Right")]
 	// Header space 
@@ -81,13 +80,17 @@ public class PlayerController : MonoBehaviour
 	public IKSolverArm rightIKSolverArm;
 	public ArmIK rightArmIK;
 
-	public float rightArmBendingValue;
 
 	public GameObject rightArmIKTarget;
 
 	public GameObject rightHandHoldingGrip;
 
+
+	public float rightArmBendingValue;
 	private InputConnect inputConnect;
+
+	public bool leftHandHoldingAGrip = false;
+	public bool rightHandHoldingAGrip = false;
 
 
 
@@ -213,58 +216,60 @@ public class PlayerController : MonoBehaviour
 
 		// --> the newState is null at first to be sure that the we define a new state
 		State newPlayerState = null;
-		if(currentPlayerState.stateName != "Against Wall")
+
+					// we are in the running state if the player is sprinting by pressing the left shift key
+		if (Input.GetKey(KeyCode.LeftShift) && currentSpeed > 0f)
 		{
-			
-			// we are in the running state if the player is sprinting by pressing the left shift key
-			if (Input.GetKey(KeyCode.LeftShift) && currentSpeed > 0f)
-			{
 
-				// The Move script is called in the PlayerState_Walking state
-				// The running script script inherits from the walking script
-				// We pass the controller and the sprint speed or the walk speed to the Move method depending
-				// if we are walking or sprinting		
+			// The Move script is called in the PlayerState_Walking state
+			// The running script script inherits from the walking script
+			// We pass the controller and the sprint speed or the walk speed to the Move method depending
+			// if we are walking or sprinting		
 
-				newPlayerState = new PlayerState_Running(controller, playerSetDirection.GetMoveDirection(), sprintSpeed, 
-				playerSetDirection.GetMoveDirection(),playerSetDirection.GetForwardDirection(), playerSetDirection.GetRightDirection());
+			newPlayerState = new PlayerState_Running(controller, playerSetDirection.GetMoveDirection(), sprintSpeed, 
+			playerSetDirection.GetMoveDirection(),playerSetDirection.GetForwardDirection(), playerSetDirection.GetRightDirection());
 
-				velocity = playerAnimation.RunWalkBlending(velocity, acceleration, 1f);	
-				playerAnimation.SetRunning(velocity);		
+			velocity = playerAnimation.RunWalkBlending(velocity, acceleration, 1f);	
+			playerAnimation.SetRunning(velocity);		
 					
-			}
+		}
 
 			// we are in the walking state if the player is moving and not sprinting
-			else if (currentSpeed > 0f)
-			{					
+		else if (currentSpeed > 0f)
+		{					
 
-				newPlayerState = new PlayerState_Walking(controller, playerSetDirection.GetMoveDirection(), walkSpeed, 
-				playerSetDirection.GetMoveDirection(), playerSetDirection.GetForwardDirection(),  playerSetDirection.GetRightDirection());
+			newPlayerState = new PlayerState_Walking(controller, playerSetDirection.GetMoveDirection(), walkSpeed, 
+			playerSetDirection.GetMoveDirection(), playerSetDirection.GetForwardDirection(),  playerSetDirection.GetRightDirection());
 
-				velocity = playerAnimation.RunWalkBlending(velocity, -deceleration, 0f);
-				playerAnimation.SetWalking(true);
-				playerAnimation.SetRunning(velocity);
+			velocity = playerAnimation.RunWalkBlending(velocity, -deceleration, 0f);
+			playerAnimation.SetWalking(true);
+			playerAnimation.SetRunning(velocity);
 		
-			}
-
-
-			else
-			{		
-				
-				newPlayerState = new PlayerState_Idle();
-				velocity = playerAnimation.RunWalkBlending(velocity, -deceleration, 0f);			
-				playerAnimation.SetWalking(false);
-				playerAnimation.SetRunning(velocity);
-			}	
-
 		}
-		else if(currentPlayerState.stateName != "Against Wall")
+
+		else
+		{		
+				
+			newPlayerState = new PlayerState_Idle();
+			velocity = playerAnimation.RunWalkBlending(velocity, -deceleration, 0f);			
+			playerAnimation.SetWalking(false);
+			playerAnimation.SetRunning(velocity);
+		}
+
+		
+		if(handsStateController.currentLeftHandState.stateName == "Is Holding A Grip" || handsStateController.currentRightHandState.stateName == "Is Holding A Grip")
 		{
 
-		}
-		
+			newPlayerState = new PlayerState_AgainstWall(controller, playerSetDirection.GetMoveDirection(), walkSpeed, 
+			playerSetDirection.GetMoveDirection(),playerSetDirection.GetForwardDirection(), playerSetDirection.GetRightDirection());
+
+		}	
+
+		// if the player is against a wall, we set the player state to the against wall state
 			
 		// if the new state type is different from the current state type, we get the type of the new state 
-		// we set the current state to the new state and we can change the state	
+		// we set the current state to the new state and we can change the state
+
 
 		if (currentPlayerState == null || newPlayerState.GetType() != currentPlayerState.GetType())
 		{
@@ -287,6 +292,7 @@ public class PlayerController : MonoBehaviour
 	{
 		if (canChangeState)
 		{
+			Debug.Log("Changing Player State to " + currentPlayerState.stateName);
 			playerStateManager.SetState(currentPlayerState);
 			canChangeState = false;		
 		}

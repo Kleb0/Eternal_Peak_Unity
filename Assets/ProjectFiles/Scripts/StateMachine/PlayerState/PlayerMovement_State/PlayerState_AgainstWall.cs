@@ -8,15 +8,18 @@ public class PlayerState_AgainstWall : PlayerState
 	protected Vector2 moveDirection;
 	protected Vector2 forwardBackward;
 	protected Vector2 rightLeft;
+
+	protected Vector2 combinedMovement;
 	protected float speed;
 	
 
 	
-	public PlayerState_AgainstWall(CharacterController Controller, Vector2 moveDirection, float speed, Vector2 forwardBackward, Vector2 rightLeft)
+	public PlayerState_AgainstWall(CharacterController Controller, Vector2 moveDirection,  float speed,  Vector2 combinedMovement, Vector2 forwardBackward, Vector2 rightLeft)
 	{
 		this.Controller = Controller;
 		this.moveDirection = moveDirection;
 		this.speed = speed;
+		this.combinedMovement = combinedMovement;
 		this.forwardBackward = forwardBackward;
 		this.rightLeft = rightLeft;
 		stateName = "Against Wall";
@@ -24,8 +27,8 @@ public class PlayerState_AgainstWall : PlayerState
 		//here without the need to override it in the derived classes.
 	}
 
-    public override void ExecuteState()
+    public override void EnterState()
     {
-		PlayerMove.Move(Controller, moveDirection, speed, forwardBackward, rightLeft);
+		Debug.Log("PlayerState_AgainstWall -> EnterState");
     }
 }

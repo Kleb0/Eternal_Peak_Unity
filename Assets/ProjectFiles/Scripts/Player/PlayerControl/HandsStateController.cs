@@ -5,8 +5,8 @@ using UnityEngine;
 public class HandsStateController : MonoBehaviour
 {
 	UIDEBUG uiDebug;
-	private LeftHandState currentLeftHandState;
-	private RightHandState currentRightHandState;
+	public LeftHandState currentLeftHandState;
+	public RightHandState currentRightHandState;
 	private LeftHandState previousLeftHandState;
 	private RightHandState previousRightHandState;
 	private LeftHandState_DoNothing leftHandStateDoNothing;
@@ -85,11 +85,12 @@ public class HandsStateController : MonoBehaviour
 
 	public void ChangeLeftHandStateToHoldingGrip()
 	{
-		Debug.Log("TEST IN HANDSTATECONTROLLER : " + playerController.leftHandHoldingGrip.name);
+
 		Debug.Log("Changing Left Hand State to Holding Grip");
 		ChangeLeftHandState(new LeftHandState_IsHoldingAGrip());
-		IKArmsControl.ChangeIKarmTarget(playerController.leftArmIK, playerController.leftHandHoldingGrip, playerController.leftArmIKTarget);		
-			}
+		IKArmsControl.ChangeIKarmTarget(playerController.leftArmIK, playerController.leftHandHoldingGrip, playerController.leftArmIKTarget);	
+	
+	}
 
 	public void ChangeLeftHandState(LeftHandState newLeftHandState)
 	{
@@ -159,6 +160,7 @@ public class HandsStateController : MonoBehaviour
 	}
 
 
+
 	// ------- Right Hand State Management ------- //
 #region RightHandStateManagement
 	public void PlayRightHandLoop()
@@ -187,12 +189,15 @@ public class HandsStateController : MonoBehaviour
 			distanceBetweenRightHandAndRightShoulder = IKArmsControl.CalcDistBetweenRighttHandAndRightShoulder(playerController.rightArmIK);
 			uiDebug.UpdateRightArmBendingValue(distanceBetweenRightHandAndRightShoulder);
 			playerController.rightArmBendingValue = distanceBetweenRightHandAndRightShoulder;
+
+
 		}
 		else
 		{
 			distanceBetweenRightHandAndRightShoulder = 0f;
 			uiDebug.UpdateRightArmBendingValue(distanceBetweenRightHandAndRightShoulder);
 			playerController.rightArmBendingValue = distanceBetweenRightHandAndRightShoulder;
+
 		}
 	}
 
@@ -216,6 +221,7 @@ public class HandsStateController : MonoBehaviour
 		Debug.Log("Changing Right Hand State to Holding Grip");
 		ChangeRightHandState(new RightHandState_IsHoldingAGrip());
 		IKArmsControl.ChangeIKarmTarget(playerController.rightArmIK, playerController.rightHandHoldingGrip, playerController.rightArmIKTarget);
+		isRightHandHoldingGrip();
 	}
 	public RightHandState GetCurrentRightHandState()
 	{
@@ -240,6 +246,13 @@ public class HandsStateController : MonoBehaviour
 	{
 		SetRightHandState(new RightHandState_DoNothing(playerController, playerController.rightArmIKTarget, playerController.rightArmIK));
 		isRightHandLoopEnded = true;
+	}
+
+	public bool isRightHandHoldingGrip()
+	{
+		Debug.Log("Right Hand is holding a grip");
+		return currentRightHandState.stateName == "Is Holding A Grip";
+
 	}
 
 	// The principle is merely simple : We have a state machine for the hands of the player, 

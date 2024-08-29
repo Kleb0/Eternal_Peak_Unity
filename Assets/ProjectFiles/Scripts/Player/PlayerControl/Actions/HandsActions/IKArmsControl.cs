@@ -27,6 +27,7 @@ public class IKArmsControl : MonoBehaviour
 		Debug.Log("New target is " + newtarget.name);
 		Debug.Log("Previous target is " + previousTarget.name);
 		previousTarget.SetActive(false);
+		
 	}
 
 	public static void ResetFPSTarget(ArmIK armIK, GameObject FPStarget)

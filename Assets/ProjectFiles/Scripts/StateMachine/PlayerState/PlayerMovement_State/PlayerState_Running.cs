@@ -10,9 +10,8 @@ public class PlayerState_Running : PlayerState_Moving
     {
         stateName = "Running";
         // As we are using here a special constructor, we just set the stateName to "Running" here without the need to override it in the derived classes.
-
-
     }
+    
     public override void ExecuteState()
     {
         PlayerRunning.Move(controller, moveDirection, speed, forwardBackward, rightLeft);
