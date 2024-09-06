@@ -57,7 +57,7 @@ public class PlayerController : MonoBehaviour
 	private LeftHandState previousLeftHandState;
 
 	private LeftHandState currentLeftHandState;
-	private PlayerSetDirection playerSetDirection;
+	public PlayerSetDirection playerSetDirection;
 
 	
 
@@ -195,7 +195,9 @@ public class PlayerController : MonoBehaviour
 		xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
 		playerMeshRig.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
-		transform.Rotate(Vector3.up * mouseX);	
+		transform.Rotate(Vector3.up * mouseX);
+
+			
 	}
 
 	#region  Movement
@@ -259,9 +261,11 @@ public class PlayerController : MonoBehaviour
 		
 		if(handsStateController.currentLeftHandState.stateName == "Is Holding A Grip" || handsStateController.currentRightHandState.stateName == "Is Holding A Grip")
 		{
+			
 
-			newPlayerState = new PlayerState_AgainstWall(controller, playerSetDirection.GetMoveDirection(), walkSpeed, 
-			playerSetDirection.GetMoveDirection(),playerSetDirection.GetForwardDirection(), playerSetDirection.GetRightDirection());
+			newPlayerState = new PlayerState_AgainstWall(this, controller, playerSetDirection.GetMoveDirection(), walkSpeed, 
+			playerSetDirection.GetMoveDirection(),playerSetDirection.GetForwardDirection(), playerSetDirection.GetRightDirection(), rightArmBendingValue, leftArmBendingValue);
+
 
 		}	
 

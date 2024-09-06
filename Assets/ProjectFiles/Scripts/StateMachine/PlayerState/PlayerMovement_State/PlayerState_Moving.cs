@@ -6,7 +6,6 @@ using UnityEngine;
 public class PlayerState_Moving : PlayerState
 {
 
-    
     protected CharacterController controller;
     protected Vector2 moveDirection;
     protected float speed;
