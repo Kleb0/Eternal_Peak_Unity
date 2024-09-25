@@ -41,7 +41,6 @@ public class PlayerState_AgainstWall : PlayerState_Moving
 		//Debug.Log("Executing Against Wall State : Right Arm Bending Value : " + rightarmsBendingValue + " Left Arm Bending Value : " + leftarmsBendingValue);
 		//Debug.Log("Executing Against Wall State : Forward Backward : " + forwardBackward + " left arms bending value : " + leftarmsBendingValue );
 		
-
 		Vector3 leftLimit = leftIkTarget.transform.position + leftIkTarget.transform.right * lateralLimit;
 		Vector3 rightLimit = leftIkTarget.transform.position - leftIkTarget.transform.right * lateralLimit;
 		Vector3 playerPosition = controller.transform.position;

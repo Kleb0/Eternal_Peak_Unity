@@ -24,8 +24,6 @@ public class IKArmsControl : MonoBehaviour
 	public static void ChangeIKarmTarget(ArmIK armIK, GameObject newtarget, GameObject previousTarget)
 	{
 		armIK.solver.arm.target = newtarget.transform;
-		Debug.Log("New target is " + newtarget.name);
-		Debug.Log("Previous target is " + previousTarget.name);
 		previousTarget.SetActive(false);
 		
 	}
@@ -141,6 +139,31 @@ public class IKArmsControl : MonoBehaviour
 		}
 		return 0f;
 		
+	}
+
+	public static void CorrectIkHandRaycastDirection(ArmIK armIk, GameObject palm)
+	{
+
+		if (armIk.solver.isLeft)
+		{
+			Transform leftShoulder = armIk.solver.shoulder.transform;
+			Transform leftHand = armIk.solver.hand.transform;
+
+			Vector3 Direction = leftShoulder.position - leftHand.position;
+
+			palm.transform.rotation = Quaternion.LookRotation(Direction);
+			
+		}
+		else
+		{
+			Transform rightShoulder = armIk.solver.shoulder.transform;
+			Transform rightHand = armIk.solver.hand.transform;
+
+			Vector3 Direction = rightShoulder.position - rightHand.position;
+
+			palm.transform.rotation = Quaternion.LookRotation(Direction);
+		}
+	
 	} 
 }
 
