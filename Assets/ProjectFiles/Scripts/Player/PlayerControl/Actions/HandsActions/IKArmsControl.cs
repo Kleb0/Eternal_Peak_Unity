@@ -24,8 +24,6 @@ public class IKArmsControl : MonoBehaviour
 	public static void ChangeIKarmTarget(ArmIK armIK, GameObject newtarget, GameObject previousTarget)
 	{
 		armIK.solver.arm.target = newtarget.transform;
-		Debug.Log("New target is " + newtarget.name);
-		Debug.Log("Previous target is " + previousTarget.name);
 		previousTarget.SetActive(false);
 		
 	}
@@ -111,7 +109,7 @@ public class IKArmsControl : MonoBehaviour
 			float distance = Vector3.Distance(lefthandPosition, leftShoulderPosition);
 
 			float minDistance = 0.30f;
-			float maxDistance = 0.45f;
+			float maxDistance = 0.60f;
 
 			// we normalize the distance on a field of 0 to 1
 			float normalizedDistance = Mathf.Clamp01((distance - minDistance) / (maxDistance - minDistance));
@@ -133,7 +131,7 @@ public class IKArmsControl : MonoBehaviour
 			float distance = Vector3.Distance(righthandPosition, rightShoulderPosition);
 
 			float minDistance = 0.30f;
-			float maxDistance = 0.45f;
+			float maxDistance = 0.55f;
 
 			// we normalize the distance on a field of 0 to 1
 			float normalizedDistance = Mathf.Clamp01((distance - minDistance) / (maxDistance - minDistance));
@@ -141,6 +139,31 @@ public class IKArmsControl : MonoBehaviour
 		}
 		return 0f;
 		
+	}
+
+	public static void CorrectIkHandRaycastDirection(ArmIK armIk, GameObject palm)
+	{
+
+		if (armIk.solver.isLeft)
+		{
+			Transform leftShoulder = armIk.solver.shoulder.transform;
+			Transform leftHand = armIk.solver.hand.transform;
+
+			Vector3 Direction = leftShoulder.position - leftHand.position;
+
+			palm.transform.rotation = Quaternion.LookRotation(Direction);
+			
+		}
+		else
+		{
+			Transform rightShoulder = armIk.solver.shoulder.transform;
+			Transform rightHand = armIk.solver.hand.transform;
+
+			Vector3 Direction = rightShoulder.position - rightHand.position;
+
+			palm.transform.rotation = Quaternion.LookRotation(Direction);
+		}
+	
 	} 
 }
 

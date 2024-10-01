@@ -91,6 +91,7 @@ public class PlayerController : MonoBehaviour
 
 	public bool leftHandHoldingAGrip = false;
 	public bool rightHandHoldingAGrip = false;
+	public bool bothHandsHoldAGrip = false;
 
 
 
@@ -208,7 +209,16 @@ public class PlayerController : MonoBehaviour
 		// that will be used to move the player in the world space
 
 		moveDirection = new Vector2(inputConnect.rightLeft, inputConnect.forwardBackward);
-		float currentSpeed = 0f;		
+		float currentSpeed = 0f;
+
+		if(leftHandHoldingAGrip && rightHandHoldingAGrip)
+		{
+			bothHandsHoldAGrip = true;
+		}
+		else
+		{
+			bothHandsHoldAGrip = false;
+		}
 
 		// if the move direction is not equal to zero, the player is moving
 		if (moveDirection != Vector2.zero)
@@ -264,7 +274,10 @@ public class PlayerController : MonoBehaviour
 			
 
 			newPlayerState = new PlayerState_AgainstWall(this, controller, playerSetDirection.GetMoveDirection(), walkSpeed, 
-			playerSetDirection.GetMoveDirection(),playerSetDirection.GetForwardDirection(), playerSetDirection.GetRightDirection(), rightArmBendingValue, leftArmBendingValue);
+			playerSetDirection.GetMoveDirection(),playerSetDirection.GetForwardDirection(), playerSetDirection.GetRightDirection(), rightArmBendingValue, leftArmBendingValue,
+			 leftHandHoldingGrip, rightHandHoldingAGrip, bothHandsHoldAGrip);
+
+			 
 
 
 		}	
@@ -300,7 +313,8 @@ public class PlayerController : MonoBehaviour
 			playerStateManager.SetState(currentPlayerState);
 			canChangeState = false;		
 		}
-	}
+	}	
+	
 
 	public void ChangeLeftIKWeight(float weight)
 	{
@@ -314,6 +328,4 @@ public class PlayerController : MonoBehaviour
 		rightIKSolverArm.IKRotationWeight = weight;
 	}
 
-
-	// control here the hands of the player
 }
