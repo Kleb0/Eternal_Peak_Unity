@@ -1,9 +1,4 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using UnityEngine.Animations.Rigging;
 using RootMotion.FinalIK;
 
 // This script took instructions from the InputConnect script, and transmit to playerStateManager the current state of the player 
@@ -21,7 +16,6 @@ public class PlayerController : MonoBehaviour
 	private float walkSpeed = 2f;
 	private float sprintSpeed = 5f;
 	private float mouseSensitivity = 300f;
-	private float jumpForce = 5f;
 	public bool isClimbing = false;
 
 	private Vector2 moveDirection;
@@ -34,7 +28,7 @@ public class PlayerController : MonoBehaviour
 	private float gravity = Physics.gravity.y;
 	private float xRotation;
 
-	private float verticalVelocity;
+
 
 
 	// ------- States management (privates variables) ------ //
@@ -59,6 +53,19 @@ public class PlayerController : MonoBehaviour
 	private LeftHandState currentLeftHandState;
 	public PlayerSetDirection playerSetDirection;
 
+	// --- Jumping --- //
+
+	[Header("Jumping parameters")]
+	[Space(10)]
+
+	public bool canJump = false;
+	public bool isInAir = false;
+	public bool haspressedJump = false;
+
+	public float jumpHeight = 0.02f;
+	public float jumpSpeed = 0.02f;
+
+	public float verticalVelocity = 0f;
 	
 
 	// --- Access the IK solver properties --- //
@@ -92,21 +99,25 @@ public class PlayerController : MonoBehaviour
 	public bool leftHandHoldingAGrip = false;
 	public bool rightHandHoldingAGrip = false;
 	public bool bothHandsHoldAGrip = false;
-
-
-
-	// Start is called before the first frame update
-	void Start()
+	
+	void Awake()
 	{
-		// get the 
 		playerAnimation = GetComponent<PlayerAnimation>();
 		playerStateManager = GetComponent<PlayerStateManager>();
 		handsStateController = GetComponent<HandsStateController>();
 		playerSetDirection = GetComponent<PlayerSetDirection>();
 		inputConnect = GetComponent<InputConnect>();
 		controller = GetComponent<CharacterController>();
-		cam = GetComponentInChildren<Camera>();	
+		cam = GetComponentInChildren<Camera>();
 		uiDebug = GetComponent<UIDEBUG>();
+		canJump = true;
+
+	}
+
+
+	// Start is called before the first frame update
+	void Start()
+	{
 
 		// get the ArmIK component from the player object
 
@@ -148,19 +159,18 @@ public class PlayerController : MonoBehaviour
 
 		leftArmIK.enabled = false;
 		leftArmIKTarget.SetActive(false);
-
 		rightArmIK.enabled = false;
 		rightArmIKTarget.SetActive(false);
-
 		Cursor.lockState = CursorLockMode.Locked;
 	}
 
 	// Update is called once per frame
 	void Update()
 	{
-		Move();		
 		Look();	
-		applyGravity();					
+		Move();		
+		applyGravity();
+		// CheckIfGrounded();			
 	}
 
 	void applyGravity()
@@ -175,17 +185,7 @@ public class PlayerController : MonoBehaviour
 		}
 		Vector3 gravityMove = new Vector3(0f, verticalVelocity, 0f);
 		controller.Move(gravityMove * Time.deltaTime);
-	}
-
-	void applyJump()
-	{
-		if (controller.isGrounded)
-		{
-			Debug.Log("Jump");
-			verticalVelocity = jumpForce;
-		}		
-	}
-	
+	}	
 	void Look()
 	{
 	
@@ -205,8 +205,7 @@ public class PlayerController : MonoBehaviour
 	
 	void Move()
 	{
-		// here we read the input from the keyboard that give a value between -1 and 1 used to defined a vector 
-		// that will be used to move the player in the world space
+		
 
 		moveDirection = new Vector2(inputConnect.rightLeft, inputConnect.forwardBackward);
 		float currentSpeed = 0f;
@@ -229,8 +228,8 @@ public class PlayerController : MonoBehaviour
 		// --> the newState is null at first to be sure that the we define a new state
 		State newPlayerState = null;
 
-					// we are in the running state if the player is sprinting by pressing the left shift key
-		if (Input.GetKey(KeyCode.LeftShift) && currentSpeed > 0f)
+		// we are in the running state if the player is sprinting by pressing the left shift key
+		if (Input.GetKey(KeyCode.LeftShift) && currentSpeed > 0f && !isInAir)
 		{
 
 			// The Move script is called in the PlayerState_Walking state
@@ -242,12 +241,16 @@ public class PlayerController : MonoBehaviour
 			playerSetDirection.GetMoveDirection(),playerSetDirection.GetForwardDirection(), playerSetDirection.GetRightDirection());
 
 			velocity = playerAnimation.RunWalkBlending(velocity, acceleration, 1f);	
-			playerAnimation.SetRunning(velocity);		
+			playerAnimation.SetRunning(velocity);
+			if(haspressedJump)
+			{
+				isInAir = true;
+			}
 					
 		}
 
 			// we are in the walking state if the player is moving and not sprinting
-		else if (currentSpeed > 0f)
+		else if (currentSpeed > 0f && !isInAir)
 		{					
 
 			newPlayerState = new PlayerState_Walking(controller, playerSetDirection.GetMoveDirection(), walkSpeed, 
@@ -256,56 +259,64 @@ public class PlayerController : MonoBehaviour
 			velocity = playerAnimation.RunWalkBlending(velocity, -deceleration, 0f);
 			playerAnimation.SetWalking(true);
 			playerAnimation.SetRunning(velocity);
+			if(haspressedJump)
+			{
+				isInAir = true;
+			}
 		
 		}
 
-		else
+		else if(haspressedJump == false && currentSpeed == 0f)
 		{		
 				
 			newPlayerState = new PlayerState_Idle();
 			velocity = playerAnimation.RunWalkBlending(velocity, -deceleration, 0f);			
 			playerAnimation.SetWalking(false);
 			playerAnimation.SetRunning(velocity);
+			if(haspressedJump)
+			{
+				isInAir = true;
+			}
+
 		}
 
-		
+
+		else if(haspressedJump)
+		{
+	
+			// Debug.Log("Handle Jumping");
+			newPlayerState = new PlayerState_Jumping(this, controller, playerSetDirection.GetMoveDirection(), 
+			jumpSpeed, jumpHeight, playerSetDirection.GetForwardDirection(), playerSetDirection.GetRightDirection());
+		}
+				
 		if(handsStateController.currentLeftHandState.stateName == "Is Holding A Grip" || handsStateController.currentRightHandState.stateName == "Is Holding A Grip")
 		{
 			
-
 			newPlayerState = new PlayerState_AgainstWall(this, controller, playerSetDirection.GetMoveDirection(), walkSpeed, 
 			playerSetDirection.GetMoveDirection(),playerSetDirection.GetForwardDirection(), playerSetDirection.GetRightDirection(), rightArmBendingValue, leftArmBendingValue,
-			 leftHandHoldingGrip, rightHandHoldingAGrip, bothHandsHoldAGrip);
-
-			 
-
-
+			leftHandHoldingGrip, rightHandHoldingAGrip, bothHandsHoldAGrip);	
 		}	
 
-		// if the player is against a wall, we set the player state to the against wall state
-			
+		// if the player is against a wall, we set the player state to the against wall state			
 		// if the new state type is different from the current state type, we get the type of the new state 
 		// we set the current state to the new state and we can change the state
 
-
 		if (currentPlayerState == null || newPlayerState.GetType() != currentPlayerState.GetType())
 		{
+			Debug.Log("Changing Player State to " + newPlayerState.stateName);
 			canChangeState = true;
 			currentPlayerState = newPlayerState;		
 			OnPlayerStateChange();
 			if (uiDebugActive)
 			{
 				uiDebug.UpdatePlayerStateUI(newPlayerState.stateName);
-			}
-						
+			}						
 		}
-
 	}
 
-	#endregion	
-	
+	#endregion		
 
-	void OnPlayerStateChange()
+	public void OnPlayerStateChange()
 	{
 		if (canChangeState)
 		{
@@ -327,5 +338,6 @@ public class PlayerController : MonoBehaviour
 		rightIKSolverArm.IKPositionWeight = weight;
 		rightIKSolverArm.IKRotationWeight = weight;
 	}
+
 
 }

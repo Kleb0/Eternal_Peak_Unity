@@ -51,7 +51,10 @@ public class InputConnect : MonoBehaviour
 		controls.PlayerInputMap.LeftHand.canceled += ctx => OnLeftHandAction(ctx);
 
 		controls.PlayerInputMap.RightHand.performed += ctx => OnRightHandAction(ctx);
-		controls.PlayerInputMap.RightHand.canceled += ctx => OnRightHandAction(ctx);     
+		controls.PlayerInputMap.RightHand.canceled += ctx => OnRightHandAction(ctx);
+
+		controls.PlayerInputMap.Jump.performed += ctx => OnPlayerJump(ctx);
+
 		
 	}
 
@@ -162,6 +165,16 @@ public class InputConnect : MonoBehaviour
 		
 		//playerController.OnPlayerRiseRightArmBack();
 	} 
+
+	private void OnPlayerJump(InputAction.CallbackContext context)
+	{
+		Debug.LogWarning("Jump Input called in InputConnect.CS ");
+		Debug.Log("Jump Input called in InputConnect.CS ");
+		playerController.haspressedJump = true;
+		playerController.canJump = true;
+		
+		
+	}
  
   
 }

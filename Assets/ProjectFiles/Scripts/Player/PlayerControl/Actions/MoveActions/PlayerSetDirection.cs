@@ -53,5 +53,14 @@ public class PlayerSetDirection : MonoBehaviour
         return rightDirection;
     }
 
+    public Vector2 GetJumpDirection()
+    {
+        Vector2 jumpDirection = moveDirection + forwardDirection;
+
+        jumpDirection.Normalize();
+
+        return jumpDirection;
+    }
+
 
 }
