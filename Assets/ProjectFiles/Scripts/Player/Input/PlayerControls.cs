@@ -71,6 +71,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""RiseHand"",
+                    ""type"": ""Value"",
+                    ""id"": ""abac245e-e8e4-4c83-b565-e35791c00359"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -172,6 +181,17 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""action"": ""Jump"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""23875256-394d-49e8-acad-38870894f73f"",
+                    ""path"": ""<Mouse>/scroll"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""RiseHand"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -185,6 +205,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_PlayerInputMap_LeftHand = m_PlayerInputMap.FindAction("LeftHand", throwIfNotFound: true);
         m_PlayerInputMap_RightHand = m_PlayerInputMap.FindAction("RightHand", throwIfNotFound: true);
         m_PlayerInputMap_Jump = m_PlayerInputMap.FindAction("Jump", throwIfNotFound: true);
+        m_PlayerInputMap_RiseHand = m_PlayerInputMap.FindAction("RiseHand", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -251,6 +272,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_PlayerInputMap_LeftHand;
     private readonly InputAction m_PlayerInputMap_RightHand;
     private readonly InputAction m_PlayerInputMap_Jump;
+    private readonly InputAction m_PlayerInputMap_RiseHand;
     public struct PlayerInputMapActions
     {
         private @PlayerControls m_Wrapper;
@@ -260,6 +282,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         public InputAction @LeftHand => m_Wrapper.m_PlayerInputMap_LeftHand;
         public InputAction @RightHand => m_Wrapper.m_PlayerInputMap_RightHand;
         public InputAction @Jump => m_Wrapper.m_PlayerInputMap_Jump;
+        public InputAction @RiseHand => m_Wrapper.m_PlayerInputMap_RiseHand;
         public InputActionMap Get() { return m_Wrapper.m_PlayerInputMap; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -284,6 +307,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Jump.started += instance.OnJump;
             @Jump.performed += instance.OnJump;
             @Jump.canceled += instance.OnJump;
+            @RiseHand.started += instance.OnRiseHand;
+            @RiseHand.performed += instance.OnRiseHand;
+            @RiseHand.canceled += instance.OnRiseHand;
         }
 
         private void UnregisterCallbacks(IPlayerInputMapActions instance)
@@ -303,6 +329,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Jump.started -= instance.OnJump;
             @Jump.performed -= instance.OnJump;
             @Jump.canceled -= instance.OnJump;
+            @RiseHand.started -= instance.OnRiseHand;
+            @RiseHand.performed -= instance.OnRiseHand;
+            @RiseHand.canceled -= instance.OnRiseHand;
         }
 
         public void RemoveCallbacks(IPlayerInputMapActions instance)
@@ -327,5 +356,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         void OnLeftHand(InputAction.CallbackContext context);
         void OnRightHand(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
+        void OnRiseHand(InputAction.CallbackContext context);
     }
 }

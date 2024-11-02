@@ -54,6 +54,7 @@ public class InputConnect : MonoBehaviour
 		controls.PlayerInputMap.RightHand.canceled += ctx => OnRightHandAction(ctx);
 
 		controls.PlayerInputMap.Jump.performed += ctx => OnPlayerJump(ctx);
+		controls.PlayerInputMap.RiseHand.performed += ctx => OnMouseScroll(ctx);
 
 		
 	}
@@ -172,8 +173,22 @@ public class InputConnect : MonoBehaviour
 		Debug.Log("Jump Input called in InputConnect.CS ");
 		playerController.haspressedJump = true;
 		playerController.canJump = true;
-		
-		
+				
+	}
+
+	private void OnMouseScroll(InputAction.CallbackContext context)
+	{
+		Vector2 scrollValue = context.ReadValue<Vector2>();
+
+		if (scrollValue.y > 0)
+		{
+			Debug.Log("la molette de la souris est tournée vers le haut");
+		}
+		else if (scrollValue.y < 0)
+		{
+			Debug.Log("la molette de la souris est tournée vers le bas");
+		}
+
 	}
  
   

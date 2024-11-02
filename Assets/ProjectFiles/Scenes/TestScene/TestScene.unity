@@ -3858,8 +3858,8 @@ MonoBehaviour:
   canJump: 1
   isInAir: 0
   haspressedJump: 0
-  jumpHeight: 10
-  jumpSpeed: 2
+  jumpHeight: 1.5
+  jumpSpeed: 2.7
   verticalVelocity: 0
   leftIKSolverArm:
     executedInEditor: 0
