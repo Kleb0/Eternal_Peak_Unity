@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using RootMotion.FinalIK;
 using UnityEngine;
 
 public class HandsStateController : MonoBehaviour
@@ -13,30 +15,28 @@ public class HandsStateController : MonoBehaviour
 	private LeftHandState_DoNothing leftHandStateDoNothing;
 	private LeftHandState_ComingBack leftHandStateComingBack;    
 	private LeftHandState_IsRisingUp leftHandStateIsRisingUp;
-
 	private GameObject leftPalm;
-
 	private GameObject leftHandRayCaster;	
-
 	private GameObject rightPalm;
-
 	private GameObject rightHandRayCaster;
 	
 	private PlayerController playerController;
-
-
 	private float currentLeftIkWeight;
 	private float currentLeftIkRotationWeight;
 
 	private float currentRightIkWeight;
-
 	private float currentRightIkRotationWeight;
-
 	private bool isLeftHandLoopEnded = false;
 	private bool isRightHandLoopEnded = false;
 
-	float distanceBetweenLeftHandAndLeftShoulder;
-	float distanceBetweenRightHandAndRightShoulder;    
+	float distanceBetweenLeftHandAndLeftShoulder; 
+	float distanceBetweenRightHandAndRightShoulder;   
+	private float scrollAdjustmentValue = 0f; 
+	private bool isScrolling = false;
+	private bool canChangeLeftIkTargetOnScroll = false;
+	private bool isLeftHandAligned = false;
+
+	private bool isBeingGuide = false;
 
 
 	// We build a loop for the hand state management :
@@ -65,8 +65,13 @@ public class HandsStateController : MonoBehaviour
 		currentLeftIkRotationWeight = 0f;
 		currentRightIkWeight = 0f;
 		currentRightIkRotationWeight = 0f;
-		leftPalm = GameObject.Find("LeftPalm");
-		leftHandRayCaster = leftPalm.transform.GetChild(0).gameObject;
+		leftPalm = playerController.leftPalm;
+		if(leftPalm == null)
+		{
+			leftPalm = GameObject.Find("LeftPalm");
+		}
+
+		leftHandRayCaster = GameObject.Find("Left_HandRay_Caster");
 		rightPalm = GameObject.Find("RightPalm");
 		rightHandRayCaster = rightPalm.transform.GetChild(0).gameObject;
 		leftPalm.SetActive(false);
@@ -84,7 +89,72 @@ public class HandsStateController : MonoBehaviour
 		
 		PlayLeftHandLoop();
 		PlayRightHandLoop();
-	}    
+	} 
+
+#region  Player Left Hand Loop
+	public void PlayLeftHandLoop()
+	{
+		if (currentLeftHandState is LeftHandState_ComingBack)
+		{
+			
+			bool completed = IKArmsControl.DecrementLeftIkWeight(playerController, playerController.leftArmIK, ref currentLeftIkWeight, ref currentLeftIkRotationWeight, 2f);
+	
+
+			if (completed && !isLeftHandLoopEnded)
+			{
+				EndLeftHandLoop();
+				isLeftHandLoopEnded = false;
+				isLeftHandAligned = false;
+
+			}
+		}
+
+		else if (currentLeftHandState is LeftHandState_IsRisingUp) 
+		{
+		
+			bool completed = IKArmsControl.IncrementLeftIkWeight(playerController, playerController.leftArmIK, ref currentLeftIkWeight, ref currentLeftIkRotationWeight, 2f);
+
+			if (completed)
+			{
+				SetLeftHandState(new leftHandState_HasRaisedUp(playerController, playerController.leftArmIKTarget, 
+				playerController.leftBendingIKTarget, playerController.leftIKSolverArm, playerController.leftArmIK));
+			}
+		}
+		if(currentLeftHandState.stateName == "Has Raised Up")
+		{
+			distanceBetweenLeftHandAndLeftShoulder = IKArmsControl.CalcDistBetweenLeftHandAndLeftShoulder(playerController.leftArmIK);
+			uiDebug.UpdateLeftArmBendingValue(distanceBetweenLeftHandAndLeftShoulder);
+			playerController.leftArmBendingValue = distanceBetweenLeftHandAndLeftShoulder;
+
+		}
+
+		if(currentLeftHandState.stateName == "Is Being Guided")
+		{
+			//IKArmsControl.GuideHandByMouse(playerController, playerController.leftArmIK);
+		}
+
+		
+
+		if(currentLeftHandState.stateName == "Is Holding A Grip" )
+		{
+			distanceBetweenLeftHandAndLeftShoulder = IKArmsControl.CalcDistBetweenLeftHandAndLeftShoulder(playerController.leftArmIK);
+			uiDebug.UpdateLeftArmBendingValue(distanceBetweenLeftHandAndLeftShoulder);
+			playerController.leftArmBendingValue = distanceBetweenLeftHandAndLeftShoulder;
+		}
+
+		// else
+		// {
+		// 	distanceBetweenLeftHandAndLeftShoulder = 0f;
+		// 	uiDebug.UpdateLeftArmBendingValue(distanceBetweenLeftHandAndLeftShoulder);
+		// 	playerController.leftArmBendingValue = distanceBetweenLeftHandAndLeftShoulder;
+		// }
+	}
+#endregion	   
+
+// ------- Left Hand State Management ------- //
+
+#region LeftHandStateManagement
+
 	public void SetLeftHandState(LeftHandState newLeftHandState)
 	{
 		if (currentLeftHandState != null)
@@ -105,7 +175,7 @@ public class HandsStateController : MonoBehaviour
 
 		Debug.Log("Changing Left Hand State to Holding Grip");
 		ChangeLeftHandState(new LeftHandState_IsHoldingAGrip());
-		IKArmsControl.ChangeIKarmTarget(playerController.leftArmIK, playerController.leftHandHoldingGrip, playerController.leftArmIKTarget);	
+		// IKArmsControl.ChangeIKarmTarget(playerController.leftArmIK, playerController.leftHandHoldingGrip, playerController.leftArmIKTarget);	
 	
 	}
 
@@ -128,7 +198,7 @@ public class HandsStateController : MonoBehaviour
 
 	public void EndLeftHandLoop()
 	{
-		ChangeLeftHandState	(new LeftHandState_DoNothing(playerController, playerController.leftArmIKTarget, playerController.leftArmIK));
+		ChangeLeftHandState	(new LeftHandState_DoNothing(playerController, playerController.leftArmIKTarget, playerController.leftBendingIKTarget, playerController.leftArmIK));
 		isLeftHandLoopEnded = false;
 
 	}
@@ -138,58 +208,16 @@ public class HandsStateController : MonoBehaviour
 		return currentLeftHandState;
 	}
 
-	public void PlayLeftHandLoop()
-	{
-		if (currentLeftHandState is LeftHandState_ComingBack)
-		{
-			
-			bool completed = IKArmsControl.DecrementLeftIkWeight(playerController.leftArmIK, ref currentLeftIkWeight, ref currentLeftIkRotationWeight, 2f);
-		
 
-			if (completed && !isLeftHandLoopEnded)
-			{
-				EndLeftHandLoop();
-				isLeftHandLoopEnded = true;
-			}
-		}
-
-		else if (currentLeftHandState is LeftHandState_IsRisingUp)
-		{
-			leftPalm.SetActive(true);
-			IKArmsControl.CorrectIkHandRaycastDirection(playerController.leftArmIK, leftPalm);
-			bool completed = IKArmsControl.IncrementLeftIkWeight(playerController.leftArmIK, ref currentLeftIkWeight, ref currentLeftIkRotationWeight, 2f);
-		}
-
-		if(currentLeftHandState.stateName == "Is Holding A Grip" )
-		{
-			distanceBetweenLeftHandAndLeftShoulder = IKArmsControl.CalcDistBetweenLeftHandAndLeftShoulder(playerController.leftArmIK);
-			uiDebug.UpdateLeftArmBendingValue(distanceBetweenLeftHandAndLeftShoulder);
-			playerController.leftArmBendingValue = distanceBetweenLeftHandAndLeftShoulder;
-		}
-		else
-		{
-			distanceBetweenLeftHandAndLeftShoulder = 0f;
-			uiDebug.UpdateLeftArmBendingValue(distanceBetweenLeftHandAndLeftShoulder);
-			playerController.leftArmBendingValue = distanceBetweenLeftHandAndLeftShoulder;
-		}
-	}
-
-	public void CalculDistBetweenLeftHandAndLeftShoulder()
-	{
-		float leftArmBendingValue = IKArmsControl.CalcDistBetweenLeftHandAndLeftShoulder(playerController.leftArmIK);
-		uiDebug.UpdateLeftArmBendingValue(leftArmBendingValue);
-		playerController.leftArmBendingValue = leftArmBendingValue;
-	}
-
-
+#endregion
 
 	// ------- Right Hand State Management ------- //
-#region RightHandStateManagement
+#region  Player Right Hand Loop
 	public void PlayRightHandLoop()
 	{
 		if (currentRightHandState is RightHandState_ComingBack)
 		{
-			bool completed = IKArmsControl.DecrementRightIkWeight(playerController.rightArmIK, ref currentRightIkWeight, ref currentRightIkRotationWeight, 2f);
+			bool completed = IKArmsControl.DecrementRightIkWeight(playerController, playerController.rightArmIK, ref currentRightIkWeight, ref currentRightIkRotationWeight, 2f);
 			uiDebug.UpdateRightArmBendingValue(currentRightIkWeight);
 			playerController.rightArmBendingValue = currentLeftIkWeight;
 
@@ -203,7 +231,7 @@ public class HandsStateController : MonoBehaviour
 		else if (currentRightHandState is RightHandState_IsRisingUp)
 		{
 			rightPalm.SetActive(true);
-			bool completed = IKArmsControl.IncrementRightIkWeight(playerController.rightArmIK, ref currentRightIkWeight, ref currentRightIkRotationWeight, 2f);
+			bool completed = IKArmsControl.IncrementRightIkWeight(playerController, playerController.rightArmIK, ref currentRightIkWeight, ref currentRightIkRotationWeight, 2f);
 			uiDebug.UpdateRightArmBendingValue(currentRightIkWeight);
 			playerController.rightArmBendingValue = currentLeftIkWeight;
 			IKArmsControl.CorrectIkHandRaycastDirection(playerController.rightArmIK, rightPalm);
@@ -215,14 +243,17 @@ public class HandsStateController : MonoBehaviour
 			playerController.rightArmBendingValue = distanceBetweenRightHandAndRightShoulder;
 		
 		}
-		else
-		{
-			distanceBetweenRightHandAndRightShoulder = 0f;
-			uiDebug.UpdateRightArmBendingValue(distanceBetweenRightHandAndRightShoulder);
-			playerController.rightArmBendingValue = distanceBetweenRightHandAndRightShoulder;
+		// else
+		// {
+		// 	distanceBetweenRightHandAndRightShoulder = 0f;
+		// 	uiDebug.UpdateRightArmBendingValue(distanceBetweenRightHandAndRightShoulder);
+		// 	playerController.rightArmBendingValue = distanceBetweenRightHandAndRightShoulder;
 
-		}
+		// }
 	}
+#endregion
+
+#region RightHandStateManagement
 
 	public void SetRightHandState(RightHandState newRightHandState)
 	{
@@ -276,5 +307,54 @@ public class HandsStateController : MonoBehaviour
 	//Then we can get the current state of the hands of the player by calling the GetCurrentLeftHandState and GetCurrentRightHandState methods.
 
 	#endregion
+	
+	// ------- Scroll Management ------- //
+	#region ScrollManagement
+	public void OnMouseScrollDetected(float adjustmentValue)
+	{
+		
+		if (currentLeftHandState is leftHandState_HasRaisedUp)
+		{
+			isScrolling = true;
+			IKArmsControl.ControlLeftArmBendingOnMouseScroll(playerController.leftArmIK, adjustmentValue, playerController.leftBendingIKTarget);
+			
+		}
 
+		// IKArmsControl.ControlLeftArmBendingOnMouseScroll(playerController.leftArmIK, ref currentLeftIkWeight, ref currentLeftIkRotationWeight, scrollAdjustmentValue);	
+		
+	}
+
+	public void StopMouseScroll()
+	{
+		if (currentLeftHandState is leftHandState_HasRaisedUp)
+		{
+			isScrolling = false;
+			// Debug.LogWarning("Mouse Scroll Stopped");
+		}
+	}
+
+	#endregion
+
+	// ---------- Ik Target Management (to be refactored later) ---------- //
+	#region IkTargetManagement
+
+	public void changeLeftHandIkTargetOnScroll()
+	{
+		if(currentLeftHandState is leftHandState_HasRaisedUp && canChangeLeftIkTargetOnScroll)
+		{
+			// Debug.LogWarning("Changing Left Hand IK Target on Scroll");
+			IKArmsControl.ChangeIkArmTargetToBendingTarget(playerController.leftArmIK, playerController.leftBendingIKTarget);			
+			canChangeLeftIkTargetOnScroll = false;
+		}
+
+	}
+	public void ResetCanChangeLeftIkTargetOnScroll()
+	{
+		// Debug.LogWarning("Resetting Can Change Left IK Target on Scroll");
+		canChangeLeftIkTargetOnScroll = true;
+		
+	}
+
+
+	#endregion
 }

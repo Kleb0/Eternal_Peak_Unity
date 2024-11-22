@@ -53,8 +53,10 @@ public class UIDEBUG : MonoBehaviour
 
         public void UpdateLeftArmBendingValue(float newLeftArmBendingValue)
         {
+            
             leftArmBendingValue = newLeftArmBendingValue;
             leftArmBendingSlider.value = leftArmBendingValue;
+            // Debug.Log("Updating left arm bending value" + leftArmBendingValue);
         }
 
         public void UpdateRightArmBendingValue(float newRightArmBendingValue)

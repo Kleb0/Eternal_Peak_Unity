@@ -12,7 +12,7 @@ public class State : IState
     // so that the derived classes can have their own logic for themselves without the need to implement the logic of a State
 
     public virtual string stateName { get; protected set; } = "STATE_OBJECT";
-    public virtual void EnterState() {  /* Debug.Log("Enter " + stateName + " State"); */ }
+    public virtual void EnterState() {  /* Debug.Log("Enter " + stateName + " State"); */  }
     public virtual void ExecuteState() {/* State Logic here */}
     public virtual void ExitState() { /* Debug.Log("Exit " + stateName + " State"); */ }
 }

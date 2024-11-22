@@ -1,5 +1,6 @@
 using UnityEngine;
 using RootMotion.FinalIK;
+using System.Collections;
 
 // This script took instructions from the InputConnect script, and transmit to playerStateManager the current state of the player 
 // modified by the input on the keyboard. The script also manage the player's movement and the camera rotation.
@@ -11,8 +12,7 @@ public class PlayerController : MonoBehaviour
 	public GameObject playerMesh;
 	public GameObject playerMeshRig;
 	private CharacterController controller;
-	private Camera cam;
-	private Collider coll;
+	public Camera cam;
 	private float walkSpeed = 2f;
 	private float sprintSpeed = 5f;
 	private float mouseSensitivity = 300f;
@@ -77,8 +77,13 @@ public class PlayerController : MonoBehaviour
 	public ArmIK leftArmIK;
 	public GameObject leftArmIKTarget;
 
+	public GameObject leftBendingIKTarget;
+
 	public GameObject leftHandHoldingGrip;
-	public float leftArmBendingValue;		
+	public float leftArmBendingValue;
+
+	public GameObject leftPalm;
+	public GameObject leftPalmRaycaster;
 
 	[Header("IK Solvers Right")]
 	// Header space 
@@ -87,8 +92,9 @@ public class PlayerController : MonoBehaviour
 	public IKSolverArm rightIKSolverArm;
 	public ArmIK rightArmIK;
 
-
 	public GameObject rightArmIKTarget;
+
+	public GameObject rightBendingIKTarget;
 
 	public GameObject rightHandHoldingGrip;
 
@@ -141,7 +147,7 @@ public class PlayerController : MonoBehaviour
 		playerInitialState = new PlayerState_Idle();
 		currentPlayerState = playerInitialState;
 
-		handsStateController.ChangeLeftHandState(new LeftHandState_DoNothing(this, leftArmIKTarget, leftArmIK));
+		handsStateController.ChangeLeftHandState(new LeftHandState_DoNothing(this, leftArmIKTarget, leftBendingIKTarget, leftArmIK));
 		handsStateController.ChangeRightHandState(new RightHandState_DoNothing(this, rightArmIKTarget, rightArmIK));
 
 		// we set the player state to the initial state
@@ -167,6 +173,7 @@ public class PlayerController : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
+		// leftBendingIKTarget.transform.position = leftPalm.transform.position;
 		Look();	
 		Move();		
 		applyGravity();
@@ -338,6 +345,27 @@ public class PlayerController : MonoBehaviour
 		rightIKSolverArm.IKPositionWeight = weight;
 		rightIKSolverArm.IKRotationWeight = weight;
 	}
+
+	//-------- Our coroutines are here --------//
+	#region Coroutines
+
+	public void StartTestCoroutine()
+	{
+		StartCoroutine(TestCoroutine());
+	}
+
+	public IEnumerator TestCoroutine()
+	{
+		yield return new WaitForSeconds(0.001f);
+		leftPalm.SetActive(true);
+		leftBendingIKTarget.SetActive(true);
+		IKArmsControl.AlignBendingIKTargetCorrectly(leftArmIK, leftBendingIKTarget, leftPalm.transform.position);
+		// Debug.Log("Coroutine appelée dans le PlayerController");
+
+
+	}
+
+	#endregion
 
 
 }

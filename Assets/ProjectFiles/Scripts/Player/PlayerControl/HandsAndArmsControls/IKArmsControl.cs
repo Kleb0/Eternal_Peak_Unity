@@ -2,17 +2,32 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using RootMotion.FinalIK;
-using Unity.Burst.Intrinsics;
 using System;
 
 public class IKArmsControl : MonoBehaviour
 {
-	public static void EnableIKTarget(GameObject IKtarget)
+	static float testValue = 0f;
+	static float forwardOffset = 0.1f;
+	static float additionnalZOffset = 0.3f;
+	static Vector3 leftHandPosition = Vector3.zero;
+
+	static Camera playerCamera;
+
+	private static float inertialValue = 0f; 
+
+	public static void startPlayerControllerCoroutine(PlayerController playerController)
+	{
+		playerController.StartTestCoroutine();
+	}
+
+	public static void EnableIKTarget(PlayerController playerController, GameObject IKtarget, GameObject BendingTarget, ArmIK armIK)
 	{
 		IKtarget.SetActive(true);
+		playerCamera = playerController.cam;	
 	}
-	public static void DisableIKTarget(GameObject IKtarget)
+	public static void DisableIKTarget(GameObject IKtarget, GameObject BendingTarget)
 	{
+		BendingTarget.SetActive(false);
 		IKtarget.SetActive(false);
 	}
 	public static void EnableIkArm(ArmIK armIK)
@@ -39,7 +54,7 @@ public class IKArmsControl : MonoBehaviour
 		armIK.enabled = false;
 	}
 
-	public static bool IncrementLeftIkWeight(ArmIK armIK, ref float leftIKWeight, ref float lefIKRotationWeight, float rate)
+	public static bool IncrementLeftIkWeight(PlayerController playerController, ArmIK armIK, ref float leftIKWeight, ref float lefIKRotationWeight, float rate)
 	{
 		leftIKWeight += rate * Time.deltaTime;
 		armIK.solver.IKPositionWeight = leftIKWeight;
@@ -50,11 +65,12 @@ public class IKArmsControl : MonoBehaviour
 		if (leftIKWeight > 1) leftIKWeight = 1;
 		if (lefIKRotationWeight > 1) lefIKRotationWeight = 1;
 
+		leftHandPosition = playerController.leftPalm.transform.position;
 		return leftIKWeight == 1 && lefIKRotationWeight == 1;
 	}
 
 	// we return a boolean to send a kind of signal to the state handController
-	public static bool DecrementLeftIkWeight(ArmIK armIK, ref float leftIKWeight, ref float lefIKRotationWeight, float rate)
+	public static bool DecrementLeftIkWeight(PlayerController playerController, ArmIK armIK, ref float leftIKWeight, ref float lefIKRotationWeight, float rate)
 	{
 		leftIKWeight -= rate * Time.deltaTime;
 		armIK.solver.IKPositionWeight = leftIKWeight;
@@ -69,7 +85,7 @@ public class IKArmsControl : MonoBehaviour
 		return leftIKWeight == 0 && lefIKRotationWeight == 0;
 	}
 
-	public static bool IncrementRightIkWeight(ArmIK armIK, ref float IKWeight, ref float IKRotationWeight, float rate)
+	public static bool IncrementRightIkWeight(PlayerController playerController, ArmIK armIK, ref float IKWeight, ref float IKRotationWeight, float rate)
 	{
 		IKWeight += rate * Time.deltaTime;
 		armIK.solver.IKPositionWeight = IKWeight;
@@ -83,7 +99,7 @@ public class IKArmsControl : MonoBehaviour
 		return IKWeight == 1 && IKRotationWeight == 1;
 	}
 
-	public static bool DecrementRightIkWeight(ArmIK armIK, ref float IKWeight, ref float IKRotationWeight, float rate)
+	public static bool DecrementRightIkWeight(PlayerController playerController, ArmIK armIK, ref float IKWeight, ref float IKRotationWeight, float rate)
 	{
 		IKWeight -= rate * Time.deltaTime;
 		armIK.solver.IKPositionWeight = IKWeight;
@@ -163,7 +179,80 @@ public class IKArmsControl : MonoBehaviour
 
 			palm.transform.rotation = Quaternion.LookRotation(Direction);
 		}
-	
 	} 
-}
 
+	public static void AlignIKTargetCorrectly(ArmIK armIk, GameObject IKtarget, Camera cam, float radius = 2.0f, float leftOffset = 0.3f)
+	{
+		if (armIk.solver.isLeft)
+		{
+			Vector3 newIkTargetPosition;
+
+			if(cam.orthographic)
+			{
+				newIkTargetPosition = cam.transform.position + cam.transform.forward * radius;
+
+			}
+			else
+			{
+				Vector3 cameraForward = cam.transform.forward;
+				cameraForward.Normalize();
+
+				Vector3 cameraLeft = -cam.transform.right;
+				cameraLeft.Normalize();
+
+				newIkTargetPosition = cam.transform.position + cameraForward * radius + cameraLeft * leftOffset;
+
+				Vector3 cameraToIkTarget = newIkTargetPosition - cam.transform.position ;
+				if (cameraToIkTarget.magnitude > radius)
+				{
+					newIkTargetPosition = cam.transform.position + cameraToIkTarget.normalized * radius;
+				}
+				
+				IKtarget.transform.position = newIkTargetPosition;
+
+			}
+
+			
+		}
+	}
+
+	public static void AlignBendingIKTargetCorrectly(ArmIK armIK, GameObject bendingtarget, Vector3 leftHandPosition)
+	{
+
+		if (armIK.solver.isLeft)
+		{
+			bendingtarget.transform.position = leftHandPosition;
+			//Debug.Log($"left hand position is : {leftHandPosition}  {bendingtarget.name} position: {bendingtarget.transform.position}");	
+		}
+	}
+
+	public static void ChangeIkArmTargetToBendingTarget(ArmIK armIK, GameObject bendingtarget)
+	{
+		if (armIK.solver.isLeft)
+		{
+			armIK.solver.arm.target = bendingtarget.transform;
+		}
+	}
+
+	public static void ControlLeftArmBendingOnMouseScroll(ArmIK armIK, float adjustmentValue, GameObject bendingtarget)
+	{
+
+		if (armIK.solver.isLeft)
+		{
+			
+			testValue += adjustmentValue * Time.deltaTime;
+			testValue = Mathf.Clamp(testValue, -1f, 1f);
+
+			Vector3 movementDirection = adjustmentValue > 0 ? bendingtarget.transform.forward : -bendingtarget.transform.forward;
+
+			Vector3 targetPosition = bendingtarget.transform.position + movementDirection * Mathf.Abs(testValue);
+			float smoothTime = 0.001f;
+			Vector3 currentVelocity = Vector3.zero;
+
+			bendingtarget.transform.position = Vector3.SmoothDamp(bendingtarget.transform.position, targetPosition, ref currentVelocity, smoothTime);
+
+			// Vector3 movement = movementDirection * Mathf.Abs(testValue);
+			// bendingtarget.transform.position += movement;
+		}
+	}
+}

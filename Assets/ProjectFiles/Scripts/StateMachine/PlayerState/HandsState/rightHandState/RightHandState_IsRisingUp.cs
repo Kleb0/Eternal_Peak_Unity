@@ -23,7 +23,7 @@ public class RightHandState_IsRisingUp : RightHandState
     private float rate = 1f;
     protected float target = 1f;
 
-    public RightHandState_IsRisingUp(PlayerController playerController, GameObject rightHandIkTarget, ArmIK rightArmIK, IKSolverArm rightArmSolver, float IKWeight, float IKRotationWeight)
+    public RightHandState_IsRisingUp(PlayerController playerController, GameObject rightHandIkTarget, ArmIK rightArmIK, IKSolverArm rightArmSolver, float IKWeight, float IKRotationWeightn, ArmIK armIK)
     {
         this.playerController = playerController;
         this.rightArmIK = playerController.rightArmIK;
@@ -35,13 +35,13 @@ public class RightHandState_IsRisingUp : RightHandState
 
     public override void EnterState()
     {
-        IKArmsControl.EnableIKTarget(rightHandIKTarget);
+        IKArmsControl.EnableIKTarget(playerController, rightHandIKTarget, playerController.rightBendingIKTarget, playerController.rightArmIK);
         IKArmsControl.EnableIkArm(rightArmIK);
     }
 
     public override void ExecuteState()
     {
-        IKArmsControl.IncrementRightIkWeight(rightArmIK, ref IKWeight, ref IKRotationWeight, rate);
+        IKArmsControl.IncrementRightIkWeight(playerController, rightArmIK, ref IKWeight, ref IKRotationWeight, rate);
     }
 
     

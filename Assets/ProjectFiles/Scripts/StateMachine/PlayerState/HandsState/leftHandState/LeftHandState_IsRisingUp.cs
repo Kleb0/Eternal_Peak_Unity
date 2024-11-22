@@ -13,6 +13,7 @@ public class LeftHandState_IsRisingUp : LeftHandState
 	protected IKSolverArm LeftIKSolverArm;
 	protected float reachingSpeed;
 	protected GameObject leftArmIkTarget;
+	protected GameObject leftBendingTarget;
 
 	protected float IKWeight = 0f;
 	protected float IKRotationWeight;
@@ -22,7 +23,7 @@ public class LeftHandState_IsRisingUp : LeftHandState
 	// the constructor will take the playerController, the leftArmIkTarget, the leftArmIK, the leftIKSolverArm, the IKWeight and the IKRotationWeight
 	// from the playerController
 	// and initialize them in the state
-	 public LeftHandState_IsRisingUp(PlayerController playerController, GameObject LeftArmIkTarget, ArmIK leftArmIk, IKSolverArm leftIKSolverArm, float IKWeight, float IKRotationWeight)
+	 public LeftHandState_IsRisingUp(PlayerController playerController, GameObject LeftArmIkTarget, GameObject leftBendingTarget, ArmIK leftArmIk, IKSolverArm leftIKSolverArm, float IKWeight, float IKRotationWeight, ArmIK armIK)
 	{
 		this.playerController = playerController;
 		this.leftArmIkTarget = playerController.leftArmIKTarget;
@@ -30,6 +31,7 @@ public class LeftHandState_IsRisingUp : LeftHandState
 		this.LeftIKSolverArm = playerController.leftIKSolverArm;
 		this.IKWeight = playerController.leftIKSolverArm.IKPositionWeight;
 		this.IKRotationWeight = playerController.leftIKSolverArm.IKRotationWeight;
+		this.leftBendingTarget = playerController.leftBendingIKTarget;
 		
 	  
 		// As we are using here a special constructor, we just set the stateName to "Moving" here without the need to override it in the derived classes.
@@ -39,7 +41,8 @@ public class LeftHandState_IsRisingUp : LeftHandState
 
 	public override void EnterState()
 	{
-		IKArmsControl.EnableIKTarget(leftArmIkTarget);
+		Debug.Log("Entering LeftHandState_IsRisingUp");
+		IKArmsControl.EnableIKTarget(playerController, leftArmIkTarget, leftBendingTarget, LeftArmIK);
 		IKArmsControl.EnableIkArm(LeftArmIK);
 
 	}
@@ -49,7 +52,7 @@ public class LeftHandState_IsRisingUp : LeftHandState
 
 	public override void ExecuteState()
 	{
-		IKArmsControl.IncrementLeftIkWeight(LeftArmIK, ref IKWeight, ref IKRotationWeight, rate);
+		IKArmsControl.IncrementLeftIkWeight(playerController, LeftArmIK, ref IKWeight, ref IKRotationWeight, rate);
 
 	}
 }

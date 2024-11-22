@@ -76,10 +76,19 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""name"": ""RiseHand"",
                     ""type"": ""Value"",
                     ""id"": ""abac245e-e8e4-4c83-b565-e35791c00359"",
-                    ""expectedControlType"": ""Vector2"",
+                    ""expectedControlType"": ""Axis"",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""GuideHand"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""f60ff15a-3f1a-4e9e-8b22-4f9759518a8a"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": ""Hold"",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -192,6 +201,17 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""action"": ""RiseHand"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ce791dd6-a477-4027-8ec0-f0f61286c7e7"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""GuideHand"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -206,6 +226,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_PlayerInputMap_RightHand = m_PlayerInputMap.FindAction("RightHand", throwIfNotFound: true);
         m_PlayerInputMap_Jump = m_PlayerInputMap.FindAction("Jump", throwIfNotFound: true);
         m_PlayerInputMap_RiseHand = m_PlayerInputMap.FindAction("RiseHand", throwIfNotFound: true);
+        m_PlayerInputMap_GuideHand = m_PlayerInputMap.FindAction("GuideHand", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -273,6 +294,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_PlayerInputMap_RightHand;
     private readonly InputAction m_PlayerInputMap_Jump;
     private readonly InputAction m_PlayerInputMap_RiseHand;
+    private readonly InputAction m_PlayerInputMap_GuideHand;
     public struct PlayerInputMapActions
     {
         private @PlayerControls m_Wrapper;
@@ -283,6 +305,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         public InputAction @RightHand => m_Wrapper.m_PlayerInputMap_RightHand;
         public InputAction @Jump => m_Wrapper.m_PlayerInputMap_Jump;
         public InputAction @RiseHand => m_Wrapper.m_PlayerInputMap_RiseHand;
+        public InputAction @GuideHand => m_Wrapper.m_PlayerInputMap_GuideHand;
         public InputActionMap Get() { return m_Wrapper.m_PlayerInputMap; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -310,6 +333,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @RiseHand.started += instance.OnRiseHand;
             @RiseHand.performed += instance.OnRiseHand;
             @RiseHand.canceled += instance.OnRiseHand;
+            @GuideHand.started += instance.OnGuideHand;
+            @GuideHand.performed += instance.OnGuideHand;
+            @GuideHand.canceled += instance.OnGuideHand;
         }
 
         private void UnregisterCallbacks(IPlayerInputMapActions instance)
@@ -332,6 +358,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @RiseHand.started -= instance.OnRiseHand;
             @RiseHand.performed -= instance.OnRiseHand;
             @RiseHand.canceled -= instance.OnRiseHand;
+            @GuideHand.started -= instance.OnGuideHand;
+            @GuideHand.performed -= instance.OnGuideHand;
+            @GuideHand.canceled -= instance.OnGuideHand;
         }
 
         public void RemoveCallbacks(IPlayerInputMapActions instance)
@@ -357,5 +386,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         void OnRightHand(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
         void OnRiseHand(InputAction.CallbackContext context);
+        void OnGuideHand(InputAction.CallbackContext context);
     }
 }

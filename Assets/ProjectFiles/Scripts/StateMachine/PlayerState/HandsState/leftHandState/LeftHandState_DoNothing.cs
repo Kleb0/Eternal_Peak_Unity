@@ -10,19 +10,22 @@ public class LeftHandState_DoNothing : LeftHandState
 	PlayerController playerController;
 	GameObject leftArmIKTarget;
 	ArmIK leftArmIK;
+
+	GameObject leftBendingTarget;
   
 	public override string stateName { get; protected set; } = "Do Nothing";   
 
-	public LeftHandState_DoNothing(PlayerController playerController, GameObject leftArmIKTarget, ArmIK leftArmIK)
+	public LeftHandState_DoNothing(PlayerController playerController, GameObject leftArmIKTarget, GameObject leftBendingIKtarget, ArmIK leftArmIK)
 	{
 		this.playerController = playerController;
 		this.leftArmIKTarget = playerController.leftArmIKTarget;
 		this.leftArmIK = playerController.leftArmIK;
+		this.leftBendingTarget = playerController.leftBendingIKTarget;
 	}
 
 	public override void EnterState()
 	{
-		IKArmsControl.DisableIKTarget(playerController.leftArmIKTarget);
+		IKArmsControl.DisableIKTarget(playerController.leftArmIKTarget, playerController.leftBendingIKTarget);
 		IKArmsControl.DisableIkArm(playerController.leftArmIK);
 	}
 
