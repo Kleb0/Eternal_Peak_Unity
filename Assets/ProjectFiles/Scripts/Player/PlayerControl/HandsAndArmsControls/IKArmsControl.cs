@@ -255,4 +255,10 @@ public class IKArmsControl : MonoBehaviour
 			// bendingtarget.transform.position += movement;
 		}
 	}
+
+	public static void GuideleftHandByMouse(PlayerController playercontroller, ArmIK leftarmIk)
+	{
+		Debug.Log("Guiding Left Hand by Mouse");
+
+	}
 }

@@ -130,7 +130,7 @@ public class HandsStateController : MonoBehaviour
 
 		if(currentLeftHandState.stateName == "Is Being Guided")
 		{
-			//IKArmsControl.GuideHandByMouse(playerController, playerController.leftArmIK);
+			IKArmsControl.GuideleftHandByMouse(playerController, playerController.leftArmIK);
 		}
 
 		

@@ -281,6 +281,7 @@ public class InputConnect : MonoBehaviour
 		{
 			isGuideHandActive = false;
 			Debug.Log("GuideHand Action Completed");
+			handsStateController.ChangeLeftHandState(new leftHandState_HasRaisedUp(playerController, playerController.leftArmIKTarget, playerController.leftBendingIKTarget, playerController.leftIKSolverArm, playerController.leftArmIK));
 		}
 	}
 
@@ -288,7 +289,7 @@ public class InputConnect : MonoBehaviour
 	{
 		yield return new WaitForSeconds(0.2f);
 		isGuideHandActive = true;
-		Debug.Log("Guide Hand Active");
+		handsStateController.ChangeLeftHandState(new leftHandState_isBeingGuided());
 	}
 
 	
