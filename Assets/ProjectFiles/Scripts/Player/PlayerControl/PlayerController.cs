@@ -7,7 +7,9 @@ using System.Collections;
 // It also uses the PlayerAnimation script to manage the player's animation controller.
 
 public class PlayerController : MonoBehaviour
-{
+{	// ------- variables ------ //
+	#region Variables
+	
 	public GameObject player;
 	public GameObject playerMesh;
 	public GameObject playerMeshRig;
@@ -28,16 +30,12 @@ public class PlayerController : MonoBehaviour
 	private float gravity = Physics.gravity.y;
 	private float xRotation;
 
-
-
-
 	// ------- States management (privates variables) ------ //
 	public PlayerAnimation playerAnimation;
 	private PlayerStateManager playerStateManager;
 	private State playerInitialState;
 	public State currentPlayerState;
 	private bool canChangeState = false;
-
 	float velocity = 0f;
 	float acceleration = 1.0f;
 	float deceleration = 0.5f;
@@ -47,14 +45,11 @@ public class PlayerController : MonoBehaviour
 	private UIDEBUG uiDebug;
 	public GameObject playerStateUI;
 	public bool uiDebugActive;
-
 	private LeftHandState previousLeftHandState;
-
 	private LeftHandState currentLeftHandState;
 	public PlayerSetDirection playerSetDirection;
 
 	// --- Jumping --- //
-
 	[Header("Jumping parameters")]
 	[Space(10)]
 
@@ -66,7 +61,6 @@ public class PlayerController : MonoBehaviour
 	public float jumpSpeed = 0.02f;
 
 	public float verticalVelocity = 0f;
-	
 
 	// --- Access the IK solver properties --- //
 
@@ -76,9 +70,7 @@ public class PlayerController : MonoBehaviour
 	public IKSolverArm leftIKSolverArm;
 	public ArmIK leftArmIK;
 	public GameObject leftArmIKTarget;
-
 	public GameObject leftBendingIKTarget;
-
 	public GameObject leftHandHoldingGrip;
 	public float leftArmBendingValue;
 
@@ -91,21 +83,18 @@ public class PlayerController : MonoBehaviour
 
 	public IKSolverArm rightIKSolverArm;
 	public ArmIK rightArmIK;
-
 	public GameObject rightArmIKTarget;
-
 	public GameObject rightBendingIKTarget;
-
 	public GameObject rightHandHoldingGrip;
-
-
 	public float rightArmBendingValue;
 	private InputConnect inputConnect;
 
 	public bool leftHandHoldingAGrip = false;
 	public bool rightHandHoldingAGrip = false;
 	public bool bothHandsHoldAGrip = false;
-	
+
+	#endregion
+	// ------------------------ //
 	void Awake()
 	{
 		playerAnimation = GetComponent<PlayerAnimation>();
@@ -117,9 +106,7 @@ public class PlayerController : MonoBehaviour
 		cam = GetComponentInChildren<Camera>();
 		uiDebug = GetComponent<UIDEBUG>();
 		canJump = true;
-
 	}
-
 
 	// Start is called before the first frame update
 	void Start()
@@ -192,10 +179,13 @@ public class PlayerController : MonoBehaviour
 		}
 		Vector3 gravityMove = new Vector3(0f, verticalVelocity, 0f);
 		controller.Move(gravityMove * Time.deltaTime);
-	}	
+	}
+
+	#region look
 	void Look()
 	{
 	
+		// -- Here we will decrease the mouse Speed when the hand state will be " is being guide "
 		float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
 		float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
 		
@@ -207,7 +197,14 @@ public class PlayerController : MonoBehaviour
 
 			
 	}
+	#endregion
 
+// -------------------------------------- //
+
+
+
+
+// -------------------------------------- //
 	#region  Movement
 	
 	void Move()
@@ -322,6 +319,7 @@ public class PlayerController : MonoBehaviour
 	}
 
 	#endregion		
+// -------------------------------------- //
 
 	public void OnPlayerStateChange()
 	{
@@ -346,6 +344,7 @@ public class PlayerController : MonoBehaviour
 		rightIKSolverArm.IKRotationWeight = weight;
 	}
 
+
 	//-------- Our coroutines are here --------//
 	#region Coroutines
 
@@ -366,6 +365,6 @@ public class PlayerController : MonoBehaviour
 	}
 
 	#endregion
-
+	// -------------------------------------- //
 
 }

@@ -241,6 +241,66 @@ public class InputConnect : MonoBehaviour
 
 	//We use a Ienumerator to wait for a short time before we stop the scrolling, then we know that the player has stopped scrolling
 	//and we can set the scrollValue to zero
+
+
+
+#endregion   
+
+#region Mouse Displacement Calculation and Logic
+
+	private void OnGuideHandStart(InputAction.CallbackContext context)
+	{
+
+		if(guideHandCoroutine == null)
+		{
+			guideHandCoroutine = StartCoroutine(GuideHandHoldRoutine());
+		}
+
+	}
+
+	private void OnGuideHandStop(InputAction.CallbackContext context)
+	{
+
+		if(guideHandCoroutine != null)
+		{
+			StopCoroutine(guideHandCoroutine);
+			guideHandCoroutine = null;
+		}
+
+		if(isGuideHandActive)
+		{
+			StartCoroutine(StayInGuidedStateBeforeTransition());
+		}
+
+		
+	}	
+
+
+#region Coroutines Declaration
+	// the state is managed by the handStateController. But this script InputConnect.Cs receive the player's input.
+	// so we can call the IKarmsControls Static function here as we want the function to be called after we stopped
+	// to press the left mouse button
+
+
+	private IEnumerator GuideHandHoldRoutine()
+	{
+		yield return new WaitForSeconds(0.2f);
+		isGuideHandActive = true;
+		handsStateController.ChangeLeftHandState(new leftHandState_isBeingGuided());
+	}
+
+	private IEnumerator StayInGuidedStateBeforeTransition()
+	{
+		float delay = 1.0f;
+		yield return new WaitForSeconds(delay);
+
+		if(isGuideHandActive)
+		{
+			isGuideHandActive = false;
+			handsStateController.ChangeLeftHandState(new leftHandState_HasRaisedUp(playerController, playerController.leftArmIKTarget, playerController.leftBendingIKTarget, playerController.leftIKSolverArm, playerController.leftArmIK));
+		}
+	}
+
 	private IEnumerator WaitForScrollStop()
 	{
 		yield return new WaitForSeconds(0.2f);
@@ -255,43 +315,6 @@ public class InputConnect : MonoBehaviour
 		handsStateController.ResetCanChangeLeftIkTargetOnScroll();
 	}
 
-
-#endregion   
-
-#region Holding Mouse ToGuide Hand Logic 
-
-	private void OnGuideHandStart(InputAction.CallbackContext context)
-	{
-
-		if(guideHandCoroutine == null)
-		{
-			guideHandCoroutine = StartCoroutine(GuideHandHoldRoutine());
-		}
-
-	}
-
-	private void OnGuideHandStop(InputAction.CallbackContext context)
-	{
-		if (guideHandCoroutine != null)
-		{
-			StopCoroutine(guideHandCoroutine);
-			guideHandCoroutine = null;
-		}
-		if (isGuideHandActive)
-		{
-			isGuideHandActive = false;
-			Debug.Log("GuideHand Action Completed");
-			handsStateController.ChangeLeftHandState(new leftHandState_HasRaisedUp(playerController, playerController.leftArmIKTarget, playerController.leftBendingIKTarget, playerController.leftIKSolverArm, playerController.leftArmIK));
-		}
-	}
-
-	private IEnumerator GuideHandHoldRoutine()
-	{
-		yield return new WaitForSeconds(0.2f);
-		isGuideHandActive = true;
-		handsStateController.ChangeLeftHandState(new leftHandState_isBeingGuided());
-	}
-
-	
+#endregion	
 #endregion
 }

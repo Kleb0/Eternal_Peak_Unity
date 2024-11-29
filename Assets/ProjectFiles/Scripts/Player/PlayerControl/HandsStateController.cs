@@ -128,11 +128,10 @@ public class HandsStateController : MonoBehaviour
 
 		}
 
-		if(currentLeftHandState.stateName == "Is Being Guided")
+		if(currentLeftHandState.stateName =="Is Being Guided")
 		{
 			IKArmsControl.GuideleftHandByMouse(playerController, playerController.leftArmIK);
 		}
-
 		
 
 		if(currentLeftHandState.stateName == "Is Holding A Grip" )
@@ -141,6 +140,7 @@ public class HandsStateController : MonoBehaviour
 			uiDebug.UpdateLeftArmBendingValue(distanceBetweenLeftHandAndLeftShoulder);
 			playerController.leftArmBendingValue = distanceBetweenLeftHandAndLeftShoulder;
 		}
+
 
 		// else
 		// {
@@ -152,7 +152,6 @@ public class HandsStateController : MonoBehaviour
 #endregion	   
 
 // ------- Left Hand State Management ------- //
-
 #region LeftHandStateManagement
 
 	public void SetLeftHandState(LeftHandState newLeftHandState)
@@ -210,8 +209,9 @@ public class HandsStateController : MonoBehaviour
 
 
 #endregion
+// -------------------------------------------- //
 
-	// ------- Right Hand State Management ------- //
+// ------- Right Hand State Management ------- //
 #region  Player Right Hand Loop
 	public void PlayRightHandLoop()
 	{
@@ -252,7 +252,9 @@ public class HandsStateController : MonoBehaviour
 		// }
 	}
 #endregion
+// ------------------------------------------ //
 
+// -------------------------------------------- //
 #region RightHandStateManagement
 
 	public void SetRightHandState(RightHandState newRightHandState)
@@ -307,9 +309,10 @@ public class HandsStateController : MonoBehaviour
 	//Then we can get the current state of the hands of the player by calling the GetCurrentLeftHandState and GetCurrentRightHandState methods.
 
 	#endregion
-	
-	// ------- Scroll Management ------- //
-	#region ScrollManagement
+// -------------------------------------------- //
+
+// ------- Scroll Management ------- //
+#region ScrollManagement
 	public void OnMouseScrollDetected(float adjustmentValue)
 	{
 		
@@ -334,9 +337,10 @@ public class HandsStateController : MonoBehaviour
 	}
 
 	#endregion
+// -------------------------------------------- //
 
-	// ---------- Ik Target Management (to be refactored later) ---------- //
-	#region IkTargetManagement
+// ---------- Ik Target Management (to be refactored later) ---------- //
+#region IkTargetManagement
 
 	public void changeLeftHandIkTargetOnScroll()
 	{
@@ -357,4 +361,5 @@ public class HandsStateController : MonoBehaviour
 
 
 	#endregion
+// -------------------------------------------- //
 }
