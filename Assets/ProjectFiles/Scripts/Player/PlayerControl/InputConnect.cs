@@ -8,6 +8,8 @@ using UnityEngine.InputSystem;
 public class InputConnect : MonoBehaviour
 {
 
+// ---- Variables and References ---- //
+#region variables
 	private PlayerControls controls;
 	private PlayerAnimation playerAnimation;
 	private HandsStateController handsStateController;
@@ -38,7 +40,40 @@ public class InputConnect : MonoBehaviour
 	private Coroutine stopScrollCoroutine;
 	private Coroutine guideHandCoroutine;
 	private Vector2 scrollValue;
+	private Vector2 mouseDirection;
+	private Vector2 preservedMouseDirection;
+	private bool isPreservingMouseDirection = false;
 
+	private static readonly Vector2[] directions = new Vector2[]
+	{
+		new Vector2(0, 1),	// North
+		new Vector2(0, -1),	// South
+		new Vector2(1, 0),	// East
+		new Vector2(-1, 0), // West
+		new Vector2(1, 1).normalized,	// North-East
+		new Vector2(-1, 1).normalized,	// North-West
+		new Vector2(1, -1).normalized,	// South-East
+		new Vector2(-1, -1).normalized	// South-West
+
+	};
+
+	private static readonly string[] directionNames = new string[]
+	{
+		"North",
+		"South",
+		"East",
+		"West",
+		"North-East",
+		"North-West",
+		"South-East",
+		"South-West"
+	};
+
+#endregion
+// ----------------------------------------- //
+
+// ---- Initialize ---- //
+#region Initializations
 	private void Awake()
 	{
 		playerController = GetComponent<PlayerController>();  
@@ -82,19 +117,24 @@ public class InputConnect : MonoBehaviour
 		controls.Disable();
 	}
 
-	private void OnForwardMovement(InputAction.CallbackContext context)
-	{
-		forwardBackward = context.phase == InputActionPhase.Performed ? context.ReadValue<float>() : 0f;
-		UpdateMovement();
+#endregion
+// ----------------------------------------- //
 
+
+	private void Update()
+	{
+		if(handsStateController.currentLeftHandState.stateName =="Is Being Guided" && !isPreservingMouseDirection)
+		{
+			// mouseDirection = Mouse.current.delta.ReadValue();
+			// handsStateController.mouseDirection = mouseDirection;	
+			StartCoroutine(PreserveMouseDirectionRoutine());
+		}		
 	}
 
-	private void OnSideMovement(InputAction.CallbackContext context)
-	{
-		rightLeft = context.phase == InputActionPhase.Performed ? context.ReadValue<float>() : 0f;
-		UpdateMovement();   
 
-	}
+
+// ---- Hand Actions ---- //
+	#region Hand actions
 	// Left Hand Action
 	private void OnLeftHandAction(InputAction.CallbackContext context)
 	{	
@@ -145,15 +185,6 @@ public class InputConnect : MonoBehaviour
 		
 	}
 
-	private void UpdateMovement()
-	{
-		Vector2 moveDirection = new Vector2(rightLeft, forwardBackward);
-		playerSetDirection.SetMoveDirection(moveDirection);
-		playerSetDirection.SetForwardDirection(new Vector2(0f, forwardBackward));
-		playerSetDirection.SetRightDirection(new Vector2(rightLeft, 0f));
-		playerSetDirection.UpdateCurrentMovingDirection(new Vector2(0f, forwardBackward), new Vector2(rightLeft, 0f));   
-	}
-
 	private void OnLeftHandActionCompleted()
 	{	
 		if (handsStateController != null)
@@ -171,6 +202,35 @@ public class InputConnect : MonoBehaviour
 		//playerController.OnPlayerRiseRightArmBack();
 	} 
 
+	#endregion
+// ------------------------------------- //
+
+// ---- Movement ---- //
+#region movement	
+	private void UpdateMovement()
+	{
+		Vector2 moveDirection = new Vector2(rightLeft, forwardBackward);
+		playerSetDirection.SetMoveDirection(moveDirection);
+		playerSetDirection.SetForwardDirection(new Vector2(0f, forwardBackward));
+		playerSetDirection.SetRightDirection(new Vector2(rightLeft, 0f));
+		playerSetDirection.UpdateCurrentMovingDirection(new Vector2(0f, forwardBackward), new Vector2(rightLeft, 0f));   
+	}
+
+	private void OnForwardMovement(InputAction.CallbackContext context)
+	{
+		forwardBackward = context.phase == InputActionPhase.Performed ? context.ReadValue<float>() : 0f;
+		UpdateMovement();
+
+	}
+
+	private void OnSideMovement(InputAction.CallbackContext context)
+	{
+		rightLeft = context.phase == InputActionPhase.Performed ? context.ReadValue<float>() : 0f;
+		UpdateMovement();   
+
+	}	
+
+
 	private void OnPlayerJump(InputAction.CallbackContext context)
 	{
 		Debug.LogWarning("Jump Input called in InputConnect.CS ");
@@ -178,7 +238,10 @@ public class InputConnect : MonoBehaviour
 		playerController.haspressedJump = true;
 		playerController.canJump = true;				
 	}
+#endregion
+// ------------------------------------- //
 
+// ---- Mouse Scroll Input ----------------- //
 #region ScrollInput
 	private void OnMouseScroll(InputAction.CallbackContext context)
 	{
@@ -225,9 +288,6 @@ public class InputConnect : MonoBehaviour
 
 		// }
 	}
-	
-
-
 	private void OnMouseScrollCanceled(InputAction.CallbackContext context)
 	{
 		if (context.phase == InputActionPhase.Canceled)
@@ -242,10 +302,10 @@ public class InputConnect : MonoBehaviour
 	//We use a Ienumerator to wait for a short time before we stop the scrolling, then we know that the player has stopped scrolling
 	//and we can set the scrollValue to zero
 
-
-
 #endregion   
+// ----------------------------------------- //
 
+// ---- Mouse Movement Input ----------------- //
 #region Mouse Displacement Calculation and Logic
 
 	private void OnGuideHandStart(InputAction.CallbackContext context)
@@ -255,7 +315,6 @@ public class InputConnect : MonoBehaviour
 		{
 			guideHandCoroutine = StartCoroutine(GuideHandHoldRoutine());
 		}
-
 	}
 
 	private void OnGuideHandStop(InputAction.CallbackContext context)
@@ -273,19 +332,48 @@ public class InputConnect : MonoBehaviour
 		}
 
 		
-	}	
+	}
 
+#endregion
+// ----------------------------------------- //	
 
+// ---- Coroutines ---- //
 #region Coroutines Declaration
 	// the state is managed by the handStateController. But this script InputConnect.Cs receive the player's input.
 	// so we can call the IKarmsControls Static function here as we want the function to be called after we stopped
 	// to press the left mouse button
+
+	private IEnumerator PreserveMouseDirectionRoutine()
+	{	
+		isPreservingMouseDirection = true;
+		// preservedMouseDirection = Mouse.current.delta.ReadValue();
+		// handsStateController.mouseDirection = preservedMouseDirection;
+
+		// yield return new WaitForSeconds(1.5f);
+		// isPreservingMouseDirection = false;
+
+		while (handsStateController.currentLeftHandState.stateName == "Is Being Guided")
+		{
+			Vector2 rawMouseDirection = Mouse.current.delta.ReadValue();
+			var (directionName, vector) = GetMouseDirectionAndVector(rawMouseDirection);
+
+
+			handsStateController.mouseDirection = vector;
+			handsStateController.DirectionName = directionName;
+
+			yield return new WaitForSeconds(0.5f);
+		}
+
+		isPreservingMouseDirection = false;
+	}
 
 
 	private IEnumerator GuideHandHoldRoutine()
 	{
 		yield return new WaitForSeconds(0.2f);
 		isGuideHandActive = true;
+		// mousePosition = Mouse.current.position.ReadValue();
+		// Debug.Log($"Mouse Position is {mousePosition}");
 		handsStateController.ChangeLeftHandState(new leftHandState_isBeingGuided());
 	}
 
@@ -296,6 +384,8 @@ public class InputConnect : MonoBehaviour
 
 		if(isGuideHandActive)
 		{
+			// mousePosition = Mouse.current.position.ReadValue();
+			// Debug.Log($"Mouse Position is {mousePosition}");
 			isGuideHandActive = false;
 			handsStateController.ChangeLeftHandState(new leftHandState_HasRaisedUp(playerController, playerController.leftArmIKTarget, playerController.leftBendingIKTarget, playerController.leftIKSolverArm, playerController.leftArmIK));
 		}
@@ -315,6 +405,101 @@ public class InputConnect : MonoBehaviour
 		handsStateController.ResetCanChangeLeftIkTargetOnScroll();
 	}
 
+	
+
 #endregion	
+// ----------------------------------------- //
+
+// ---- Functions that returns variables ---- //
+#region functions that returns variables 
+
+//here we use a tuple to return two values, the direction name and the normalized vector
+private (string directionName, Vector2 vector) GetMouseDirectionAndVector (Vector2 mouseDir)
+{
+
+	float mouseSensitive = 0.25f;
+
+
+	if(mouseDir.magnitude < mouseSensitive)
+	{
+		return ("None", Vector2.zero);
+	}
+
+	Vector2 normalizedMouseDir = mouseDir.normalized;
+
+	string directionName = "None";
+	Vector2 vector = Vector2.zero;
+
+	//we prioritize the principal axes over the diagonal ones such as North-East, North-West, South-East, South-West
+	if (Mathf.Abs(normalizedMouseDir.x) > Mathf.Abs(normalizedMouseDir.y))
+	{
+		if (normalizedMouseDir.x > 0)
+		{
+			directionName = "East";
+			vector = new Vector2(1, 0);
+		}
+		else
+		{
+			directionName = "West";
+			vector = new Vector2(-1, 0);
+		}
+	}
+	else
+	{
+		if (normalizedMouseDir.y > 0)
+		{
+			directionName = "North";
+			vector = new Vector2(0, 1);
+		}
+		else
+		{
+			directionName = "South";
+			vector = new Vector2(0, -1);
+		}
+	}
+
+	if(Mathf.Abs(normalizedMouseDir.x - normalizedMouseDir.y) < 0.35f) // tolerance for diagonal directions
+	{
+		if (normalizedMouseDir.x > 0 && normalizedMouseDir.y >0)
+		{
+			directionName = "North-East";
+			vector = new Vector2(1, 1).normalized;
+		}
+		else if (normalizedMouseDir.x > 0 && normalizedMouseDir.y < 0)
+		{
+			directionName = "South-East";
+			vector = new Vector2(1, -1).normalized;
+		}
+		else if(normalizedMouseDir.x < 0 && normalizedMouseDir.y > 0)
+		{
+			directionName = "North-West";
+			vector = new Vector2(-1, 1).normalized;
+		}
+		else if(normalizedMouseDir.x < 0 && normalizedMouseDir.y < 0)
+		{
+			directionName = "South-West";
+			vector = new Vector2(-1, -1).normalized;
+		}
+	}
+
+	return (directionName, vector);
+	// int closestIndex = 0;
+	// float maxDot = -1;
+
+	// for (int i = 0; i < directions.Length; i++)
+	// {
+	// 	float dot = Vector2.Dot(mouseDir, directions[i]);
+	// 	if (dot > maxDot)
+	// 	{
+	// 		maxDot = dot;
+	// 		closestIndex = i;
+	// 	}
+	// }
+
+	// string directionName = directionNames[closestIndex];
+	// Vector2 vector = directions[closestIndex];
+	// return (directionName, vector);
+}
 #endregion
+// ----------------------------------------- //
 }

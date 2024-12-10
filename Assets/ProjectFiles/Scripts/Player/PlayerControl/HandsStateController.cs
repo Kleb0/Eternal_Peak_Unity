@@ -3,9 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using RootMotion.FinalIK;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class HandsStateController : MonoBehaviour
 {
+	#region handstates variables
 	UIDEBUG uiDebug;
 
 	public LeftHandState currentLeftHandState;
@@ -31,12 +33,16 @@ public class HandsStateController : MonoBehaviour
 
 	float distanceBetweenLeftHandAndLeftShoulder; 
 	float distanceBetweenRightHandAndRightShoulder;   
-	private float scrollAdjustmentValue = 0f; 
 	private bool isScrolling = false;
 	private bool canChangeLeftIkTargetOnScroll = false;
 	private bool isLeftHandAligned = false;
 
-	private bool isBeingGuide = false;
+	public string DirectionName;
+
+	private float timeSinceGuidedStart = 0f;
+	public Vector2 mouseDirection;
+
+	#endregion
 
 
 	// We build a loop for the hand state management :
@@ -91,6 +97,7 @@ public class HandsStateController : MonoBehaviour
 		PlayRightHandLoop();
 	} 
 
+//----- Player left Hand Loop ------------//
 #region  Player Left Hand Loop
 	public void PlayLeftHandLoop()
 	{
@@ -122,20 +129,29 @@ public class HandsStateController : MonoBehaviour
 		}
 		if(currentLeftHandState.stateName == "Has Raised Up")
 		{
+			
 			distanceBetweenLeftHandAndLeftShoulder = IKArmsControl.CalcDistBetweenLeftHandAndLeftShoulder(playerController.leftArmIK);
 			uiDebug.UpdateLeftArmBendingValue(distanceBetweenLeftHandAndLeftShoulder);
 			playerController.leftArmBendingValue = distanceBetweenLeftHandAndLeftShoulder;
+			
 
 		}
 
 		if(currentLeftHandState.stateName =="Is Being Guided")
 		{
-			IKArmsControl.GuideleftHandByMouse(playerController, playerController.leftArmIK);
+			// here we calculate the time since the player is being guided
+			// guidedHandDirection = Mouse.current.position.ReadValue();
+			// Debug.Log($"Guided Hand Direction is {guidedHandDirection}");
+			timeSinceGuidedStart += Time.deltaTime;
+			// UpdateMouseDirection(mouseDirection, DirectionName);
+			// Debug.Log($"Time since guided start is {timeSinceGuidedStart} and the direction is {DirectionName}, the vector is {mouseDirection}");
+			IKArmsControl.GuideleftHandByMouse(playerController, playerController.leftArmIK, timeSinceGuidedStart, mouseDirection, DirectionName);
 		}
 		
 
 		if(currentLeftHandState.stateName == "Is Holding A Grip" )
 		{
+
 			distanceBetweenLeftHandAndLeftShoulder = IKArmsControl.CalcDistBetweenLeftHandAndLeftShoulder(playerController.leftArmIK);
 			uiDebug.UpdateLeftArmBendingValue(distanceBetweenLeftHandAndLeftShoulder);
 			playerController.leftArmBendingValue = distanceBetweenLeftHandAndLeftShoulder;
@@ -150,6 +166,7 @@ public class HandsStateController : MonoBehaviour
 		// }
 	}
 #endregion	   
+// ------------------------------------------ //
 
 // ------- Left Hand State Management ------- //
 #region LeftHandStateManagement
@@ -180,9 +197,11 @@ public class HandsStateController : MonoBehaviour
 
 	public void ChangeLeftHandState(LeftHandState newLeftHandState)
 	{
+		timeSinceGuidedStart = 0f;
 		previousLeftHandState = currentLeftHandState;
 		SetLeftHandState(newLeftHandState);
-		isLeftHandLoopEnded = false;        
+		isLeftHandLoopEnded = false;
+
 	}
 
 	public void RevertLeftHandState(LeftHandState currentLeftHandState)
@@ -361,5 +380,23 @@ public class HandsStateController : MonoBehaviour
 
 
 	#endregion
+// -------------------------------------------- //
+
+
+//---- Update functions ----//
+#region UpdateFunctions
+// public void UpdateMouseDirection(Vector2 direction, string directionName)
+// {
+// 	mouseDirection = direction;
+// 	DirectionName = directionName;
+// 	//  Debug.Log($"Left hand is guided by mouse. Direction: {directionName}, Vector: {mouseDirection}");
+// }
+
+#endregion
+
+
+// ---- Functions returning variables ---- //
+#region Functions returning variables
+#endregion
 // -------------------------------------------- //
 }

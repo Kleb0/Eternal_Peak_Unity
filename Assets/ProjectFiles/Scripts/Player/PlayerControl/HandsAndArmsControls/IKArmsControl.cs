@@ -3,15 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using RootMotion.FinalIK;
 using System;
+using UnityEngine.InputSystem;
 
 public class IKArmsControl : MonoBehaviour
 {
 	static float testValue = 0f;
-	static float forwardOffset = 0.1f;
-	static float additionnalZOffset = 0.3f;
 	static Vector3 leftHandPosition = Vector3.zero;
-
-	static Camera playerCamera;
 
 	private static float inertialValue = 0f; 
 
@@ -22,8 +19,7 @@ public class IKArmsControl : MonoBehaviour
 
 	public static void EnableIKTarget(PlayerController playerController, GameObject IKtarget, GameObject BendingTarget, ArmIK armIK)
 	{
-		IKtarget.SetActive(true);
-		playerCamera = playerController.cam;	
+		IKtarget.SetActive(true);	
 	}
 	public static void DisableIKTarget(GameObject IKtarget, GameObject BendingTarget)
 	{
@@ -257,9 +253,96 @@ public class IKArmsControl : MonoBehaviour
 	}
 
 	
-	public static void GuideleftHandByMouse(PlayerController playercontroller, ArmIK leftarmIk)
+	public static void GuideleftHandByMouse(PlayerController playercontroller, ArmIK leftarmIk, float TimeSinceStart, Vector2 mouseDirection, string DirectionName)
 	{
-		Debug.Log("Guiding Left Hand by Mouse");
+		
+		if(TimeSinceStart > 0)
+		{
+			// Debug.Log($"Left hand is guided by mouse since {TimeSinceStart} seconds, mouse direction is {mouseDirection}, direction name is {DirectionName}, target position is {targetTransform.position}");
+			//Debug.Log($"Left hand is guided by mouse since {TimeSinceStart} seconds, mouse direction is {mouseDirection}, direction name is {DirectionName}");
+			
+			if(leftarmIk.solver.arm.target != null)
+			{
+				Transform targetTransform = leftarmIk.solver.arm.target;
+				Vector3 movementDirection = Vector3.zero;
+				float movementSpeed = 2f;
+
+				switch(DirectionName)
+				{
+					case "North":
+						movementDirection = targetTransform.up;
+						break;
+					case "South":
+						movementDirection = -targetTransform.up;
+						break;	
+					case "East":
+						movementDirection = -targetTransform.right;
+						break;
+					case "West":
+						movementDirection = targetTransform.right;
+						break;
+					case "North-East":
+						movementDirection = targetTransform.up + targetTransform.right;
+						break;
+					case "North-West":
+						movementDirection = targetTransform.up - targetTransform.right;
+						break;
+					case "South-East":
+						movementDirection = -targetTransform.up + targetTransform.right;
+						break;
+					case "South-West":
+						movementDirection = -targetTransform.up - targetTransform.right;
+						break;
+				}
+	
+
+
+				Vector3 targetPosition = targetTransform.position + movementDirection * movementSpeed * Time.deltaTime;
+				targetTransform.position = targetPosition;
+
+
+		
+				// Debug.Log($"Left hand is guided by mouse since {TimeSinceStart} seconds, mouse direction is {mouseDirection}, direction name is {DirectionName}, target position is {targetTransform.position}");
+
+
+			
+	
+				// Vector3 movementDirection = new Vector3(mouseDirection.x, 0, mouseDirection.y);				
+			}
+		}
 
 	}
+
+	// private static Vector3 GetCardinalDirection(Vector2 mouseDirection)
+	// {
+	// 	Vector2[] directions = new Vector2[]
+	// 	{
+	// 		new Vector2(0, 1),   // North
+	// 		new Vector2(0, -1),  // South
+	// 		new Vector2(1, 0),   // East
+	// 		new Vector2(-1, 0),  // West
+	// 		new Vector2(1, 1),   // North-East
+	// 		new Vector2(-1, 1),  // North-West
+	// 		new Vector2(1, -1),  // South-East
+	// 		new Vector2(-1, -1)  // South-West	
+	// 	};
+
+	// 	int closestIndex = 0;
+	// 	float maxDot = -1;
+
+	// 	for (int i = 0; i < directions.Length; i++)
+	// 	{
+	// 		float dot = Vector2.Dot(mouseDirection.normalized, directions[i]);
+	// 		if (dot > maxDot)
+	// 		{
+	// 			maxDot = dot;
+	// 			closestIndex = i;
+	// 		}
+	// 	}
+
+	// 	Vector2 bestMatch = directions[closestIndex];
+	// 	Debug.Log($"closest Direction: {bestMatch}");
+	// 	return new Vector3(bestMatch.x, 0, bestMatch.y);
+
+	// }
 }

@@ -1,6 +1,8 @@
 using UnityEngine;
 using RootMotion.FinalIK;
 using System.Collections;
+using UnityEngine.InputSystem;
+using Unity.Mathematics;
 
 // This script took instructions from the InputConnect script, and transmit to playerStateManager the current state of the player 
 // modified by the input on the keyboard. The script also manage the player's movement and the camera rotation.
@@ -24,6 +26,28 @@ public class PlayerController : MonoBehaviour
 
 	private Vector2 forwardDirection;
 	private Vector2 rightDirection;
+
+	// --- Guiding --- //
+
+	private bool isPreservingMouseDirection = false;
+	private Quaternion targetRotation;
+	private float smoothSpeed = 5f;
+	
+	// private static readonly Vector2[] directions = new Vector2[]
+	// {
+	// 	new Vector2(0, 1),	// North
+	// 	new Vector2(0, -1),	// South
+	// 	new Vector2(1, 0),	// East
+	// 	new Vector2(-1, 0), // West
+	// 	new Vector2(1, 1).normalized,	// North-East
+	// 	new Vector2(-1, 1).normalized,	// North-West
+	// 	new Vector2(1, -1).normalized,	// South-East
+	// 	new Vector2(-1, -1).normalized	// South-West
+
+	// };
+
+
+	// --- Gravity --- //
 
 
 	//gravity is equal to one defined in project settings
@@ -184,16 +208,37 @@ public class PlayerController : MonoBehaviour
 	#region look
 	void Look()
 	{
-	
-		// -- Here we will decrease the mouse Speed when the hand state will be " is being guide "
-		float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
-		float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
-		
-		xRotation -= mouseY;
-		xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
-		playerMeshRig.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
-		transform.Rotate(Vector3.up * mouseX);
+		if(handsStateController.currentLeftHandState.stateName == "Is Being Guided" && !isPreservingMouseDirection)
+		{
+			mouseSensitivity = 25f;
+			float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
+			float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
+			
+			xRotation -= mouseY;
+			xRotation = Mathf.Clamp(xRotation, -90f, 90f);
+
+			playerMeshRig.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+			transform.Rotate(Vector3.up * mouseX);
+
+			// StartCoroutine(LookWhileBeingGuided());
+		}
+		else if (handsStateController.currentLeftHandState.stateName != "Is Being Guided")
+		{
+			mouseSensitivity = 300f;
+			// -- Here we will decrease the mouse Speed when the hand state will be " is being guide "
+			float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
+			float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
+			
+			xRotation -= mouseY;
+			xRotation = Mathf.Clamp(xRotation, -90f, 90f);
+
+			playerMeshRig.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+			transform.Rotate(Vector3.up * mouseX);
+
+
+		}
+	
 
 			
 	}
@@ -363,8 +408,71 @@ public class PlayerController : MonoBehaviour
 
 
 	}
+	// private IEnumerator LookWhileBeingGuided()
+	// {
+	// 	isPreservingMouseDirection = true;
+	// 	float reducedSensitivity = mouseSensitivity * 0.2f;
+
+	// 	quaternion initialDirection = transform.rotation;
+	// 	Vector2 preservedMouseDelta = Mouse.current.delta.ReadValue();
+
+	// 	//convert the mouse delta to the nearest direction
+	// 	Vector2 normalizdDelta = preservedMouseDelta.normalized;
+	// 	Vector2 closestDirection = FindClosestDirection(normalizdDelta);
+
+	// 	//conv the direction into horizotal and vertical angle
+	// 	float horizontalAngle = Mathf.Atan2(closestDirection.y, closestDirection.x) * Mathf.Rad2Deg;
+	// 	Quaternion targetRotationHorizontal = Quaternion.Euler(0f, horizontalAngle, 0f);
+
+	// 	// Add a vertical rotation based on the delta
+	// 	float mouseY = preservedMouseDelta.y * reducedSensitivity * Time.deltaTime;
+	// 	xRotation -= mouseY;
+	// 	xRotation = Mathf.Clamp(xRotation, -90f, 90f);
+	// 	Quaternion targetRotationVertical = Quaternion.Euler(xRotation, 0f, 0f);
+
+	// 	float elpasedTime = 0f;
+	// 	float transitionDuration = 1.5f;
+
+	// 	while (elpasedTime < transitionDuration)
+	// 	{
+	// 		elpasedTime += Time.deltaTime;
+	// 		float t = elpasedTime / transitionDuration;
+
+	// 		transform.rotation = Quaternion.Lerp(initialDirection, targetRotationHorizontal, t);
+	// 		playerMeshRig.transform.localRotation = Quaternion.Lerp(playerMeshRig.transform.localRotation, targetRotationVertical, t);
+
+	// 		yield return null;
+	// 	}
+
+	// 	transform.rotation = targetRotationHorizontal;
+	// 	playerMeshRig.transform.localRotation = targetRotationVertical;
+	// 	isPreservingMouseDirection = false;
+	// 	// Debug.Log("Coroutine appelée dans le PlayerController");
+	// }
+
+
 
 	#endregion
 	// -------------------------------------- //
+
+	#region functions returning private variables
+
+	// private Vector2 FindClosestDirection(Vector2 delta)
+	// {
+	// 	Vector2 closest = directions[0];
+	// 	float maxDot = Vector2.Dot(delta.normalized, closest);
+
+	// 	foreach (Vector2 dir in directions)
+	// 	{
+	// 		float dot = Vector2.Dot(delta.normalized, dir);
+	// 		if (dot > maxDot)
+	// 		{
+	// 			maxDot = dot;
+	// 			closest = dir;
+	// 		}
+	// 	}
+	// 	return closest;
+	// }
+	#endregion
 
 }
