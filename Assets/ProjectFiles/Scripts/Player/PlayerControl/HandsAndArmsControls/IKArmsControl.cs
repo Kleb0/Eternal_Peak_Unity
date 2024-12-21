@@ -10,12 +10,6 @@ public class IKArmsControl : MonoBehaviour
 	static float testValue = 0f;
 	static Vector3 leftHandPosition = Vector3.zero;
 
-	private static float inertialValue = 0f; 
-
-	public static void startPlayerControllerCoroutine(PlayerController playerController)
-	{
-		playerController.StartTestCoroutine();
-	}
 
 	public static void EnableIKTarget(PlayerController playerController, GameObject IKtarget, GameObject BendingTarget, ArmIK armIK)
 	{
@@ -212,25 +206,25 @@ public class IKArmsControl : MonoBehaviour
 		}
 	}
 
-	public static void AlignBendingIKTargetCorrectly(ArmIK armIK, GameObject bendingtarget, Vector3 leftHandPosition)
-	{
-
-		if (armIK.solver.isLeft)
-		{
-			bendingtarget.transform.position = leftHandPosition;
-			//Debug.Log($"left hand position is : {leftHandPosition}  {bendingtarget.name} position: {bendingtarget.transform.position}");	
-		}
-	}
-
-	public static void ChangeIkArmTargetToBendingTarget(ArmIK armIK, GameObject bendingtarget)
+	public static void ChangeIkArmTargetToBendingTarget(ArmIK armIK, GameObject bendingTarget, GameObject handTarget)
 	{
 		if (armIK.solver.isLeft)
 		{
-			armIK.solver.arm.target = bendingtarget.transform;
+			Debug.Log("Changing IK arm target to bending target");
+			armIK.solver.arm.target = bendingTarget.transform;
+
+			Vector3 directionToTarget = bendingTarget.transform.position - handTarget.transform.position;
+
+			if(directionToTarget != Vector3.zero)
+			{
+				bendingTarget.transform.rotation = Quaternion.LookRotation(directionToTarget);
+			}
+
+
 		}
 	}
 
-	public static void ControlLeftArmBendingOnMouseScroll(ArmIK armIK, float adjustmentValue, GameObject bendingtarget)
+	public static void ControlLeftArmBendingOnMouseScroll(ArmIK armIK, float adjustmentValue, GameObject bendingtarget, Vector3 currentHandPosition)
 	{
 
 		if (armIK.solver.isLeft)
@@ -239,9 +233,12 @@ public class IKArmsControl : MonoBehaviour
 			testValue += adjustmentValue * Time.deltaTime;
 			testValue = Mathf.Clamp(testValue, -1f, 1f);
 
+			//movement direction based on the hand position
 			Vector3 movementDirection = adjustmentValue > 0 ? bendingtarget.transform.forward : -bendingtarget.transform.forward;
 
-			Vector3 targetPosition = bendingtarget.transform.position + movementDirection * Mathf.Abs(testValue);
+			//calculate the new position based on the actual pos of the hand
+			Vector3 targetPosition = currentHandPosition + movementDirection * Mathf.Abs(testValue);
+
 			float smoothTime = 0.001f;
 			Vector3 currentVelocity = Vector3.zero;
 
@@ -265,7 +262,10 @@ public class IKArmsControl : MonoBehaviour
 			{
 				Transform targetTransform = leftarmIk.solver.arm.target;
 				Vector3 movementDirection = Vector3.zero;
-				float movementSpeed = 2f;
+				float movementSpeed = 3f;
+
+				Camera Camera = playercontroller.cam;
+				Vector3 screenBounds = new Vector3(Screen.width, Screen.height, 0f);
 
 				switch(DirectionName)
 				{
@@ -296,53 +296,20 @@ public class IKArmsControl : MonoBehaviour
 				}
 	
 
+				//Calculate the new position based on the screen bounds
+				Vector3 newPosition = targetTransform.position + movementDirection * movementSpeed * Time.deltaTime;
+				Vector3 screenPosition = Camera.WorldToScreenPoint(newPosition);
 
-				Vector3 targetPosition = targetTransform.position + movementDirection * movementSpeed * Time.deltaTime;
-				targetTransform.position = targetPosition;
+				screenPosition.x = Mathf.Clamp(screenPosition.x, 0, screenBounds.x);
+				screenPosition.y = Mathf.Clamp(screenPosition.y, 0, screenBounds.y);
 
+				newPosition = Camera.ScreenToWorldPoint(screenPosition);
 
-		
-				// Debug.Log($"Left hand is guided by mouse since {TimeSinceStart} seconds, mouse direction is {mouseDirection}, direction name is {DirectionName}, target position is {targetTransform.position}");
-
-
-			
-	
-				// Vector3 movementDirection = new Vector3(mouseDirection.x, 0, mouseDirection.y);				
+				//Apply the new position
+				targetTransform.position = newPosition;		
 			}
 		}
 
 	}
 
-	// private static Vector3 GetCardinalDirection(Vector2 mouseDirection)
-	// {
-	// 	Vector2[] directions = new Vector2[]
-	// 	{
-	// 		new Vector2(0, 1),   // North
-	// 		new Vector2(0, -1),  // South
-	// 		new Vector2(1, 0),   // East
-	// 		new Vector2(-1, 0),  // West
-	// 		new Vector2(1, 1),   // North-East
-	// 		new Vector2(-1, 1),  // North-West
-	// 		new Vector2(1, -1),  // South-East
-	// 		new Vector2(-1, -1)  // South-West	
-	// 	};
-
-	// 	int closestIndex = 0;
-	// 	float maxDot = -1;
-
-	// 	for (int i = 0; i < directions.Length; i++)
-	// 	{
-	// 		float dot = Vector2.Dot(mouseDirection.normalized, directions[i]);
-	// 		if (dot > maxDot)
-	// 		{
-	// 			maxDot = dot;
-	// 			closestIndex = i;
-	// 		}
-	// 	}
-
-	// 	Vector2 bestMatch = directions[closestIndex];
-	// 	Debug.Log($"closest Direction: {bestMatch}");
-	// 	return new Vector3(bestMatch.x, 0, bestMatch.y);
-
-	// }
 }

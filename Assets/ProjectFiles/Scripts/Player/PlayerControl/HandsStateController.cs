@@ -33,9 +33,7 @@ public class HandsStateController : MonoBehaviour
 
 	float distanceBetweenLeftHandAndLeftShoulder; 
 	float distanceBetweenRightHandAndRightShoulder;   
-	private bool isScrolling = false;
 	private bool canChangeLeftIkTargetOnScroll = false;
-	private bool isLeftHandAligned = false;
 
 	public string DirectionName;
 
@@ -111,7 +109,6 @@ public class HandsStateController : MonoBehaviour
 			{
 				EndLeftHandLoop();
 				isLeftHandLoopEnded = false;
-				isLeftHandAligned = false;
 
 			}
 		}
@@ -337,8 +334,9 @@ public class HandsStateController : MonoBehaviour
 		
 		if (currentLeftHandState is leftHandState_HasRaisedUp)
 		{
-			isScrolling = true;
-			IKArmsControl.ControlLeftArmBendingOnMouseScroll(playerController.leftArmIK, adjustmentValue, playerController.leftBendingIKTarget);
+
+			Vector3 currentHandPosition = playerController.leftArmIK.solver.arm.target.position;
+			IKArmsControl.ControlLeftArmBendingOnMouseScroll(playerController.leftArmIK, adjustmentValue, playerController.leftBendingIKTarget, currentHandPosition);
 			
 		}
 
@@ -350,7 +348,6 @@ public class HandsStateController : MonoBehaviour
 	{
 		if (currentLeftHandState is leftHandState_HasRaisedUp)
 		{
-			isScrolling = false;
 			// Debug.LogWarning("Mouse Scroll Stopped");
 		}
 	}
@@ -366,7 +363,8 @@ public class HandsStateController : MonoBehaviour
 		if(currentLeftHandState is leftHandState_HasRaisedUp && canChangeLeftIkTargetOnScroll)
 		{
 			// Debug.LogWarning("Changing Left Hand IK Target on Scroll");
-			IKArmsControl.ChangeIkArmTargetToBendingTarget(playerController.leftArmIK, playerController.leftBendingIKTarget);			
+			// --- Here we should place the Bending target pos directly to the current hand position --- //
+			IKArmsControl.ChangeIkArmTargetToBendingTarget(playerController.leftArmIK, playerController.leftBendingIKTarget, playerController.leftArmIKTarget);		
 			canChangeLeftIkTargetOnScroll = false;
 		}
 
@@ -385,12 +383,6 @@ public class HandsStateController : MonoBehaviour
 
 //---- Update functions ----//
 #region UpdateFunctions
-// public void UpdateMouseDirection(Vector2 direction, string directionName)
-// {
-// 	mouseDirection = direction;
-// 	DirectionName = directionName;
-// 	//  Debug.Log($"Left hand is guided by mouse. Direction: {directionName}, Vector: {mouseDirection}");
-// }
 
 #endregion
 

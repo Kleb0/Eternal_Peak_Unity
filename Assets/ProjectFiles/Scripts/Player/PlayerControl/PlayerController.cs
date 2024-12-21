@@ -21,7 +21,6 @@ public class PlayerController : MonoBehaviour
 	private float sprintSpeed = 5f;
 	private float mouseSensitivity = 300f;
 	public bool isClimbing = false;
-
 	private Vector2 moveDirection;
 
 	private Vector2 forwardDirection;
@@ -30,25 +29,7 @@ public class PlayerController : MonoBehaviour
 	// --- Guiding --- //
 
 	private bool isPreservingMouseDirection = false;
-	private Quaternion targetRotation;
-	private float smoothSpeed = 5f;
-	
-	// private static readonly Vector2[] directions = new Vector2[]
-	// {
-	// 	new Vector2(0, 1),	// North
-	// 	new Vector2(0, -1),	// South
-	// 	new Vector2(1, 0),	// East
-	// 	new Vector2(-1, 0), // West
-	// 	new Vector2(1, 1).normalized,	// North-East
-	// 	new Vector2(-1, 1).normalized,	// North-West
-	// 	new Vector2(1, -1).normalized,	// South-East
-	// 	new Vector2(-1, -1).normalized	// South-West
-
-	// };
-
-
 	// --- Gravity --- //
-
 
 	//gravity is equal to one defined in project settings
 	private float gravity = Physics.gravity.y;
@@ -389,90 +370,10 @@ public class PlayerController : MonoBehaviour
 		rightIKSolverArm.IKRotationWeight = weight;
 	}
 
-
-	//-------- Our coroutines are here --------//
-	#region Coroutines
-
-	public void StartTestCoroutine()
-	{
-		StartCoroutine(TestCoroutine());
-	}
-
-	public IEnumerator TestCoroutine()
-	{
-		yield return new WaitForSeconds(0.001f);
-		leftPalm.SetActive(true);
-		leftBendingIKTarget.SetActive(true);
-		IKArmsControl.AlignBendingIKTargetCorrectly(leftArmIK, leftBendingIKTarget, leftPalm.transform.position);
-		// Debug.Log("Coroutine appelée dans le PlayerController");
-
-
-	}
-	// private IEnumerator LookWhileBeingGuided()
-	// {
-	// 	isPreservingMouseDirection = true;
-	// 	float reducedSensitivity = mouseSensitivity * 0.2f;
-
-	// 	quaternion initialDirection = transform.rotation;
-	// 	Vector2 preservedMouseDelta = Mouse.current.delta.ReadValue();
-
-	// 	//convert the mouse delta to the nearest direction
-	// 	Vector2 normalizdDelta = preservedMouseDelta.normalized;
-	// 	Vector2 closestDirection = FindClosestDirection(normalizdDelta);
-
-	// 	//conv the direction into horizotal and vertical angle
-	// 	float horizontalAngle = Mathf.Atan2(closestDirection.y, closestDirection.x) * Mathf.Rad2Deg;
-	// 	Quaternion targetRotationHorizontal = Quaternion.Euler(0f, horizontalAngle, 0f);
-
-	// 	// Add a vertical rotation based on the delta
-	// 	float mouseY = preservedMouseDelta.y * reducedSensitivity * Time.deltaTime;
-	// 	xRotation -= mouseY;
-	// 	xRotation = Mathf.Clamp(xRotation, -90f, 90f);
-	// 	Quaternion targetRotationVertical = Quaternion.Euler(xRotation, 0f, 0f);
-
-	// 	float elpasedTime = 0f;
-	// 	float transitionDuration = 1.5f;
-
-	// 	while (elpasedTime < transitionDuration)
-	// 	{
-	// 		elpasedTime += Time.deltaTime;
-	// 		float t = elpasedTime / transitionDuration;
-
-	// 		transform.rotation = Quaternion.Lerp(initialDirection, targetRotationHorizontal, t);
-	// 		playerMeshRig.transform.localRotation = Quaternion.Lerp(playerMeshRig.transform.localRotation, targetRotationVertical, t);
-
-	// 		yield return null;
-	// 	}
-
-	// 	transform.rotation = targetRotationHorizontal;
-	// 	playerMeshRig.transform.localRotation = targetRotationVertical;
-	// 	isPreservingMouseDirection = false;
-	// 	// Debug.Log("Coroutine appelée dans le PlayerController");
-	// }
-
-
-
-	#endregion
 	// -------------------------------------- //
 
 	#region functions returning private variables
 
-	// private Vector2 FindClosestDirection(Vector2 delta)
-	// {
-	// 	Vector2 closest = directions[0];
-	// 	float maxDot = Vector2.Dot(delta.normalized, closest);
-
-	// 	foreach (Vector2 dir in directions)
-	// 	{
-	// 		float dot = Vector2.Dot(delta.normalized, dir);
-	// 		if (dot > maxDot)
-	// 		{
-	// 			maxDot = dot;
-	// 			closest = dir;
-	// 		}
-	// 	}
-	// 	return closest;
-	// }
 	#endregion
 
 }

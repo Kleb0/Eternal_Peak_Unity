@@ -26,8 +26,6 @@ public class leftHandState_HasRaisedUp : LeftHandState
     public override void EnterState()
     {
         Debug.Log("Entering LeftHandState_HasRaisedUp");
-        IKArmsControl.startPlayerControllerCoroutine(playerController);
-        IKArmsControl.AlignIKTargetCorrectly(playerController.leftArmIK, playerController.leftArmIKTarget, playerController.cam);
     }
 
     public override void ExecuteState()

@@ -33,8 +33,6 @@ public class InputConnect : MonoBehaviour
 
 	private bool isRightHandActionActive = false;
 
-	private bool hasStoppedMouseScroll = false;
-
 	private bool isScrolling = false;
 	private bool isGuideHandActive = false;
 	private Coroutine stopScrollCoroutine;
@@ -119,8 +117,6 @@ public class InputConnect : MonoBehaviour
 
 #endregion
 // ----------------------------------------- //
-
-
 	private void Update()
 	{
 		if(handsStateController.currentLeftHandState.stateName =="Is Being Guided" && !isPreservingMouseDirection)
@@ -130,8 +126,6 @@ public class InputConnect : MonoBehaviour
 			StartCoroutine(PreserveMouseDirectionRoutine());
 		}		
 	}
-
-
 
 // ---- Hand Actions ---- //
 	#region Hand actions
@@ -179,10 +173,8 @@ public class InputConnect : MonoBehaviour
 				rightHandStateRishingUP = new RightHandState_IsRisingUp(playerController, playerController.rightArmIKTarget, playerController.rightArmIK, playerController.rightIKSolverArm, initialRightIkWeight, initialRightIkRotationWeight, playerController.rightArmIK);
 				handsStateController.ChangeRightHandState(rightHandStateRishingUP);
 				isRightHandActionActive = true;		
-			}
-		
-		}
-		
+			}		
+		}		
 	}
 
 	private void OnLeftHandActionCompleted()
@@ -245,6 +237,8 @@ public class InputConnect : MonoBehaviour
 #region ScrollInput
 	private void OnMouseScroll(InputAction.CallbackContext context)
 	{
+		playerController.leftBendingIKTarget.SetActive(true);
+		playerController.leftBendingIKTarget.transform.position = playerController.leftArmIK.solver.hand.transform.position;
 		scrollValue = context.ReadValue<Vector2>();
 
 		if (scrollValue.y != 0)
@@ -270,7 +264,6 @@ public class InputConnect : MonoBehaviour
 
 			}
 
-			// Debug.Log("Mouse Scroll Value: " + scrollValue);
 		}
 		else
 		{
@@ -280,13 +273,6 @@ public class InputConnect : MonoBehaviour
 			}
 			
 		}
-
-		// else if (scrollValue == Vector2.zero)
-		// {
-		// 	Debug.LogWarning("Mouse Scroll Stopped in InputConnect.CS");
-		// 	handsStateController.StopMouseScroll();
-
-		// }
 	}
 	private void OnMouseScrollCanceled(InputAction.CallbackContext context)
 	{
@@ -346,11 +332,6 @@ public class InputConnect : MonoBehaviour
 	private IEnumerator PreserveMouseDirectionRoutine()
 	{	
 		isPreservingMouseDirection = true;
-		// preservedMouseDirection = Mouse.current.delta.ReadValue();
-		// handsStateController.mouseDirection = preservedMouseDirection;
-
-		// yield return new WaitForSeconds(1.5f);
-		// isPreservingMouseDirection = false;
 
 		while (handsStateController.currentLeftHandState.stateName == "Is Being Guided")
 		{
@@ -370,10 +351,8 @@ public class InputConnect : MonoBehaviour
 
 	private IEnumerator GuideHandHoldRoutine()
 	{
-		yield return new WaitForSeconds(0.2f);
+		yield return new WaitForSeconds(0.1f);
 		isGuideHandActive = true;
-		// mousePosition = Mouse.current.position.ReadValue();
-		// Debug.Log($"Mouse Position is {mousePosition}");
 		handsStateController.ChangeLeftHandState(new leftHandState_isBeingGuided());
 	}
 
@@ -384,8 +363,6 @@ public class InputConnect : MonoBehaviour
 
 		if(isGuideHandActive)
 		{
-			// mousePosition = Mouse.current.position.ReadValue();
-			// Debug.Log($"Mouse Position is {mousePosition}");
 			isGuideHandActive = false;
 			handsStateController.ChangeLeftHandState(new leftHandState_HasRaisedUp(playerController, playerController.leftArmIKTarget, playerController.leftBendingIKTarget, playerController.leftIKSolverArm, playerController.leftArmIK));
 		}
@@ -398,7 +375,6 @@ public class InputConnect : MonoBehaviour
 		{
 			isScrolling = false;
 			scrollValue = Vector2.zero;
-			// Debug.LogWarning("Mouse Scroll Stopped in InputConnect.CS, scrollValue: " + scrollValue);
 		}
 		stopScrollCoroutine = null;
 		handsStateController.StopMouseScroll();
@@ -417,16 +393,16 @@ public class InputConnect : MonoBehaviour
 private (string directionName, Vector2 vector) GetMouseDirectionAndVector (Vector2 mouseDir)
 {
 
-	float mouseSensitive = 0.25f;
-
+	float mouseSensitive = 1f;
+	float sensitivityMultiplier = 5f;
 
 	if(mouseDir.magnitude < mouseSensitive)
 	{
 		return ("None", Vector2.zero);
 	}
 
-	Vector2 normalizedMouseDir = mouseDir.normalized;
-
+	Vector2 adjustedMouseDir = mouseDir * sensitivityMultiplier;
+	Vector2 normalizedMouseDir = adjustedMouseDir.normalized;
 	string directionName = "None";
 	Vector2 vector = Vector2.zero;
 
@@ -457,7 +433,6 @@ private (string directionName, Vector2 vector) GetMouseDirectionAndVector (Vecto
 			vector = new Vector2(0, -1);
 		}
 	}
-
 	if(Mathf.Abs(normalizedMouseDir.x - normalizedMouseDir.y) < 0.35f) // tolerance for diagonal directions
 	{
 		if (normalizedMouseDir.x > 0 && normalizedMouseDir.y >0)
@@ -481,24 +456,7 @@ private (string directionName, Vector2 vector) GetMouseDirectionAndVector (Vecto
 			vector = new Vector2(-1, -1).normalized;
 		}
 	}
-
 	return (directionName, vector);
-	// int closestIndex = 0;
-	// float maxDot = -1;
-
-	// for (int i = 0; i < directions.Length; i++)
-	// {
-	// 	float dot = Vector2.Dot(mouseDir, directions[i]);
-	// 	if (dot > maxDot)
-	// 	{
-	// 		maxDot = dot;
-	// 		closestIndex = i;
-	// 	}
-	// }
-
-	// string directionName = directionNames[closestIndex];
-	// Vector2 vector = directions[closestIndex];
-	// return (directionName, vector);
 }
 #endregion
 // ----------------------------------------- //
