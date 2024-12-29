@@ -7,7 +7,7 @@ using UnityEngine.InputSystem;
 
 public class IKArmsControl : MonoBehaviour
 {
-	static float testValue = 0f;
+	static float bendingValue = 0f;
 	static Vector3 leftHandPosition = Vector3.zero;
 
 
@@ -224,20 +224,20 @@ public class IKArmsControl : MonoBehaviour
 		}
 	}
 
-	public static void ControlLeftArmBendingOnMouseScroll(ArmIK armIK, float adjustmentValue, GameObject bendingtarget, Vector3 currentHandPosition)
+	public static void ControlArmBendingOnMouseScroll(ArmIK armIK, float adjustmentValue, GameObject bendingtarget, Vector3 currentHandPosition)
 	{
 
 		if (armIK.solver.isLeft)
 		{
 			
-			testValue += adjustmentValue * Time.deltaTime;
-			testValue = Mathf.Clamp(testValue, -1f, 1f);
+			bendingValue += adjustmentValue * Time.deltaTime;
+			bendingValue = Mathf.Clamp(bendingValue, -1f, 1f);
 
 			//movement direction based on the hand position
 			Vector3 movementDirection = adjustmentValue > 0 ? bendingtarget.transform.forward : -bendingtarget.transform.forward;
 
 			//calculate the new position based on the actual pos of the hand
-			Vector3 targetPosition = currentHandPosition + movementDirection * Mathf.Abs(testValue);
+			Vector3 targetPosition = currentHandPosition + movementDirection * Mathf.Abs(bendingValue);
 
 			float smoothTime = 0.001f;
 			Vector3 currentVelocity = Vector3.zero;
@@ -246,6 +246,20 @@ public class IKArmsControl : MonoBehaviour
 
 			// Vector3 movement = movementDirection * Mathf.Abs(testValue);
 			// bendingtarget.transform.position += movement;
+		}
+
+		else
+		{
+			bendingValue += adjustmentValue * Time.deltaTime;
+			bendingValue = Mathf.Clamp(bendingValue, -1f, 1f);
+
+			Vector3 movementDirection = adjustmentValue > 0 ? bendingtarget.transform.forward : -bendingtarget.transform.forward;
+			
+			Vector3 targetPosition = currentHandPosition + movementDirection * Mathf.Abs(bendingValue);
+
+			float smoothTime = 0.001f;
+			Vector3 currentVelocity = Vector3.zero;
+			bendingtarget.transform.position = Vector3.SmoothDamp(bendingtarget.transform.position, targetPosition, ref currentVelocity, smoothTime);
 		}
 	}
 

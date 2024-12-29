@@ -234,6 +234,7 @@ public class HandsStateController : MonoBehaviour
 		if (currentRightHandState is RightHandState_ComingBack)
 		{
 			bool completed = IKArmsControl.DecrementRightIkWeight(playerController, playerController.rightArmIK, ref currentRightIkWeight, ref currentRightIkRotationWeight, 2f);
+			
 			uiDebug.UpdateRightArmBendingValue(currentRightIkWeight);
 			playerController.rightArmBendingValue = currentLeftIkWeight;
 
@@ -248,9 +249,19 @@ public class HandsStateController : MonoBehaviour
 		{
 			rightPalm.SetActive(true);
 			bool completed = IKArmsControl.IncrementRightIkWeight(playerController, playerController.rightArmIK, ref currentRightIkWeight, ref currentRightIkRotationWeight, 2f);
-			uiDebug.UpdateRightArmBendingValue(currentRightIkWeight);
-			playerController.rightArmBendingValue = currentLeftIkWeight;
-			IKArmsControl.CorrectIkHandRaycastDirection(playerController.rightArmIK, rightPalm);
+
+			if (completed)
+			{
+				SetRightHandState(new RightHandState_HasRaisedUp(playerController, playerController.rightArmIKTarget, playerController.rightBendingIKTarget, playerController.rightIKSolverArm, playerController.rightArmIK));
+			}
+		}
+		if (currentRightHandState.stateName == "Has Raised Up")
+		{
+
+		}
+		if (currentRightHandState.stateName == "Is Being Guided")
+		{
+			
 		}
 		if(currentRightHandState.stateName == "Is Holding A Grip" )
 		{
@@ -336,15 +347,20 @@ public class HandsStateController : MonoBehaviour
 		{
 
 			Vector3 currentHandPosition = playerController.leftArmIK.solver.arm.target.position;
-			IKArmsControl.ControlLeftArmBendingOnMouseScroll(playerController.leftArmIK, adjustmentValue, playerController.leftBendingIKTarget, currentHandPosition);
+			IKArmsControl.ControlArmBendingOnMouseScroll(playerController.leftArmIK, adjustmentValue, playerController.leftBendingIKTarget, currentHandPosition);
 			
+		}
+
+		if (currentRightHandState is RightHandState_IsRisingUp)
+		{
+
 		}
 
 		// IKArmsControl.ControlLeftArmBendingOnMouseScroll(playerController.leftArmIK, ref currentLeftIkWeight, ref currentLeftIkRotationWeight, scrollAdjustmentValue);	
 		
 	}
 
-	public void StopMouseScroll()
+ 	public void StopMouseScroll()
 	{
 		if (currentLeftHandState is leftHandState_HasRaisedUp)
 		{
