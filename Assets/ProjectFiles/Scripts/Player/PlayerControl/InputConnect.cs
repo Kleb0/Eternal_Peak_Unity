@@ -16,7 +16,6 @@ public class InputConnect : MonoBehaviour
 	private PlayerController playerController;
 	private PlayerSetDirection playerSetDirection;
 	private LeftHandState leftHandStateRishingUP;
-
 	private RightHandState rightHandStateRishingUP;
 
 	private ArmIK leftArmIK;
@@ -34,13 +33,17 @@ public class InputConnect : MonoBehaviour
 	private bool isRightHandActionActive = false;
 
 	private bool isScrolling = false;
-	private bool isGuideHandActive = false;
+	private bool isleftHandGuideActive = false;
+	private bool isRightHandGuideActive = false;
 	private Coroutine stopScrollCoroutine;
-	private Coroutine guideHandCoroutine;
+	private Coroutine guideLeftHandCoroutine;
+	private Coroutine guideRightHandCoroutine;
 	private Vector2 scrollValue;
 	private Vector2 mouseDirection;
 	private Vector2 preservedMouseDirection;
 	private bool isPreservingMouseDirection = false;
+
+	private float ScrollSensitivity = 10f;
 
 	private static readonly Vector2[] directions = new Vector2[]
 	{
@@ -124,7 +127,13 @@ public class InputConnect : MonoBehaviour
 			// mouseDirection = Mouse.current.delta.ReadValue();
 			// handsStateController.mouseDirection = mouseDirection;	
 			StartCoroutine(PreserveMouseDirectionRoutine());
-		}		
+		}
+
+		if(handsStateController.currentRightHandState.stateName =="Is Being Guided" && !isPreservingMouseDirection)
+		{
+	
+			StartCoroutine(PreserveMouseDirectionRoutine());
+		}
 	}
 
 // ---- Hand Actions ---- //
@@ -145,7 +154,7 @@ public class InputConnect : MonoBehaviour
 				float initialLeftIkRotationWeight = 0f;
 				// leftArmIK = playerController.leftArmIK;
 				playerController.ChangeLeftIKWeight(1f);
-				leftHandStateRishingUP = new LeftHandState_IsRisingUp(playerController, playerController.leftArmIKTarget, playerController.leftBendingIKTarget, playerController.leftArmIK, playerController.leftIKSolverArm, initialLeftIkWeight, initialLeftIkRotationWeight, playerController.leftArmIK);
+				leftHandStateRishingUP = new LeftHandState_IsRisingUp(playerController, playerController.leftArmIKTarget, playerController.leftArmIK, playerController.leftIKSolverArm, initialLeftIkWeight, initialLeftIkRotationWeight, playerController.leftArmIK);
 				handsStateController.ChangeLeftHandState(leftHandStateRishingUP);
 				isLeftHandActionActive = true;
 			}		
@@ -237,51 +246,66 @@ public class InputConnect : MonoBehaviour
 #region ScrollInput
 	private void OnMouseScroll(InputAction.CallbackContext context)
 	{
-		playerController.leftBendingIKTarget.SetActive(true);
+		
 		playerController.leftBendingIKTarget.transform.position = playerController.leftArmIK.solver.hand.transform.position;
+		playerController.rightBendingIKTarget.transform.position = playerController.rightArmIK.solver.hand.transform.position;
 		scrollValue = context.ReadValue<Vector2>();
+
+		//Debug.Log($"isLeftArmActive: {handsStateController.isLeftArmActive}, isRightArmActive: {handsStateController.isRightArmActive}");
 
 		if (scrollValue.y != 0)
 		{
-			//Debug.Log("Mouse Scroll Detected in InputConnect.CS");
-			isScrolling = true;
-			handsStateController.changeLeftHandIkTargetOnScroll();
-			
-			if(stopScrollCoroutine != null)
+			if (handsStateController.isLeftArmActive)
 			{
-				StopCoroutine(stopScrollCoroutine);
-				stopScrollCoroutine = null;
-			}
+				playerController.leftBendingIKTarget.SetActive(true);
+				isScrolling = true;
+				handsStateController.changeLeftHandIkTargetOnScroll();	
 
-			if(scrollValue.y < 0)
-			{
 				
-				handsStateController.OnMouseScrollDetected(1f);
+
+				manageScrollInput();		
+
 			}
-			else if(scrollValue.y > 0)
+			if (handsStateController.isRightArmActive)
 			{
-				handsStateController.OnMouseScrollDetected(-1f);
+				playerController.rightBendingIKTarget.SetActive(true);
+				isScrolling = true;
+				handsStateController.changeRightHandIkTargetOnScroll();
 
+				manageScrollInput();
 			}
-
+			
 		}
 		else
 		{
-			if (stopScrollCoroutine == null)
-			{
-				stopScrollCoroutine = StartCoroutine(WaitForScrollStop());
-			}
+			stopScrollCoroutine ??= StartCoroutine(WaitForScrollStop());
 			
 		}
 	}
+
+	private void manageScrollInput()
+	{
+			if(stopScrollCoroutine != null)
+				{
+					StopCoroutine(stopScrollCoroutine);
+					stopScrollCoroutine = null;
+				}
+
+				if(scrollValue.y < 0)
+				{
+					handsStateController.OnMouseScrollDetected(ScrollSensitivity);
+				}
+				else if(scrollValue.y > 0)
+				{
+					handsStateController.OnMouseScrollDetected(-ScrollSensitivity);
+				}
+	}
+	
 	private void OnMouseScrollCanceled(InputAction.CallbackContext context)
 	{
 		if (context.phase == InputActionPhase.Canceled)
 		{
-			if (stopScrollCoroutine == null)
-			{
-				stopScrollCoroutine = StartCoroutine(WaitForScrollStop());
-			}
+			stopScrollCoroutine ??= StartCoroutine(WaitForScrollStop());
 		}
 	}
 
@@ -295,26 +319,57 @@ public class InputConnect : MonoBehaviour
 #region Mouse Displacement Calculation and Logic
 
 	private void OnGuideHandStart(InputAction.CallbackContext context)
-	{
+{
+    // Règle C : Si les deux mains sont dans l'état "Has Raised Up", elles peuvent entrer simultanément dans l'état "Is Being Guided"
+    if (handsStateController.currentLeftHandState.stateName == "Has Raised Up" &&
+        handsStateController.currentRightHandState.stateName == "Has Raised Up")
+    {
+        guideLeftHandCoroutine ??= StartCoroutine(GuideLeftHandHoldRoutine());
+        guideRightHandCoroutine ??= StartCoroutine(GuideRightHandHoldRoutine());
+        return; 
+    }
 
-		if(guideHandCoroutine == null)
-		{
-			guideHandCoroutine = StartCoroutine(GuideHandHoldRoutine());
-		}
-	}
+    // Règle A : Si l'état de la main droite n'est pas "Is Being Guided", alors la main gauche peut entrer dans cet état
+    if (handsStateController.currentRightHandState.stateName != "Is Being Guided" &&
+	 handsStateController.currentLeftHandState.stateName == "Has Raised Up" || 
+	 handsStateController.currentRightHandState.stateName == "Do Nothing")
+    {
+        guideLeftHandCoroutine ??= StartCoroutine(GuideLeftHandHoldRoutine());
+    }
+
+    // Règle B : Si l'état de la main gauche n'est pas "Is Being Guided", alors la main droite peut entrer dans cet état
+    if (handsStateController.currentLeftHandState.stateName != "Is Being Guided" &&
+	handsStateController.currentRightHandState.stateName == "Has Raised Up" ||
+	handsStateController.currentLeftHandState.stateName == "Do Nothing")
+    {
+        guideRightHandCoroutine ??= StartCoroutine(GuideRightHandHoldRoutine());
+    }
+}
+
+
+
 
 	private void OnGuideHandStop(InputAction.CallbackContext context)
 	{
 
-		if(guideHandCoroutine != null)
+		if(guideLeftHandCoroutine != null)
 		{
-			StopCoroutine(guideHandCoroutine);
-			guideHandCoroutine = null;
+			StopCoroutine(guideLeftHandCoroutine);
+			guideLeftHandCoroutine = null;
+		}
+		if(guideRightHandCoroutine != null)
+		{
+			StopCoroutine(guideRightHandCoroutine);
+			guideRightHandCoroutine = null;
 		}
 
-		if(isGuideHandActive)
+		if(isleftHandGuideActive)
 		{
-			StartCoroutine(StayInGuidedStateBeforeTransition());
+			StartCoroutine(LeftHandStayInGuidedStateBeforeTransition());
+		}
+		if(isRightHandGuideActive)
+		{
+			StartCoroutine(RightHandStayInGuidedStateBeforeTransition());
 		}
 
 		
@@ -336,11 +391,42 @@ public class InputConnect : MonoBehaviour
 		while (handsStateController.currentLeftHandState.stateName == "Is Being Guided")
 		{
 			Vector2 rawMouseDirection = Mouse.current.delta.ReadValue();
-			var (directionName, vector) = GetMouseDirectionAndVector(rawMouseDirection);
 
+			if (rawMouseDirection.magnitude < 0.01f)
+			{
+				handsStateController.mouseDirection = Vector2.zero;
+				handsStateController.DirectionName = "None";
+			}
+			else
+			{
+			
+			var (directionName, vector) = GetMouseDirectionAndVector(rawMouseDirection);
 
 			handsStateController.mouseDirection = vector;
 			handsStateController.DirectionName = directionName;
+			
+			}
+
+			yield return new WaitForSeconds(0.5f);
+		}
+		while (handsStateController.currentRightHandState.stateName == "Is Being Guided")
+		{
+			Vector2 rawMouseDirection = Mouse.current.delta.ReadValue();
+
+			if (rawMouseDirection.magnitude < 0.01f)
+			{
+				handsStateController.mouseDirection = Vector2.zero;
+				handsStateController.DirectionName = "None";
+			}
+			else
+			{
+			
+			var (directionName, vector) = GetMouseDirectionAndVector(rawMouseDirection);
+
+			handsStateController.mouseDirection = vector;
+			handsStateController.DirectionName = directionName;
+			
+			}
 
 			yield return new WaitForSeconds(0.5f);
 		}
@@ -349,22 +435,46 @@ public class InputConnect : MonoBehaviour
 	}
 
 
-	private IEnumerator GuideHandHoldRoutine()
+	private IEnumerator GuideLeftHandHoldRoutine()
 	{
+	
 		yield return new WaitForSeconds(0.1f);
-		isGuideHandActive = true;
+		isleftHandGuideActive = true;
 		handsStateController.ChangeLeftHandState(new leftHandState_isBeingGuided());
+
 	}
 
-	private IEnumerator StayInGuidedStateBeforeTransition()
+	private IEnumerator GuideRightHandHoldRoutine()
+	{
+		yield return new WaitForSeconds(0.1f); // Attente avant de démarrer
+		isRightHandGuideActive = true;
+		handsStateController.ChangeRightHandState(new RightHandState_isBeingGuided()); // État spécifique pour la main droite
+	}
+
+
+	private IEnumerator LeftHandStayInGuidedStateBeforeTransition()
 	{
 		float delay = 1.0f;
 		yield return new WaitForSeconds(delay);
 
-		if(isGuideHandActive)
+		if(isleftHandGuideActive)
 		{
-			isGuideHandActive = false;
-			handsStateController.ChangeLeftHandState(new leftHandState_HasRaisedUp(playerController, playerController.leftArmIKTarget, playerController.leftBendingIKTarget, playerController.leftIKSolverArm, playerController.leftArmIK));
+			isleftHandGuideActive = false;
+			handsStateController.ChangeLeftHandState(new leftHandState_HasRaisedUp(playerController, playerController.leftArmIKTarget, 
+			playerController.leftBendingIKTarget, playerController.leftIKSolverArm, playerController.leftArmIK));
+		}	
+	}
+
+	private IEnumerator RightHandStayInGuidedStateBeforeTransition()
+	{
+		float delay = 1.0f; // Temps avant de quitter l'état de guidage
+		yield return new WaitForSeconds(delay);
+
+		if (isRightHandGuideActive)
+		{
+			isRightHandGuideActive = false;
+			handsStateController.ChangeRightHandState(new RightHandState_HasRaisedUp(playerController,playerController.rightArmIKTarget,
+			playerController.rightBendingIKTarget, playerController.rightIKSolverArm, playerController.rightArmIK));
 		}
 	}
 
@@ -379,6 +489,7 @@ public class InputConnect : MonoBehaviour
 		stopScrollCoroutine = null;
 		handsStateController.StopMouseScroll();
 		handsStateController.ResetCanChangeLeftIkTargetOnScroll();
+		handsStateController.ResetCanChangeRightIkTargetOnScroll();
 	}
 
 	
@@ -394,7 +505,7 @@ private (string directionName, Vector2 vector) GetMouseDirectionAndVector (Vecto
 {
 
 	float mouseSensitive = 1f;
-	float sensitivityMultiplier = 5f;
+	float sensitivityMultiplier = 20f;
 
 	if(mouseDir.magnitude < mouseSensitive)
 	{

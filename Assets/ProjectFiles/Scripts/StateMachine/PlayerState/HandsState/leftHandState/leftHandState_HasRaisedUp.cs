@@ -25,7 +25,7 @@ public class leftHandState_HasRaisedUp : LeftHandState
 
     public override void EnterState()
     {
-        Debug.Log("Entering LeftHandState_HasRaisedUp");
+        // Debug.Log("Entering LeftHandState_HasRaisedUp");
     }
 
     public override void ExecuteState()

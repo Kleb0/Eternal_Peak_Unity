@@ -190,7 +190,9 @@ public class PlayerController : MonoBehaviour
 	void Look()
 	{
 
-		if(handsStateController.currentLeftHandState.stateName == "Is Being Guided" && !isPreservingMouseDirection)
+		if(handsStateController.currentLeftHandState.stateName == "Is Being Guided" || 
+		handsStateController.currentRightHandState.stateName == "Is Being Guided" && 
+		!isPreservingMouseDirection)
 		{
 			mouseSensitivity = 25f;
 			float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
@@ -217,11 +219,8 @@ public class PlayerController : MonoBehaviour
 			playerMeshRig.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
 			transform.Rotate(Vector3.up * mouseX);
 
-
 		}
-	
-
-			
+				
 	}
 	#endregion
 
@@ -333,7 +332,7 @@ public class PlayerController : MonoBehaviour
 
 		if (currentPlayerState == null || newPlayerState.GetType() != currentPlayerState.GetType())
 		{
-			Debug.Log("Changing Player State to " + newPlayerState.stateName);
+			// Debug.Log("Changing Player State to " + newPlayerState.stateName);
 			canChangeState = true;
 			currentPlayerState = newPlayerState;		
 			OnPlayerStateChange();
@@ -351,7 +350,7 @@ public class PlayerController : MonoBehaviour
 	{
 		if (canChangeState)
 		{
-			Debug.Log("Changing Player State to " + currentPlayerState.stateName);
+			// Debug.Log("Changing Player State to " + currentPlayerState.stateName);
 			playerStateManager.SetState(currentPlayerState);
 			canChangeState = false;		
 		}

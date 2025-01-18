@@ -1,9 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using RootMotion.FinalIK;
 using System;
-using UnityEngine.InputSystem;
 
 public class IKArmsControl : MonoBehaviour
 {
@@ -11,7 +8,7 @@ public class IKArmsControl : MonoBehaviour
 	static Vector3 leftHandPosition = Vector3.zero;
 
 
-	public static void EnableIKTarget(PlayerController playerController, GameObject IKtarget, GameObject BendingTarget, ArmIK armIK)
+	public static void EnableIKTarget(PlayerController playerController, GameObject IKtarget, ArmIK armIK)
 	{
 		IKtarget.SetActive(true);	
 	}
@@ -175,42 +172,52 @@ public class IKArmsControl : MonoBehaviour
 	{
 		if (armIk.solver.isLeft)
 		{
-			Vector3 newIkTargetPosition;
+			Vector3 newIkTargetPosition = Vector3.zero;
+			AlignIk(newIkTargetPosition, cam, armIk);			
+		}
 
-			if(cam.orthographic)
+		if(!armIk.solver.isLeft)
+		{
+			Vector3 newIkTargetPosition = Vector3.zero;
+			AlignIk(newIkTargetPosition, cam, armIk);		
+		}
+	}
+
+
+	public static void AlignIk(Vector3 newIkTargetPosition, Camera cam, ArmIK armik )
+	{
+		if (cam.orthographic)
+		{
+			newIkTargetPosition = cam.transform.position + cam.transform.forward * 2.0f;
+		}
+		else
+		{
+			Vector3 cameraForward = cam.transform.forward;
+			cameraForward.Normalize();
+
+			Vector3 cameraLeft = -cam.transform.right;
+			cameraLeft.Normalize();
+
+			newIkTargetPosition = cam.transform.position + cameraForward * 2.0f + cameraLeft * 0.3f;
+
+			Vector3 cameraToIkTarget = newIkTargetPosition - cam.transform.position ;
+			if (cameraToIkTarget.magnitude > 2.0f)
 			{
-				newIkTargetPosition = cam.transform.position + cam.transform.forward * radius;
-
+				newIkTargetPosition = cam.transform.position + cameraToIkTarget.normalized * 2.0f;
 			}
-			else
-			{
-				Vector3 cameraForward = cam.transform.forward;
-				cameraForward.Normalize();
-
-				Vector3 cameraLeft = -cam.transform.right;
-				cameraLeft.Normalize();
-
-				newIkTargetPosition = cam.transform.position + cameraForward * radius + cameraLeft * leftOffset;
-
-				Vector3 cameraToIkTarget = newIkTargetPosition - cam.transform.position ;
-				if (cameraToIkTarget.magnitude > radius)
-				{
-					newIkTargetPosition = cam.transform.position + cameraToIkTarget.normalized * radius;
-				}
-				
-				IKtarget.transform.position = newIkTargetPosition;
-
-			}
-
+			armik.solver.arm.target.position = newIkTargetPosition;
 			
 		}
 	}
 
 	public static void ChangeIkArmTargetToBendingTarget(ArmIK armIK, GameObject bendingTarget, GameObject handTarget)
 	{
+				
+
 		if (armIK.solver.isLeft)
 		{
-			Debug.Log("Changing IK arm target to bending target");
+			
+			Debug.Log("Change the left arm Ik target to the left bending target" + bendingTarget.name);
 			armIK.solver.arm.target = bendingTarget.transform;
 
 			Vector3 directionToTarget = bendingTarget.transform.position - handTarget.transform.position;
@@ -219,8 +226,18 @@ public class IKArmsControl : MonoBehaviour
 			{
 				bendingTarget.transform.rotation = Quaternion.LookRotation(directionToTarget);
 			}
+		}
+		else
+		{
+			//Debug.Log("Change the right arm Ik target to the right bending target" + bendingTarget.name);
+			armIK.solver.arm.target = bendingTarget.transform;
 
+			Vector3 directionToTarget = bendingTarget.transform.position - handTarget.transform.position;
 
+			if(directionToTarget != Vector3.zero)
+			{
+				bendingTarget.transform.rotation = Quaternion.LookRotation(directionToTarget);
+			}
 		}
 	}
 
@@ -229,8 +246,55 @@ public class IKArmsControl : MonoBehaviour
 
 		if (armIK.solver.isLeft)
 		{
+			Debug.Log("Left arm is controlled by mouse scroll");
+			guideOnScroll(adjustmentValue, bendingtarget, currentHandPosition);
+		}
+
+		else if(!armIK.solver.isLeft)
+		{
+			Debug.Log("Right arm is controlled by mouse scroll");
+			guideOnScroll(adjustmentValue, bendingtarget, currentHandPosition);
+	
+		}
+	}
+
+	
+	public static void GuideHandByMouse(PlayerController playercontroller, ArmIK armIk, float TimeSinceStart, Vector2 mouseDirection, string DirectionName)
+	{
+		
+		if(TimeSinceStart > 0)
+		{
+			// Debug.Log($"Left hand is guided by mouse since {TimeSinceStart} seconds, mouse direction is {mouseDirection}, direction name is {DirectionName}, target position is {targetTransform.position}");
+			//Debug.Log($"Left hand is guided by mouse since {TimeSinceStart} seconds, mouse direction is {mouseDirection}, direction name is {DirectionName}");
 			
+			if (mouseDirection == Vector2.zero || string.IsNullOrEmpty(DirectionName) || DirectionName == "None")
+			{		
+				return;
+			}
+
+			if(armIk.solver.isLeft && armIk.solver.arm.target != null)
+			{
+				// Debug.Log("Left arm is guided by mouse");
+				GuideOnMouse(playercontroller, armIk, DirectionName, 3f);
+				
+			}
+			if(!armIk.solver.isLeft)
+			{
+				// Debug.Log("Right arm is guided by mouse");
+				GuideOnMouse(playercontroller, armIk, DirectionName, 3f);
+			}
+		}
+	}
+
+
+#region mouse guide functions
+
+	public static void guideOnScroll(float adjustmentValue, GameObject bendingtarget, Vector3 currentHandPosition)
+	{
+			bendingValue = 0f;
+			Debug.Log("Left arm is controlled by mouse scroll");
 			bendingValue += adjustmentValue * Time.deltaTime;
+			Debug.Log("bending value is " + bendingValue);
 			bendingValue = Mathf.Clamp(bendingValue, -1f, 1f);
 
 			//movement direction based on the hand position
@@ -244,86 +308,62 @@ public class IKArmsControl : MonoBehaviour
 
 			bendingtarget.transform.position = Vector3.SmoothDamp(bendingtarget.transform.position, targetPosition, ref currentVelocity, smoothTime);
 
-			// Vector3 movement = movementDirection * Mathf.Abs(testValue);
-			// bendingtarget.transform.position += movement;
-		}
-
-		else
-		{
-			bendingValue += adjustmentValue * Time.deltaTime;
-			bendingValue = Mathf.Clamp(bendingValue, -1f, 1f);
-
-			Vector3 movementDirection = adjustmentValue > 0 ? bendingtarget.transform.forward : -bendingtarget.transform.forward;
-			
-			Vector3 targetPosition = currentHandPosition + movementDirection * Mathf.Abs(bendingValue);
-
-			float smoothTime = 0.001f;
-			Vector3 currentVelocity = Vector3.zero;
-			bendingtarget.transform.position = Vector3.SmoothDamp(bendingtarget.transform.position, targetPosition, ref currentVelocity, smoothTime);
-		}
 	}
 
-	
-	public static void GuideleftHandByMouse(PlayerController playercontroller, ArmIK leftarmIk, float TimeSinceStart, Vector2 mouseDirection, string DirectionName)
+	private static void GuideOnMouse(PlayerController playerController, ArmIK armIK, string directionName, float movementSpeed)
 	{
-		
-		if(TimeSinceStart > 0)
+		// if (!armIK.solver.isLeft)
+		// {
+		// 	Debug.Log("Right arm is guided by mouse");
+		// }
+		if (armIK.solver.arm.target == null || string.IsNullOrEmpty(directionName) || directionName == "None")
+			return;
+
+		Transform targetTransform = armIK.solver.arm.target;
+		Vector3 movementDirection = Vector3.zero;
+		Camera camera = playerController.cam;
+		Vector3 screenBounds = new Vector3(Screen.width, Screen.height, 0f);
+
+		switch (directionName)
 		{
-			// Debug.Log($"Left hand is guided by mouse since {TimeSinceStart} seconds, mouse direction is {mouseDirection}, direction name is {DirectionName}, target position is {targetTransform.position}");
-			//Debug.Log($"Left hand is guided by mouse since {TimeSinceStart} seconds, mouse direction is {mouseDirection}, direction name is {DirectionName}");
-			
-			if(leftarmIk.solver.arm.target != null)
-			{
-				Transform targetTransform = leftarmIk.solver.arm.target;
-				Vector3 movementDirection = Vector3.zero;
-				float movementSpeed = 3f;
-
-				Camera Camera = playercontroller.cam;
-				Vector3 screenBounds = new Vector3(Screen.width, Screen.height, 0f);
-
-				switch(DirectionName)
-				{
-					case "North":
-						movementDirection = targetTransform.up;
-						break;
-					case "South":
-						movementDirection = -targetTransform.up;
-						break;	
-					case "East":
-						movementDirection = -targetTransform.right;
-						break;
-					case "West":
-						movementDirection = targetTransform.right;
-						break;
-					case "North-East":
-						movementDirection = targetTransform.up + targetTransform.right;
-						break;
-					case "North-West":
-						movementDirection = targetTransform.up - targetTransform.right;
-						break;
-					case "South-East":
-						movementDirection = -targetTransform.up + targetTransform.right;
-						break;
-					case "South-West":
-						movementDirection = -targetTransform.up - targetTransform.right;
-						break;
-				}
-	
-
-				//Calculate the new position based on the screen bounds
-				Vector3 newPosition = targetTransform.position + movementDirection * movementSpeed * Time.deltaTime;
-				Vector3 screenPosition = Camera.WorldToScreenPoint(newPosition);
-
-				screenPosition.x = Mathf.Clamp(screenPosition.x, 0, screenBounds.x);
-				screenPosition.y = Mathf.Clamp(screenPosition.y, 0, screenBounds.y);
-
-				newPosition = Camera.ScreenToWorldPoint(screenPosition);
-
-				//Apply the new position
-				targetTransform.position = newPosition;		
-			}
+			case "North":
+				movementDirection = targetTransform.up;
+				break;
+			case "South":
+				movementDirection = -targetTransform.up;
+				break;
+			case "East":
+				movementDirection = -targetTransform.right;
+				break;
+			case "West":
+				movementDirection = targetTransform.right;
+				break;
+			case "North-East":
+				movementDirection = targetTransform.up + targetTransform.right;
+				break;
+			case "North-West":
+				movementDirection = targetTransform.up - targetTransform.right;
+				break;
+			case "South-East":
+				movementDirection = -targetTransform.up + targetTransform.right;
+				break;
+			case "South-West":
+				movementDirection = -targetTransform.up - targetTransform.right;
+				break;
 		}
 
+		Vector3 targetPosition = targetTransform.position + movementDirection * movementSpeed * Time.deltaTime;
+		Vector3 interpolatedPosition = Vector3.Lerp(targetTransform.position, targetPosition, 0.5f);
+
+		Vector3 screenPosition = camera.WorldToScreenPoint(interpolatedPosition);
+		screenPosition.x = Mathf.Clamp(screenPosition.x, 0, screenBounds.x);
+		screenPosition.y = Mathf.Clamp(screenPosition.y, 0, screenBounds.y);
+
+		Vector3 clampedWorldPosition = camera.ScreenToWorldPoint(screenPosition);
+		targetTransform.position = clampedWorldPosition;
 	}
 
+	
+
+#endregion
 }

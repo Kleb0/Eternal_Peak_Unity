@@ -82,6 +82,18 @@ public class UIDEBUG : MonoBehaviour
         
         }
 
+        public void ClearLeftArmBendingValue()
+        {
+            float value = 0f;
+            leftArmBendingSlider.value = value;
+        }
+
+        public void ClearRightArmBendingValue()
+        {
+            float value = 0f;
+            rightArmBendingSlider.value = value;
+        }
+
         
         
 }

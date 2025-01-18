@@ -4171,6 +4171,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DirectionName: 
   mouseDirection: {x: 0, y: 0}
+  isLeftArmActive: 0
+  isRightArmActive: 0
 --- !u!114 &1073958764
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4841,7 +4843,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1296095604}
   m_Layer: 0
-  m_Name: Left_Bending_Transform
+  m_Name: Left_Bending
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5895,7 +5897,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1783921795}
   m_Layer: 0
-  m_Name: Right_Bending_Transform
+  m_Name: Right_Bending
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

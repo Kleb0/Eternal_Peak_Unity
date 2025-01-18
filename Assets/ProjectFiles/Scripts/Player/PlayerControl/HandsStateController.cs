@@ -7,6 +7,8 @@ using UnityEngine.InputSystem;
 
 public class HandsStateController : MonoBehaviour
 {
+
+//---- HandStates Variables -------------------//
 	#region handstates variables
 	UIDEBUG uiDebug;
 
@@ -14,9 +16,7 @@ public class HandsStateController : MonoBehaviour
 	public RightHandState currentRightHandState;
 	private LeftHandState previousLeftHandState;
 	private RightHandState previousRightHandState;
-	private LeftHandState_DoNothing leftHandStateDoNothing;
-	private LeftHandState_ComingBack leftHandStateComingBack;    
-	private LeftHandState_IsRisingUp leftHandStateIsRisingUp;
+
 	private GameObject leftPalm;
 	private GameObject leftHandRayCaster;	
 	private GameObject rightPalm;
@@ -34,14 +34,21 @@ public class HandsStateController : MonoBehaviour
 	float distanceBetweenLeftHandAndLeftShoulder; 
 	float distanceBetweenRightHandAndRightShoulder;   
 	private bool canChangeLeftIkTargetOnScroll = false;
+	private bool canChangeRightIkTargetOnScroll = false;
 
 	public string DirectionName;
 
 	private float timeSinceGuidedStart = 0f;
 	public Vector2 mouseDirection;
 
-	#endregion
 
+	// ---- active arms bools ---- //
+	public bool isLeftArmActive = false;
+	public bool isRightArmActive = false;
+
+
+#endregion
+//--------------------------------------------//
 
 	// We build a loop for the hand state management :
 	// in the player controller script, the hand state is defined on do nothing at start
@@ -52,6 +59,8 @@ public class HandsStateController : MonoBehaviour
 	// these states, will activate and deactivate the arm Ik weight, the arm Ik rotation weight, and the arm Ik target
 
 
+//----- Start and Update ---------------------- //
+#region start and update
 	public void Start()
 	{
 		playerController = GetComponent<PlayerController>();
@@ -95,7 +104,11 @@ public class HandsStateController : MonoBehaviour
 		PlayRightHandLoop();
 	} 
 
-//----- Player left Hand Loop ------------//
+
+#endregion	
+// -------------------------------------------- //
+
+//----- Player left Hand Loop -----------------//
 #region  Player Left Hand Loop
 	public void PlayLeftHandLoop()
 	{
@@ -113,9 +126,11 @@ public class HandsStateController : MonoBehaviour
 			}
 		}
 
+		
 		else if (currentLeftHandState is LeftHandState_IsRisingUp) 
 		{
 		
+			isLeftArmActive = true;
 			bool completed = IKArmsControl.IncrementLeftIkWeight(playerController, playerController.leftArmIK, ref currentLeftIkWeight, ref currentLeftIkRotationWeight, 2f);
 
 			if (completed)
@@ -142,7 +157,7 @@ public class HandsStateController : MonoBehaviour
 			timeSinceGuidedStart += Time.deltaTime;
 			// UpdateMouseDirection(mouseDirection, DirectionName);
 			// Debug.Log($"Time since guided start is {timeSinceGuidedStart} and the direction is {DirectionName}, the vector is {mouseDirection}");
-			IKArmsControl.GuideleftHandByMouse(playerController, playerController.leftArmIK, timeSinceGuidedStart, mouseDirection, DirectionName);
+			IKArmsControl.GuideHandByMouse(playerController, playerController.leftArmIK, timeSinceGuidedStart, mouseDirection, DirectionName);
 		}
 		
 
@@ -214,7 +229,9 @@ public class HandsStateController : MonoBehaviour
 	public void EndLeftHandLoop()
 	{
 		ChangeLeftHandState	(new LeftHandState_DoNothing(playerController, playerController.leftArmIKTarget, playerController.leftBendingIKTarget, playerController.leftArmIK));
+		uiDebug.ClearLeftArmBendingValue();
 		isLeftHandLoopEnded = false;
+		isLeftArmActive = false;
 
 	}
 
@@ -225,15 +242,16 @@ public class HandsStateController : MonoBehaviour
 
 
 #endregion
-// -------------------------------------------- //
+// ----------------------------------------- //
 
-// ------- Right Hand State Management ------- //
+// ------- Right Hand State Management ----- //
 #region  Player Right Hand Loop
 	public void PlayRightHandLoop()
 	{
 		if (currentRightHandState is RightHandState_ComingBack)
 		{
 			bool completed = IKArmsControl.DecrementRightIkWeight(playerController, playerController.rightArmIK, ref currentRightIkWeight, ref currentRightIkRotationWeight, 2f);
+			
 			
 			uiDebug.UpdateRightArmBendingValue(currentRightIkWeight);
 			playerController.rightArmBendingValue = currentLeftIkWeight;
@@ -248,6 +266,9 @@ public class HandsStateController : MonoBehaviour
 		else if (currentRightHandState is RightHandState_IsRisingUp)
 		{
 			rightPalm.SetActive(true);
+			isRightArmActive = true;
+
+			canChangeRightIkTargetOnScroll = true;
 			bool completed = IKArmsControl.IncrementRightIkWeight(playerController, playerController.rightArmIK, ref currentRightIkWeight, ref currentRightIkRotationWeight, 2f);
 
 			if (completed)
@@ -257,10 +278,16 @@ public class HandsStateController : MonoBehaviour
 		}
 		if (currentRightHandState.stateName == "Has Raised Up")
 		{
+			distanceBetweenRightHandAndRightShoulder = IKArmsControl.CalcDistBetweenRighttHandAndRightShoulder(playerController.rightArmIK);
+			uiDebug.UpdateRightArmBendingValue(distanceBetweenRightHandAndRightShoulder);
+			playerController.rightArmBendingValue = distanceBetweenRightHandAndRightShoulder;
 
 		}
 		if (currentRightHandState.stateName == "Is Being Guided")
 		{
+			timeSinceGuidedStart += Time.deltaTime;
+			// Debug.Log($"Right Arm is being guided by mouse ! Time since guided start is {timeSinceGuidedStart} and the direction is {DirectionName}, the vector is {mouseDirection}");
+			IKArmsControl.GuideHandByMouse(playerController, playerController.rightArmIK, timeSinceGuidedStart, mouseDirection, DirectionName);
 			
 		}
 		if(currentRightHandState.stateName == "Is Holding A Grip" )
@@ -328,6 +355,7 @@ public class HandsStateController : MonoBehaviour
 	public void EndRightHandLoop()
 	{
 		SetRightHandState(new RightHandState_DoNothing(playerController, playerController.rightArmIKTarget, playerController.rightArmIK));
+		uiDebug.ClearRightArmBendingValue();
 		isRightHandLoopEnded = true;
 	}
 
@@ -345,19 +373,17 @@ public class HandsStateController : MonoBehaviour
 		
 		if (currentLeftHandState is leftHandState_HasRaisedUp)
 		{
-
 			Vector3 currentHandPosition = playerController.leftArmIK.solver.arm.target.position;
 			IKArmsControl.ControlArmBendingOnMouseScroll(playerController.leftArmIK, adjustmentValue, playerController.leftBendingIKTarget, currentHandPosition);
 			
 		}
 
-		if (currentRightHandState is RightHandState_IsRisingUp)
+		if (currentRightHandState is RightHandState_HasRaisedUp)
 		{
-
+			Vector3 currentHandPosition = playerController.rightArmIK.solver.arm.target.position;
+			IKArmsControl.ControlArmBendingOnMouseScroll(playerController.rightArmIK, adjustmentValue, playerController.rightBendingIKTarget, currentHandPosition);
 		}
 
-		// IKArmsControl.ControlLeftArmBendingOnMouseScroll(playerController.leftArmIK, ref currentLeftIkWeight, ref currentLeftIkRotationWeight, scrollAdjustmentValue);	
-		
 	}
 
  	public void StopMouseScroll()
@@ -365,6 +391,7 @@ public class HandsStateController : MonoBehaviour
 		if (currentLeftHandState is leftHandState_HasRaisedUp)
 		{
 			// Debug.LogWarning("Mouse Scroll Stopped");
+			
 		}
 	}
 
@@ -385,26 +412,31 @@ public class HandsStateController : MonoBehaviour
 		}
 
 	}
+
+	public void changeRightHandIkTargetOnScroll()
+	{
+		if(currentRightHandState is RightHandState_HasRaisedUp && canChangeRightIkTargetOnScroll)
+		{
+			IKArmsControl.ChangeIkArmTargetToBendingTarget(playerController.rightArmIK, playerController.rightBendingIKTarget, playerController.rightArmIKTarget);
+			canChangeRightIkTargetOnScroll = false;		
+			
+		}
+
+	}
 	public void ResetCanChangeLeftIkTargetOnScroll()
 	{
 		// Debug.LogWarning("Resetting Can Change Left IK Target on Scroll");
 		canChangeLeftIkTargetOnScroll = true;
 		
+		
+	}
+
+	public void ResetCanChangeRightIkTargetOnScroll()
+	{
+		canChangeRightIkTargetOnScroll = true;
 	}
 
 
 	#endregion
-// -------------------------------------------- //
-
-
-//---- Update functions ----//
-#region UpdateFunctions
-
-#endregion
-
-
-// ---- Functions returning variables ---- //
-#region Functions returning variables
-#endregion
 // -------------------------------------------- //
 }

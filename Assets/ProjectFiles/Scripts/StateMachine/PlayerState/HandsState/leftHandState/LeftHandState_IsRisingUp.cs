@@ -23,16 +23,14 @@ public class LeftHandState_IsRisingUp : LeftHandState
 	// the constructor will take the playerController, the leftArmIkTarget, the leftArmIK, the leftIKSolverArm, the IKWeight and the IKRotationWeight
 	// from the playerController
 	// and initialize them in the state
-	 public LeftHandState_IsRisingUp(PlayerController playerController, GameObject LeftArmIkTarget, GameObject leftBendingTarget, ArmIK leftArmIk, IKSolverArm leftIKSolverArm, float IKWeight, float IKRotationWeight, ArmIK armIK)
+	 public LeftHandState_IsRisingUp(PlayerController playerController, GameObject LeftArmIkTarget, ArmIK leftArmIk, IKSolverArm leftIKSolverArm, float IKWeight, float IKRotationWeight, ArmIK armIK)
 	{
 		this.playerController = playerController;
 		this.leftArmIkTarget = playerController.leftArmIKTarget;
 		this.LeftArmIK = playerController.leftArmIK;
 		this.LeftIKSolverArm = playerController.leftIKSolverArm;
 		this.IKWeight = playerController.leftIKSolverArm.IKPositionWeight;
-		this.IKRotationWeight = playerController.leftIKSolverArm.IKRotationWeight;
-		this.leftBendingTarget = playerController.leftBendingIKTarget;
-		
+		this.IKRotationWeight = playerController.leftIKSolverArm.IKRotationWeight;		
 	  
 		// As we are using here a special constructor, we just set the stateName to "Moving" here without the need to override it in the derived classes.
 	}
@@ -42,7 +40,7 @@ public class LeftHandState_IsRisingUp : LeftHandState
 	public override void EnterState()
 	{
 		Debug.Log("Entering LeftHandState_IsRisingUp");
-		IKArmsControl.EnableIKTarget(playerController, leftArmIkTarget, leftBendingTarget, LeftArmIK);
+		IKArmsControl.EnableIKTarget(playerController, leftArmIkTarget, LeftArmIK);
 		IKArmsControl.EnableIkArm(LeftArmIK);
 
 	}

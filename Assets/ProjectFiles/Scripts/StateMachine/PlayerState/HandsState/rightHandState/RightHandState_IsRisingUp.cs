@@ -35,7 +35,7 @@ public class RightHandState_IsRisingUp : RightHandState
 
     public override void EnterState()
     {
-        IKArmsControl.EnableIKTarget(playerController, rightHandIKTarget, playerController.rightBendingIKTarget, playerController.rightArmIK);
+        IKArmsControl.EnableIKTarget(playerController, rightHandIKTarget, playerController.rightArmIK);
         IKArmsControl.EnableIkArm(rightArmIK);
     }
 
