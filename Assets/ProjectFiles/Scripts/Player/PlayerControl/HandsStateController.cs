@@ -137,6 +137,7 @@ public class HandsStateController : MonoBehaviour
 			{
 				SetLeftHandState(new leftHandState_HasRaisedUp(playerController, playerController.leftArmIKTarget, 
 				playerController.leftBendingIKTarget, playerController.leftIKSolverArm, playerController.leftArmIK));
+				playerController.leftPalm.SetActive(true);
 			}
 		}
 		if(currentLeftHandState.stateName == "Has Raised Up")
@@ -168,14 +169,6 @@ public class HandsStateController : MonoBehaviour
 			uiDebug.UpdateLeftArmBendingValue(distanceBetweenLeftHandAndLeftShoulder);
 			playerController.leftArmBendingValue = distanceBetweenLeftHandAndLeftShoulder;
 		}
-
-
-		// else
-		// {
-		// 	distanceBetweenLeftHandAndLeftShoulder = 0f;
-		// 	uiDebug.UpdateLeftArmBendingValue(distanceBetweenLeftHandAndLeftShoulder);
-		// 	playerController.leftArmBendingValue = distanceBetweenLeftHandAndLeftShoulder;
-		// }
 	}
 #endregion	   
 // ------------------------------------------ //
@@ -201,9 +194,9 @@ public class HandsStateController : MonoBehaviour
 	public void ChangeLeftHandStateToHoldingGrip()
 	{
 
-		Debug.Log("Changing Left Hand State to Holding Grip");
+		// Debug.Log("Changing Left Hand State to Holding Grip");
 		ChangeLeftHandState(new LeftHandState_IsHoldingAGrip());
-		// IKArmsControl.ChangeIKarmTarget(playerController.leftArmIK, playerController.leftHandHoldingGrip, playerController.leftArmIKTarget);	
+		IKArmsControl.ChangeIKarmTarget(playerController.leftArmIK, playerController.leftHandHoldingGrip, playerController.leftArmIKTarget);	
 	
 	}
 

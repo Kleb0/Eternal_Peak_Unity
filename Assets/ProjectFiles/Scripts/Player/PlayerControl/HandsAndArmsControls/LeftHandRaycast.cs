@@ -30,7 +30,7 @@ public class LeftHandRaycast : MonoBehaviour
 	void OnDrawGizmosSelected()
 	{
 		Gizmos.color = Color.green;
-		Gizmos.DrawRay(transform.position, rayCastDirection * 0.08f);
+		Gizmos.DrawRay(transform.position, rayCastDirection * 0.10f);
 	}
 
 	public void TryRaycast()

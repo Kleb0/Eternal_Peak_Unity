@@ -105,6 +105,9 @@ public class InputConnect : MonoBehaviour
 		controls.PlayerInputMap.GuideHand.performed += ctx => OnGuideHandStart(ctx);
 		controls.PlayerInputMap.GuideHand.canceled += ctx => OnGuideHandStop(ctx);
 
+		controls.PlayerInputMap.GuideRightHand.performed += ctx => OnGuideRightHandStart(ctx);
+		controls.PlayerInputMap.GuideRightHand.canceled += ctx => OnGuideRightHandStop(ctx);
+
 		
 	}
 
@@ -319,34 +322,28 @@ public class InputConnect : MonoBehaviour
 #region Mouse Displacement Calculation and Logic
 
 	private void OnGuideHandStart(InputAction.CallbackContext context)
-{
-    // Règle C : Si les deux mains sont dans l'état "Has Raised Up", elles peuvent entrer simultanément dans l'état "Is Being Guided"
-    if (handsStateController.currentLeftHandState.stateName == "Has Raised Up" &&
-        handsStateController.currentRightHandState.stateName == "Has Raised Up")
-    {
-        guideLeftHandCoroutine ??= StartCoroutine(GuideLeftHandHoldRoutine());
-        guideRightHandCoroutine ??= StartCoroutine(GuideRightHandHoldRoutine());
-        return; 
-    }
+	{
+		// //la main gauche peut entrer dans l'état "Is Being Guided" si elle est dans l'état "Has Raised Up" ou "Do Nothing"
+		// if(handsStateController.currentLeftHandState.stateName == "Has Raised Up" || handsStateController.currentLeftHandState.stateName == "Do Nothing")
+		// {
+		// 	guideLeftHandCoroutine = StartCoroutine(GuideLeftHandHoldRoutine());
+		// }
 
-    // Règle A : Si l'état de la main droite n'est pas "Is Being Guided", alors la main gauche peut entrer dans cet état
-    if (handsStateController.currentRightHandState.stateName != "Is Being Guided" &&
-	 handsStateController.currentLeftHandState.stateName == "Has Raised Up" || 
-	 handsStateController.currentRightHandState.stateName == "Do Nothing")
-    {
-        guideLeftHandCoroutine ??= StartCoroutine(GuideLeftHandHoldRoutine());
-    }
-
-    // Règle B : Si l'état de la main gauche n'est pas "Is Being Guided", alors la main droite peut entrer dans cet état
-    if (handsStateController.currentLeftHandState.stateName != "Is Being Guided" &&
-	handsStateController.currentRightHandState.stateName == "Has Raised Up" ||
-	handsStateController.currentLeftHandState.stateName == "Do Nothing")
-    {
-        guideRightHandCoroutine ??= StartCoroutine(GuideRightHandHoldRoutine());
-    }
-}
+		guideLeftHandCoroutine = StartCoroutine(GuideLeftHandHoldRoutine());
 
 
+	}
+
+	private void OnGuideRightHandStart(InputAction.CallbackContext context)
+	{
+		// Debug.Log("Right Hand Guide Input detected");
+		guideRightHandCoroutine = StartCoroutine(GuideRightHandHoldRoutine());
+		// if(handsStateController.currentRightHandState.stateName == "Has Raised Up" || handsStateController.currentRightHandState.stateName == "Do Nothing")
+		// {
+		// 	guideRightHandCoroutine = StartCoroutine(GuideRightHandHoldRoutine());
+		// }
+
+	}
 
 
 	private void OnGuideHandStop(InputAction.CallbackContext context)
@@ -357,22 +354,30 @@ public class InputConnect : MonoBehaviour
 			StopCoroutine(guideLeftHandCoroutine);
 			guideLeftHandCoroutine = null;
 		}
+
+		if(isleftHandGuideActive)
+		{
+			StartCoroutine(LeftHandStayInGuidedStateBeforeTransition());
+		}
+
+	
+	}
+
+	private void OnGuideRightHandStop(InputAction.CallbackContext context)
+	{
+		Debug.Log("GuideRightHandStop detected");
+
 		if(guideRightHandCoroutine != null)
 		{
 			StopCoroutine(guideRightHandCoroutine);
 			guideRightHandCoroutine = null;
 		}
 
-		if(isleftHandGuideActive)
-		{
-			StartCoroutine(LeftHandStayInGuidedStateBeforeTransition());
-		}
 		if(isRightHandGuideActive)
 		{
 			StartCoroutine(RightHandStayInGuidedStateBeforeTransition());
 		}
 
-		
 	}
 
 #endregion
@@ -438,7 +443,7 @@ public class InputConnect : MonoBehaviour
 	private IEnumerator GuideLeftHandHoldRoutine()
 	{
 	
-		yield return new WaitForSeconds(0.1f);
+		yield return new WaitForSeconds(1f);
 		isleftHandGuideActive = true;
 		handsStateController.ChangeLeftHandState(new leftHandState_isBeingGuided());
 
@@ -446,9 +451,10 @@ public class InputConnect : MonoBehaviour
 
 	private IEnumerator GuideRightHandHoldRoutine()
 	{
-		yield return new WaitForSeconds(0.1f); // Attente avant de démarrer
+		yield return new WaitForSeconds(1f);
 		isRightHandGuideActive = true;
-		handsStateController.ChangeRightHandState(new RightHandState_isBeingGuided()); // État spécifique pour la main droite
+		Debug.Log("Right Hand is being guided");
+		handsStateController.ChangeRightHandState(new RightHandState_isBeingGuided()); 
 	}
 
 

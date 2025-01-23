@@ -15,7 +15,7 @@ public class PlayerController : MonoBehaviour
 	public GameObject player;
 	public GameObject playerMesh;
 	public GameObject playerMeshRig;
-	private CharacterController controller;
+	public CharacterController controller;
 	public Camera cam;
 	private float walkSpeed = 2f;
 	private float sprintSpeed = 5f;
@@ -78,7 +78,6 @@ public class PlayerController : MonoBehaviour
 	public GameObject leftBendingIKTarget;
 	public GameObject leftHandHoldingGrip;
 	public float leftArmBendingValue;
-
 	public GameObject leftPalm;
 	public GameObject leftPalmRaycaster;
 
@@ -254,8 +253,11 @@ public class PlayerController : MonoBehaviour
 			currentSpeed = walkSpeed;
 		}
 
+		
+
 		// --> the newState is null at first to be sure that the we define a new state
 		State newPlayerState = null;
+
 
 		// we are in the running state if the player is sprinting by pressing the left shift key
 		if (Input.GetKey(KeyCode.LeftShift) && currentSpeed > 0f && !isInAir)
@@ -277,7 +279,6 @@ public class PlayerController : MonoBehaviour
 			}
 					
 		}
-
 			// we are in the walking state if the player is moving and not sprinting
 		else if (currentSpeed > 0f && !isInAir)
 		{					
@@ -317,14 +318,22 @@ public class PlayerController : MonoBehaviour
 			newPlayerState = new PlayerState_Jumping(this, controller, playerSetDirection.GetMoveDirection(), 
 			jumpSpeed, jumpHeight, playerSetDirection.GetForwardDirection(), playerSetDirection.GetRightDirection());
 		}
-				
+
+		
 		if(handsStateController.currentLeftHandState.stateName == "Is Holding A Grip" || handsStateController.currentRightHandState.stateName == "Is Holding A Grip")
 		{
-			
+			// if (controller == null)
+			// {
+			// 	controller = GetComponent<CharacterController>();
+			// }
+			//Debug.Log($"PlayerController is null : {this == null}, Controller is null: {controller == null}");
 			newPlayerState = new PlayerState_AgainstWall(this, controller, playerSetDirection.GetMoveDirection(), walkSpeed, 
 			playerSetDirection.GetMoveDirection(),playerSetDirection.GetForwardDirection(), playerSetDirection.GetRightDirection(), rightArmBendingValue, leftArmBendingValue,
 			leftHandHoldingGrip, rightHandHoldingAGrip, bothHandsHoldAGrip);	
 		}	
+
+				
+
 
 		// if the player is against a wall, we set the player state to the against wall state			
 		// if the new state type is different from the current state type, we get the type of the new state 
