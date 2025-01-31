@@ -112,6 +112,12 @@ public class HandsStateController : MonoBehaviour
 #region  Player Left Hand Loop
 	public void PlayLeftHandLoop()
 	{
+	
+		if (currentLeftHandState is LeftHandState_IsHoldingAGrip)
+		{
+			playerController.newPlayerState = new PlayerState_SeizeGrip();
+		
+		}
 		if (currentLeftHandState is LeftHandState_ComingBack)
 		{
 			
@@ -122,7 +128,6 @@ public class HandsStateController : MonoBehaviour
 			{
 				EndLeftHandLoop();
 				isLeftHandLoopEnded = false;
-
 			}
 		}
 
@@ -140,7 +145,7 @@ public class HandsStateController : MonoBehaviour
 				playerController.leftPalm.SetActive(true);
 			}
 		}
-		if(currentLeftHandState.stateName == "Has Raised Up")
+		if(currentLeftHandState is leftHandState_HasRaisedUp)
 		{
 			
 			distanceBetweenLeftHandAndLeftShoulder = IKArmsControl.CalcDistBetweenLeftHandAndLeftShoulder(playerController.leftArmIK);
@@ -150,7 +155,7 @@ public class HandsStateController : MonoBehaviour
 
 		}
 
-		if(currentLeftHandState.stateName =="Is Being Guided")
+		if(currentLeftHandState is leftHandState_isBeingGuided)
 		{
 			// here we calculate the time since the player is being guided
 			// guidedHandDirection = Mouse.current.position.ReadValue();
@@ -162,7 +167,7 @@ public class HandsStateController : MonoBehaviour
 		}
 		
 
-		if(currentLeftHandState.stateName == "Is Holding A Grip" )
+		if(currentLeftHandState is LeftHandState_IsHoldingAGrip)
 		{
 
 			distanceBetweenLeftHandAndLeftShoulder = IKArmsControl.CalcDistBetweenLeftHandAndLeftShoulder(playerController.leftArmIK);
@@ -193,11 +198,9 @@ public class HandsStateController : MonoBehaviour
 	}
 	public void ChangeLeftHandStateToHoldingGrip()
 	{
-
 		// Debug.Log("Changing Left Hand State to Holding Grip");
 		ChangeLeftHandState(new LeftHandState_IsHoldingAGrip());
 		IKArmsControl.ChangeIKarmTarget(playerController.leftArmIK, playerController.leftHandHoldingGrip, playerController.leftArmIKTarget);	
-	
 	}
 
 	public void ChangeLeftHandState(LeftHandState newLeftHandState)
@@ -240,12 +243,13 @@ public class HandsStateController : MonoBehaviour
 // ------- Right Hand State Management ----- //
 #region  Player Right Hand Loop
 	public void PlayRightHandLoop()
-	{
+	{	
+			
 		if (currentRightHandState is RightHandState_ComingBack)
 		{
 			bool completed = IKArmsControl.DecrementRightIkWeight(playerController, playerController.rightArmIK, ref currentRightIkWeight, ref currentRightIkRotationWeight, 2f);
 			
-			
+	
 			uiDebug.UpdateRightArmBendingValue(currentRightIkWeight);
 			playerController.rightArmBendingValue = currentLeftIkWeight;
 
@@ -253,6 +257,7 @@ public class HandsStateController : MonoBehaviour
 			{
 				EndRightHandLoop();
 				isRightHandLoopEnded = true;
+
 			}
 		}
 
@@ -269,34 +274,26 @@ public class HandsStateController : MonoBehaviour
 				SetRightHandState(new RightHandState_HasRaisedUp(playerController, playerController.rightArmIKTarget, playerController.rightBendingIKTarget, playerController.rightIKSolverArm, playerController.rightArmIK));
 			}
 		}
-		if (currentRightHandState.stateName == "Has Raised Up")
+		if (currentRightHandState is RightHandState_HasRaisedUp)
 		{
 			distanceBetweenRightHandAndRightShoulder = IKArmsControl.CalcDistBetweenRighttHandAndRightShoulder(playerController.rightArmIK);
 			uiDebug.UpdateRightArmBendingValue(distanceBetweenRightHandAndRightShoulder);
 			playerController.rightArmBendingValue = distanceBetweenRightHandAndRightShoulder;
 
 		}
-		if (currentRightHandState.stateName == "Is Being Guided")
+		if (currentRightHandState is RightHandState_isBeingGuided)
 		{
 			timeSinceGuidedStart += Time.deltaTime;
-			// Debug.Log($"Right Arm is being guided by mouse ! Time since guided start is {timeSinceGuidedStart} and the direction is {DirectionName}, the vector is {mouseDirection}");
 			IKArmsControl.GuideHandByMouse(playerController, playerController.rightArmIK, timeSinceGuidedStart, mouseDirection, DirectionName);
 			
 		}
-		if(currentRightHandState.stateName == "Is Holding A Grip" )
+		if(currentRightHandState is RightHandState_IsHoldingAGrip)
 		{
 			distanceBetweenRightHandAndRightShoulder = IKArmsControl.CalcDistBetweenRighttHandAndRightShoulder(playerController.rightArmIK);
 			uiDebug.UpdateRightArmBendingValue(distanceBetweenRightHandAndRightShoulder);
 			playerController.rightArmBendingValue = distanceBetweenRightHandAndRightShoulder;
 		
 		}
-		// else
-		// {
-		// 	distanceBetweenRightHandAndRightShoulder = 0f;
-		// 	uiDebug.UpdateRightArmBendingValue(distanceBetweenRightHandAndRightShoulder);
-		// 	playerController.rightArmBendingValue = distanceBetweenRightHandAndRightShoulder;
-
-		// }
 	}
 #endregion
 // ------------------------------------------ //

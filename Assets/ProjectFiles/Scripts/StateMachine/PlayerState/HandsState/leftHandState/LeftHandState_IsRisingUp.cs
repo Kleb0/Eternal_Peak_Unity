@@ -39,7 +39,7 @@ public class LeftHandState_IsRisingUp : LeftHandState
 
 	public override void EnterState()
 	{
-		Debug.Log("Entering LeftHandState_IsRisingUp");
+		// Debug.Log("Entering LeftHandState_IsRisingUp");
 		IKArmsControl.EnableIKTarget(playerController, leftArmIkTarget, LeftArmIK);
 		IKArmsControl.EnableIkArm(LeftArmIK);
 

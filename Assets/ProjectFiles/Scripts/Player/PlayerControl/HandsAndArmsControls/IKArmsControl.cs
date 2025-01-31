@@ -213,11 +213,10 @@ public class IKArmsControl : MonoBehaviour
 	public static void ChangeIkArmTargetToBendingTarget(ArmIK armIK, GameObject bendingTarget, GameObject handTarget)
 	{
 				
-
 		if (armIK.solver.isLeft)
 		{
 			
-			Debug.Log("Change the left arm Ik target to the left bending target" + bendingTarget.name);
+			// Debug.Log("Change the left arm Ik target to the left bending target" + bendingTarget.name);
 			armIK.solver.arm.target = bendingTarget.transform;
 
 			Vector3 directionToTarget = bendingTarget.transform.position - handTarget.transform.position;
@@ -246,18 +245,17 @@ public class IKArmsControl : MonoBehaviour
 
 		if (armIK.solver.isLeft)
 		{
-			Debug.Log("Left arm is controlled by mouse scroll");
+			// Debug.Log("Left arm is controlled by mouse scroll");
 			guideOnScroll(adjustmentValue, bendingtarget, currentHandPosition);
 		}
 
 		else if(!armIK.solver.isLeft)
 		{
-			Debug.Log("Right arm is controlled by mouse scroll");
+			// Debug.Log("Right arm is controlled by mouse scroll");
 			guideOnScroll(adjustmentValue, bendingtarget, currentHandPosition);
 	
 		}
 	}
-
 	
 	public static void GuideHandByMouse(PlayerController playercontroller, ArmIK armIk, float TimeSinceStart, Vector2 mouseDirection, string DirectionName)
 	{
@@ -292,9 +290,9 @@ public class IKArmsControl : MonoBehaviour
 	public static void guideOnScroll(float adjustmentValue, GameObject bendingtarget, Vector3 currentHandPosition)
 	{
 			bendingValue = 0f;
-			Debug.Log("Left arm is controlled by mouse scroll");
+			// Debug.Log("Left arm is controlled by mouse scroll");
 			bendingValue += adjustmentValue * Time.deltaTime;
-			Debug.Log("bending value is " + bendingValue);
+			// Debug.Log("bending value is " + bendingValue);
 			bendingValue = Mathf.Clamp(bendingValue, -1f, 1f);
 
 			//movement direction based on the hand position

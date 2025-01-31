@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerState_Jumping : PlayerState_Moving
+public class PlayerState_StartJumping : PlayerState_Moving
 {
     protected PlayerController playerController;
     protected CharacterController Controller;
@@ -20,7 +20,7 @@ public class PlayerState_Jumping : PlayerState_Moving
     protected bool isRightHandHoldingGrip;
     protected bool areBothHandsHoldingGrip;
 
-    public PlayerState_Jumping(
+    public PlayerState_StartJumping(
         PlayerController playerController,
         CharacterController characterController,
         HandsStateController handsStateController,
@@ -41,12 +41,12 @@ public class PlayerState_Jumping : PlayerState_Moving
         this.forwardBackward = forwardBackward;
         this.rightLeft = rightLeft;
 
-        stateName = "Jumping";
+        stateName = "Start Jumping";
     }
 
     public override void ExecuteState()
     {
-        
+        PlayerStartJump.StartJump(playerController, Controller, handsStateController, new Vector2(0, jumpHeight), moveDirection, jumpSpeed);
     }
 
 

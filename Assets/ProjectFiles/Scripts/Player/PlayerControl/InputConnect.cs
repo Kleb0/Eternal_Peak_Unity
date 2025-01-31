@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using RootMotion.FinalIK;
@@ -237,11 +238,14 @@ public class InputConnect : MonoBehaviour
 
 	private void OnPlayerJump(InputAction.CallbackContext context)
 	{
-		Debug.LogWarning("Jump Input called in InputConnect.CS ");
-		Debug.Log("Jump Input called in InputConnect.CS ");
-		playerController.haspressedJump = true;
-		playerController.canJump = true;				
+		if(playerController.isGrounded)
+		{
+			playerController.haspressedJump = true;		
+			Debug.Log($"Jump input received. haspressedJump: {playerController.haspressedJump}");
+		}
+		
 	}
+
 #endregion
 // ------------------------------------- //
 
@@ -365,7 +369,7 @@ public class InputConnect : MonoBehaviour
 
 	private void OnGuideRightHandStop(InputAction.CallbackContext context)
 	{
-		Debug.Log("GuideRightHandStop detected");
+		// Debug.Log("GuideRightHandStop detected");
 
 		if(guideRightHandCoroutine != null)
 		{

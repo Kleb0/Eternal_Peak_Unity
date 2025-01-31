@@ -24,7 +24,6 @@ public class LeftHandCollider : MonoBehaviour
 		playerController.leftHandHoldingGrip = other.gameObject.transform.GetChild(0).gameObject;
 		Debug.Log("Left hand is holding " + playerController.leftHandHoldingGrip.name);
 		handsStateController.ChangeLeftHandStateToHoldingGrip();	
-
 		
 
 	}

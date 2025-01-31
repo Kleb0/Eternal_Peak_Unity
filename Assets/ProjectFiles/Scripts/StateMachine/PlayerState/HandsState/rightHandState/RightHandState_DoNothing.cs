@@ -14,7 +14,7 @@ public class RightHandState_DoNothing : RightHandState
 
 	public override void EnterState()
 	{
-		Debug.Log("TEST Enter RightHandState with name " + stateName);
+		// Debug.Log("TEST Enter RightHandState with name " + stateName);
 		IKArmsControl.DisableIKTarget(playerController.rightArmIKTarget, playerController.rightBendingIKTarget);
 		IKArmsControl.DisableIkArm(playerController.rightArmIK);
 	}

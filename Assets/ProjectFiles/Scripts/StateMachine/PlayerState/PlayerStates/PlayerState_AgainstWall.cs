@@ -56,13 +56,20 @@ public class PlayerState_AgainstWall : PlayerState_Moving
 		stateName = "Against Wall";
 	}
 
+	public override void EnterState()
+	{
+		base.EnterState();
+		Debug.Log("Entering Against Wall");
+		// playerController.isInAir = true;
+	}
+
 	public override void ExecuteState()
 	{
 		Vector3 leftIkTargetPosition;
 		bool canMoveBackward, canMoveForward, canMoveLaterally;
 
 
-		PlayerHoldingAGrip.MoveAgainstWall(
+		PlayerProcessMoveAgainstWall.MoveAgainstWall(
 			this.playerController,
 			this.Controller,
 			lateralLimit,
@@ -79,6 +86,12 @@ public class PlayerState_AgainstWall : PlayerState_Moving
 		{
 			base.ExecuteState();
 		}
-		// base.ExecuteState();
+
+	}
+	public override void ExitState()
+	{
+		Debug.Log("Exiting Against Wall");
+		// playerController.isInAir = false;
+		base.ExitState();
 	}
 }
