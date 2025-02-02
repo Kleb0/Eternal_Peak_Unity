@@ -2061,7 +2061,7 @@ GameObject:
   - component: {fileID: 662601430}
   - component: {fileID: 662601429}
   m_Layer: 0
-  m_Name: Climbing_point
+  m_Name: Climbing_point_3
   m_TagString: Climbing_Point
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3521,8 +3521,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1686334931}
   - {fileID: 2019397756}
+  - {fileID: 1686334931}
   - {fileID: 662601432}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3832,17 +3832,17 @@ MonoBehaviour:
   playerMeshRig: {fileID: 919132148793657597}
   controller: {fileID: 1073958754}
   cam: {fileID: 1482299800}
-  walkSpeed: 2
   isClimbing: 0
   playerAnimation: {fileID: 1073958765}
   playerStateUI: {fileID: 667712957}
   uiDebugActive: 1
   playerSetDirection: {fileID: 1073958766}
-  isGrounded: 0
-  canJump: 1
-  isInAir: 0
-  jumpLock: 0
+  currentSpeed: 0
+  walkSpeed: 2
+  sprintSpeed: 5
+  isGrounded: 1
   haspressedJump: 0
+  isInAir: 0
   jumpHeight: 1
   jumpSpeed: 2
   jumpEllapsedTime: 0
@@ -5451,7 +5451,7 @@ GameObject:
   - component: {fileID: 1686334932}
   - component: {fileID: 1686334934}
   m_Layer: 0
-  m_Name: Climbing_point
+  m_Name: Climbing_point_2
   m_TagString: Climbing_Point
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7221,7 +7221,7 @@ GameObject:
   - component: {fileID: 2019397754}
   - component: {fileID: 2019397753}
   m_Layer: 0
-  m_Name: Climbing_point
+  m_Name: Climbing_point_1
   m_TagString: Climbing_Point
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

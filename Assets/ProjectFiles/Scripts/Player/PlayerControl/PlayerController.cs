@@ -19,8 +19,6 @@ public class PlayerController : MonoBehaviour
 	public GameObject playerMeshRig;
 	public CharacterController controller;
 	public Camera cam;
-	public float walkSpeed = 2f;
-	private float sprintSpeed = 5f;
 	private float mouseSensitivity = 300f;
 	public bool isClimbing = false;
 	private Vector2 moveDirection;
@@ -31,13 +29,6 @@ public class PlayerController : MonoBehaviour
 	// --- Guiding --- //
 
 	private bool isPreservingMouseDirection = false;
-	// --- Gravity --- //
-	[Header("Gravity Settings")]
-	[Space(10)]
-	//gravity is equal to one defined in project settings
-	private float gravity = Physics.gravity.y;
-	private float xRotation;
-
 	// ------- States management (privates variables) ------ //
 	public PlayerAnimation playerAnimation;
 	float velocity = 0f;
@@ -52,6 +43,19 @@ public class PlayerController : MonoBehaviour
 	private LeftHandState previousLeftHandState;
 	private LeftHandState currentLeftHandState;
 	public PlayerSetDirection playerSetDirection;
+
+	[Header("Moving parameters")]
+	[Space(10)]
+	public float currentSpeed;
+	public float walkSpeed = 2f;
+	public float sprintSpeed = 5f;
+
+	// --- Gravity --- //
+	[Header("Gravity Settings")]
+	[Space(10)]
+	//gravity is equal to one defined in project settings
+	private float gravity = Physics.gravity.y;
+	private float xRotation;
 
 	// --- Jumping --- //
 	[Header("Jumping parameters")]
@@ -106,6 +110,8 @@ public class PlayerController : MonoBehaviour
 
 	public PlayerState newPlayerState;
 	public PlayerState currentPlayerState;
+
+	public PlayerState PreviousStateOnGround;
 	private PlayerStateManager playerStateManager;
 	private PlayerState playerInitialState;
 
@@ -268,88 +274,107 @@ public class PlayerController : MonoBehaviour
 	
 	// The method Move have been changed. Instead of returning void, it now returns a PlayerState
 	// as each movement implements a different playerstate encapsulating its own logic.
-
 	PlayerState Move()
 	{
 		
 		moveDirection = new Vector2(inputConnect.rightLeft, inputConnect.forwardBackward);
-		float currentSpeed = 0f;
-
-		bothHandsHoldAGrip = leftHandHoldingAGrip && rightHandHoldingAGrip;
+		currentSpeed = 0f;
 
 		if (moveDirection != Vector2.zero)
 		{
-			currentSpeed = walkSpeed;
+			currentSpeed = (PreviousStateOnGround.stateName == "Walking") 
+				? walkSpeed 
+				: (PreviousStateOnGround.stateName == "Running") 
+				? sprintSpeed 
+				: walkSpeed;
+					
 		}
 	
 		newPlayerState = null;
+
+		if(leftHandHoldingGrip || rightHandHoldingAGrip)
+		{
+			newPlayerState = new PlayerState_AgainstWall(this, controller, leftArmBendingValue, playerSetDirection.GetMoveDirection(), walkSpeed,
+				playerSetDirection.GetMoveDirection(), playerSetDirection.GetForwardDirection(), playerSetDirection.GetRightDirection(),
+				rightArmBendingValue, leftArmBendingValue, leftHandHoldingGrip, rightHandHoldingAGrip, bothHandsHoldAGrip, leftArmIKTarget);
+				// currentSpeed = 0f;			
+		}
+		else if(leftHandHoldingAGrip == false && rightHandHoldingAGrip==false && currentSpeed == 0f && haspressedJump==false)
+		{
+			// Debug.Log("Idle");
+			newPlayerState = new PlayerState_Idle();
+			PreviousStateOnGround = newPlayerState;
+			velocity = playerAnimation.RunWalkBlending(velocity, -deceleration, 0f);
+			playerAnimation.SetWalking(false);
+			playerAnimation.SetRunning(velocity);
+
+		}
+
 
 
 		//begining of our if else if chain
 		if(isGrounded == false)
 		{
 			newPlayerState = new PlayerState_isJumping(this, controller, handsStateController, 
-			playerSetDirection.GetMoveDirection(), jumpSpeed);
+			playerSetDirection.GetMoveDirection(), jumpSpeed, currentSpeed);
 		}
 
 		//we don't really jump here, we start a state that will make the player begin the jump
 		//then the jump state pursue the movement when player is not grounded in the start of the chain
 
-		if(haspressedJump && isGrounded && currentPlayerState.stateName == "Against Wall")
-		{
-			// handsStateController.ChangeLeftHandState(new LeftHandState_HoldingGripWhileJumping());
-			// handsStateController.ChangeRightHandState(new RightHandState_HoldingGripWhileJumping());
-			Debug.Log(" now hand state are holding grip while jumping and we don't start jump");
+		// if(haspressedJump && isGrounded && currentPlayerState.stateName == "Against Wall")
+		// {
+		// 	// handsStateController.ChangeLeftHandState(new LeftHandState_HoldingGripWhileJumping());
+		// 	// handsStateController.ChangeRightHandState(new RightHandState_HoldingGripWhileJumping());
+		// 	Debug.Log(" now hand state are holding grip while jumping and we don't start jump");
 	
-		}
-		if (haspressedJump && isGrounded)
+		// }
+
+
+		else if (haspressedJump && isGrounded)
 		{	
 			if(currentPlayerState.stateName != "Against Wall")
 			{
 				newPlayerState = new PlayerState_StartJumping(this, controller, handsStateController, playerSetDirection.GetMoveDirection(),
-				jumpSpeed, jumpHeight, playerSetDirection.GetForwardDirection(), playerSetDirection.GetRightDirection());
+				jumpSpeed, currentSpeed, jumpHeight, playerSetDirection.GetForwardDirection(), playerSetDirection.GetRightDirection());
 
 			}	
-		}
-
-	
-		else if (Input.GetKey(KeyCode.LeftShift) && currentSpeed > 0f && !haspressedJump)
+		}	
+		else if (Input.GetKey(KeyCode.LeftShift) && currentSpeed > 0f && haspressedJump==false && leftHandHoldingAGrip == false)
 		{
+			currentSpeed = sprintSpeed;
 			newPlayerState = new PlayerState_Running(controller, playerSetDirection.GetMoveDirection(), sprintSpeed,
 				playerSetDirection.GetMoveDirection(), playerSetDirection.GetForwardDirection(), playerSetDirection.GetRightDirection());
 
+			PreviousStateOnGround = newPlayerState;
 			velocity = playerAnimation.RunWalkBlending(velocity, acceleration, 1f);
 			playerAnimation.SetRunning(velocity);
 
 		
 		}
-		else if (currentSpeed > 0f && !haspressedJump)
+		else if (currentSpeed > 0f && haspressedJump==false && leftHandHoldingAGrip == false)
 		{
+			currentSpeed = walkSpeed;
 			newPlayerState = new PlayerState_Walking(controller, playerSetDirection.GetMoveDirection(), walkSpeed,
 				playerSetDirection.GetMoveDirection(), playerSetDirection.GetForwardDirection(), playerSetDirection.GetRightDirection());
 
+			PreviousStateOnGround = newPlayerState;
 			velocity = playerAnimation.RunWalkBlending(velocity, -deceleration, 0f);
 			playerAnimation.SetWalking(true);
 			playerAnimation.SetRunning(velocity);
 
 		}
-		else if (!haspressedJump && currentSpeed == 0f && !haspressedJump)
+		else if(leftHandHoldingAGrip == false && currentSpeed == 0f && haspressedJump==false)
 		{
+			// Debug.Log("Idle");
 			newPlayerState = new PlayerState_Idle();
+			PreviousStateOnGround = newPlayerState;
 			velocity = playerAnimation.RunWalkBlending(velocity, -deceleration, 0f);
 			playerAnimation.SetWalking(false);
 			playerAnimation.SetRunning(velocity);
+
 		}
 
-		// If the player is holding a grip, we set the player state to "Against Wall" and break the else if chain
-		if (currentPlayerState.stateName == "Seize Grip")
-		{
-			newPlayerState = new PlayerState_AgainstWall(this, controller, playerSetDirection.GetMoveDirection(), walkSpeed,
-				playerSetDirection.GetMoveDirection(), playerSetDirection.GetForwardDirection(), playerSetDirection.GetRightDirection(),
-				rightArmBendingValue, leftArmBendingValue, leftHandHoldingGrip, rightHandHoldingAGrip, bothHandsHoldAGrip);			
-		}
-		
-		
 		if (newPlayerState != null && (currentPlayerState == null || newPlayerState.GetType() != currentPlayerState.GetType()))
 		{
 			canChangeState = true;
@@ -364,7 +389,6 @@ public class PlayerController : MonoBehaviour
 		return currentPlayerState;
 	}
 
-
 	#endregion		
 // -------------------------------------- //
 
@@ -378,14 +402,6 @@ public class PlayerController : MonoBehaviour
 		}
 	}
 
-	public void SetAgainstWallState()
-	{
-		currentPlayerState = new PlayerState_AgainstWall(this, controller, playerSetDirection.GetMoveDirection(), walkSpeed,
-			playerSetDirection.GetMoveDirection(), playerSetDirection.GetForwardDirection(), playerSetDirection.GetRightDirection(),
-			rightArmBendingValue, leftArmBendingValue, leftHandHoldingAGrip, rightHandHoldingAGrip, bothHandsHoldAGrip);
-		OnPlayerStateChange();
-	}	
-	
 
 	public void ChangeLeftIKWeight(float weight)
 	{
@@ -404,37 +420,23 @@ public class PlayerController : MonoBehaviour
 	#region functions returning private variables
 	private bool CheckIsGrounded()
 	{
-		// Distance de vérification réduite pour éviter les faux positifs
+
 		float groundCheckDistance = 0.2f; 
 		LayerMask groundMask = LayerMask.GetMask("Ground");
 
-		// Point de départ du Raycast légèrement ajusté au bas du collider
+		
 		Vector3 rayOrigin = controller.bounds.center;
-		rayOrigin.y = controller.bounds.min.y + 0.1f; // Légèrement au-dessus du bas du collider
+		rayOrigin.y = controller.bounds.min.y + 0.1f;
 
 		RaycastHit hit;
 		bool isGrounded = Physics.Raycast(rayOrigin, Vector3.down, out hit, groundCheckDistance, groundMask);
 
-		// Visualisation du Raycast
-		Debug.DrawRay(rayOrigin, Vector3.down * groundCheckDistance, isGrounded ? Color.green : Color.red, 0.1f);
 
-		// Log détaillé pour débogage
+		Debug.DrawRay(rayOrigin, Vector3.down * groundCheckDistance, isGrounded ? Color.green : Color.red, 0.1f);
 
 		return isGrounded;
 	}
 
 
 	#endregion
-
-	// private void OnDrawGizmos()
-	// {
-	// 	if (controller == null) return;
-
-	// 	Gizmos.color = Color.blue; // Couleur du raycast dans l'éditeur
-	// 	Vector3 rayOrigin = controller.transform.position + Vector3.up * 0.2f;
-	// 	float groundCheckDistance = 0.2f;
-
-	// 	// Dessine le raycast pour vérifier si le joueur est au sol
-	// 	Gizmos.DrawRay(rayOrigin, Vector3.down * groundCheckDistance);
-	// }
 }

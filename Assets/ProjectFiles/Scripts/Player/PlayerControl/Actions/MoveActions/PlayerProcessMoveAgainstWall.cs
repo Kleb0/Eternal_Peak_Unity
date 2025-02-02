@@ -12,82 +12,76 @@ public class PlayerProcessMoveAgainstWall
         out Vector3 leftIkTargetPosition,
         out bool canMoveBackward,
         out bool canMoveForward,
-        out bool canMoveLaterally
+        out bool canMoveLaterally,
+        GameObject leftIkTarget
     )
     {
-        
         canMoveLeft = false;
         canMoveRight = false;
         areBothHandsHoldingGrip = false;
         leftIkTargetPosition = Vector3.zero;
         canMoveBackward = false;
         canMoveForward = false;
-        canMoveLaterally = false;
-
-       
-        // if (playerController == null || controller == null)
-        // {
-        //     Debug.LogError("PlayerController or CharacterController is null in MoveAgainstWall.");
-        //     return;
-        // }
-
-      
-        bool isLeftHandHoldingGrip = playerController.leftHandHoldingAGrip;
-        bool isRightHandHoldingGrip = playerController.rightHandHoldingAGrip;
-        areBothHandsHoldingGrip = isLeftHandHoldingGrip && isRightHandHoldingGrip;
-
-        float rightarmsBendingValue = playerController.rightArmBendingValue;
-        float leftarmsBendingValue = playerController.leftArmBendingValue;
-
-        Vector2 forwardBackward = playerController.playerSetDirection.GetForwardDirection();
-        Vector2 rightLeft = playerController.playerSetDirection.GetRightDirection();
-
-        GameObject leftIkTarget = null;
-
-        if (isLeftHandHoldingGrip)
-        {
-            leftIkTarget = playerController.leftHandHoldingGrip;
-        }
-        if (isRightHandHoldingGrip)
-        {
-            leftIkTarget = playerController.rightHandHoldingGrip;
-        }
-
+        canMoveLaterally = false;     
         
-        if (isLeftHandHoldingGrip && isRightHandHoldingGrip)
+        if (playerController.leftHandHoldingAGrip)
         {
-            areBothHandsHoldingGrip = true;
-        }
+            // Debug.Log($"Lateral Limit: {lateralLimit}");
+                          
+            bool isLeftHandHoldingGrip = playerController.leftHandHoldingAGrip;
+            bool isRightHandHoldingGrip = playerController.rightHandHoldingAGrip;
+            areBothHandsHoldingGrip = isLeftHandHoldingGrip && isRightHandHoldingGrip;
 
-        
-        if (leftIkTarget == null)
-        {
-            Debug.LogWarning("Left IK target is null in MoveAgainstWall.");
-            return;
-        }
+            float rightArmsBendingValue = playerController.rightArmBendingValue;
+            float leftArmsBendingValue = playerController.leftArmBendingValue;
 
-        Vector3 leftLimit = leftIkTarget.transform.position + leftIkTarget.transform.right * lateralLimit;
-        Vector3 rightLimit = leftIkTarget.transform.position - leftIkTarget.transform.right * lateralLimit;
-        Vector3 playerPosition = controller.transform.position;
+            Vector2 forwardBackward = playerController.playerSetDirection.GetForwardDirection();
+            Vector2 rightLeft = playerController.playerSetDirection.GetRightDirection();
 
-    
-        if (areBothHandsHoldingGrip)
-        {
-            canMoveLeft = playerPosition.x > leftLimit.x - 1f;
-            canMoveRight = playerPosition.x < rightLimit.x - 1f;
-        }
-        else
-        {
-            canMoveLeft = playerPosition.x > leftLimit.x;
-            canMoveRight = playerPosition.x < rightLimit.x;
-        }
+            
+            if (leftIkTarget == null)
+            {
+                Debug.LogWarning("Left IK target is null in MoveAgainstWall.");
+                return;
+            }
 
-        
-        canMoveBackward = forwardBackward.y < 0f && leftarmsBendingValue < 1f && rightarmsBendingValue < 1f;
-        canMoveForward = forwardBackward.y > 0f && (leftarmsBendingValue > 0.15f || rightarmsBendingValue > 0.15f);
-        canMoveLaterally = (rightLeft.x < 0f && canMoveLeft) || (rightLeft.x > 0f && canMoveRight);
 
-      
-        leftIkTargetPosition = leftIkTarget.transform.position;
+            leftIkTargetPosition = leftIkTarget.transform.position;
+            Vector3 playerPosition = controller.transform.position;
+
+            // 1/ caculate the offset in function of the target
+            Vector3 offeset = playerPosition - leftIkTargetPosition;
+
+            // 2/ Project the offset on the right axis of the target
+            float xLocal = Vector3.Dot(offeset, leftIkTarget.transform.right);
+
+            // 3/ Convert this distance to a fraction in [-1 ; +1] if lateral limit represent
+            // the max value to be able to reach ±1
+            float fractionX = xLocal / lateralLimit;
+
+            // 4/ Clamp the fraction to [-1 ; +1]
+            fractionX = Mathf.Clamp(fractionX, -1f, 1f);
+
+            bool notAtRightLimit = (fractionX > -1f);
+
+            // bool notAtLeftLimit = (fractionX > -1f);
+            bool notAtLeftLimit = (fractionX < 1f);
+           
+            // Vector3 leftLimit = leftIkTarget.transform.position + leftIkTarget.transform.right * lateralLimit;
+            // Vector3 rightLimit = leftIkTarget.transform.position - leftIkTarget.transform.right * lateralLimit;
+            // Vector3 playerPosition = controller.transform.position;
+
+            canMoveBackward  = (forwardBackward.y < 0f && leftArmsBendingValue  < 1f && rightArmsBendingValue < 1f);
+            canMoveForward   = (forwardBackward.y > 0f && (leftArmsBendingValue > 0.15f || rightArmsBendingValue > 0.15f));
+            canMoveLeft = (rightLeft.x < 0f  && notAtLeftLimit && leftArmsBendingValue < 0.8f && rightArmsBendingValue < 0.8f); 
+            canMoveRight = (rightLeft.x > 0f && notAtRightLimit && (leftArmsBendingValue > 0.15f || rightArmsBendingValue > 0.15f));
+
+            Debug.Log(
+                            $"PlayerPosition = {playerPosition:F1} (range is -1..1)"
+                        );
+            canMoveLaterally = (canMoveLeft || canMoveRight);
+            // Debug.Log($"[MoveAgainstWall] canMoveLeft = {canMoveLeft}, canMoveRight = {canMoveRight}");
+        }     
+
     }
 }

@@ -14,6 +14,8 @@ public class PlayerState_StartJumping : PlayerState_Moving
 
     protected float jumpHeight;
     protected float jumpSpeed;
+
+    protected float currentSpeed;
     protected float verticalVelocity;
 
     protected bool isLeftHandHoldingGrip;
@@ -26,6 +28,7 @@ public class PlayerState_StartJumping : PlayerState_Moving
         HandsStateController handsStateController,
         Vector2 moveDirection,
         float jumpSpeed,
+        float currentSpeed,
         float jumpHeight,
         Vector2 forwardBackward,
         Vector2 rightLeft
@@ -37,6 +40,7 @@ public class PlayerState_StartJumping : PlayerState_Moving
         this.handsStateController = handsStateController;
         this.jumpHeight = jumpHeight;
         this.jumpSpeed = jumpSpeed;
+        this.currentSpeed = currentSpeed;
         this.moveDirection = moveDirection;
         this.forwardBackward = forwardBackward;
         this.rightLeft = rightLeft;
@@ -46,7 +50,8 @@ public class PlayerState_StartJumping : PlayerState_Moving
 
     public override void ExecuteState()
     {
-        PlayerStartJump.StartJump(playerController, Controller, handsStateController, new Vector2(0, jumpHeight), moveDirection, jumpSpeed);
+        PlayerStartJump.StartJump(playerController, Controller, handsStateController, new Vector2(0, jumpHeight), 
+        moveDirection, jumpSpeed , currentSpeed);
     }
 
 

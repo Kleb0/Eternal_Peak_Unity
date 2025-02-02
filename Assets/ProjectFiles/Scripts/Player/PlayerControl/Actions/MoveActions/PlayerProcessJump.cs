@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class PlayerProcessJumping : MonoBehaviour
 {
@@ -9,29 +10,32 @@ public class PlayerProcessJumping : MonoBehaviour
         CharacterController controller,
         HandsStateController handsStateController,
         Vector2 inputDirection,
-        float jumpSpeed
+        float jumpSpeed,
+        float currentSpeed
     )
     {
-        Debug.Log("Process Jumping");
+        //Debug.Log($"Process Jumping current speed is {currentSpeed}");
         float gravity = -9.81f;
-
-        // Ajout de la gravité et gestion de la vélocité verticale
+        
         playerController.jumpEllapsedTime += Time.deltaTime;
         playerController.verticalVelocity += gravity * Time.deltaTime;
 
-        // Mouvement en l'air avec la possibilité de guider le joueur
-        float circularEffect = Mathf.Sin(playerController.jumpEllapsedTime * Mathf.PI) * 0.5f;
+        float airControlFactor = 0.4f;
+    
+        float circularEffectFactor = 0.1f;
+        float circularEffect = Mathf.Sin(playerController.jumpEllapsedTime * Mathf.PI) * circularEffectFactor;
 
-        Vector3 jumpMove;
-        if (inputDirection == Vector2.zero)
+        Vector3 jumpMove = playerController.transform.forward * inputDirection.y 
+                         + playerController.transform.right * (inputDirection.x + circularEffect);
+
+    
+        if (jumpMove.sqrMagnitude  > 0.001f)
         {
-            jumpMove = Vector3.zero;
+            jumpMove.Normalize();
+
         }
-        else
-        {
-            jumpMove = playerController.transform.forward * inputDirection.y +
-                       playerController.transform.right * (inputDirection.x + circularEffect);
-        }
+
+        jumpMove *= (currentSpeed * airControlFactor);
 
         jumpMove.y = playerController.verticalVelocity;
 

@@ -9,17 +9,17 @@ public class PlayerState_isJumping : PlayerState
         private HandsStateController handsStateController;
         private Vector2 inputDirection;
         private float jumpSpeed;
-        private float gravity;
+        private float currentSpeed;
 
 
-    public PlayerState_isJumping(PlayerController playerController, CharacterController controller, HandsStateController handsStateController, Vector2 inputDirection, float jumpSpeed )        
+    public PlayerState_isJumping(PlayerController playerController, CharacterController controller, HandsStateController handsStateController, Vector2 inputDirection, float jumpSpeed, float currentSpeed)
     {
         this.playerController = playerController;
         this.controller = controller;
         this.handsStateController = handsStateController;
         this.inputDirection = inputDirection;
         this.jumpSpeed = jumpSpeed;
-        this.gravity = -9.81f;
+        this.currentSpeed = currentSpeed;
 
         stateName = "is Jumping";
     }
@@ -31,7 +31,7 @@ public class PlayerState_isJumping : PlayerState
 
     public override void ExecuteState()
     {
-        PlayerProcessJumping.ProcessJumping(playerController, controller, handsStateController, inputDirection, jumpSpeed);
+        PlayerProcessJumping.ProcessJumping(playerController, controller, handsStateController, inputDirection, jumpSpeed, currentSpeed);
         
        
     }

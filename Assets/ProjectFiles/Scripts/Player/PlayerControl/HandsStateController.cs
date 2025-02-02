@@ -115,12 +115,17 @@ public class HandsStateController : MonoBehaviour
 	
 		if (currentLeftHandState is LeftHandState_IsHoldingAGrip)
 		{
-			playerController.newPlayerState = new PlayerState_SeizeGrip();
+			playerController.leftHandHoldingAGrip = true;
+			distanceBetweenLeftHandAndLeftShoulder = IKArmsControl.CalcDistBetweenLeftHandAndLeftShoulder(playerController.leftArmIK);
+			playerController.leftArmBendingValue = distanceBetweenLeftHandAndLeftShoulder;
+
 		
 		}
+
 		if (currentLeftHandState is LeftHandState_ComingBack)
 		{
 			
+			playerController.leftHandHoldingAGrip = false;
 			bool completed = IKArmsControl.DecrementLeftIkWeight(playerController, playerController.leftArmIK, ref currentLeftIkWeight, ref currentLeftIkRotationWeight, 2f);
 	
 
@@ -129,9 +134,7 @@ public class HandsStateController : MonoBehaviour
 				EndLeftHandLoop();
 				isLeftHandLoopEnded = false;
 			}
-		}
-
-		
+		}		
 		else if (currentLeftHandState is LeftHandState_IsRisingUp) 
 		{
 		
@@ -152,7 +155,6 @@ public class HandsStateController : MonoBehaviour
 			uiDebug.UpdateLeftArmBendingValue(distanceBetweenLeftHandAndLeftShoulder);
 			playerController.leftArmBendingValue = distanceBetweenLeftHandAndLeftShoulder;
 			
-
 		}
 
 		if(currentLeftHandState is leftHandState_isBeingGuided)
@@ -166,7 +168,6 @@ public class HandsStateController : MonoBehaviour
 			IKArmsControl.GuideHandByMouse(playerController, playerController.leftArmIK, timeSinceGuidedStart, mouseDirection, DirectionName);
 		}
 		
-
 		if(currentLeftHandState is LeftHandState_IsHoldingAGrip)
 		{
 
@@ -244,9 +245,15 @@ public class HandsStateController : MonoBehaviour
 #region  Player Right Hand Loop
 	public void PlayRightHandLoop()
 	{	
+		if (currentLeftHandState is LeftHandState_IsHoldingAGrip)
+		{
+			playerController.rightHandHoldingAGrip = true;
+		
+		}
 			
 		if (currentRightHandState is RightHandState_ComingBack)
 		{
+			playerController.rightHandHoldingAGrip = false;
 			bool completed = IKArmsControl.DecrementRightIkWeight(playerController, playerController.rightArmIK, ref currentRightIkWeight, ref currentRightIkRotationWeight, 2f);
 			
 	

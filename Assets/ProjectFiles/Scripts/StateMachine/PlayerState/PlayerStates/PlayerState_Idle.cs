@@ -6,4 +6,8 @@ public class PlayerState_Idle : PlayerState
 { 
     public override string stateName { get; protected set; } = "Idle";
 
+    public override void EnterState()
+    {
+        Debug.Log("Start Idle");
+    }
 }
