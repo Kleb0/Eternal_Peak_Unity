@@ -3517,7 +3517,7 @@ Transform:
   m_GameObject: {fileID: 955729842}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.99, y: 1.3202136, z: -2.9335952}
+  m_LocalPosition: {x: 3.975, y: 1.3202136, z: -2.9335952}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -3916,7 +3916,6 @@ MonoBehaviour:
   leftArmIK: {fileID: 0}
   leftArmIKTarget: {fileID: 1686975017}
   leftBendingIKTarget: {fileID: 1296095603}
-  leftHandHoldingGrip: {fileID: 0}
   leftArmBendingValue: 0
   leftPalm: {fileID: 1963040828}
   leftPalmRaycaster: {fileID: 508566438}
@@ -3988,10 +3987,12 @@ MonoBehaviour:
   rightArmIK: {fileID: 0}
   rightArmIKTarget: {fileID: 1605426700}
   rightBendingIKTarget: {fileID: 1783921794}
-  rightHandHoldingGrip: {fileID: 0}
   rightArmBendingValue: 0
+  rangeLimit: 0.5
   leftHandHoldingAGrip: 0
+  leftHandHoldingGrip: {fileID: 0}
   rightHandHoldingAGrip: 0
+  rightHandHoldingGrip: {fileID: 0}
   bothHandsHoldAGrip: 0
 --- !u!114 &1073958756
 MonoBehaviour:

@@ -5,7 +5,7 @@ public class PlayerProcessMoveAgainstWall
     public static void MoveAgainstWall(
         PlayerController playerController,
         CharacterController controller,
-        float lateralLimit,
+        float rangelimit,
         out bool canMoveLeft,
         out bool canMoveRight,
         out bool areBothHandsHoldingGrip,
@@ -37,7 +37,6 @@ public class PlayerProcessMoveAgainstWall
 
             Vector2 forwardBackward = playerController.playerSetDirection.GetForwardDirection();
             Vector2 rightLeft = playerController.playerSetDirection.GetRightDirection();
-
             
             if (leftIkTarget == null)
             {
@@ -45,42 +44,42 @@ public class PlayerProcessMoveAgainstWall
                 return;
             }
 
+         leftIkTargetPosition = leftIkTarget.transform.position;
+        Vector3 playerPosition = controller.transform.position;
 
-            leftIkTargetPosition = leftIkTarget.transform.position;
-            Vector3 playerPosition = controller.transform.position;
+        // Offset relative to the target
+        Vector3 offset = playerPosition - leftIkTargetPosition;
+        float distanceToGrip = offset.magnitude;
+        Vector3 normalizedOffset = offset.normalized;
 
-            // 1/ caculate the offset in function of the target
-            Vector3 offeset = playerPosition - leftIkTargetPosition;
+        // Project the offset onto the local axes of the target
+        float lateralDistance = Vector3.Dot(offset, leftIkTarget.transform.right);
 
-            // 2/ Project the offset on the right axis of the target
-            float xLocal = Vector3.Dot(offeset, leftIkTarget.transform.right);
+        // Compute the fraction relative to the spherical boundary
+        float fractionX = Mathf.Clamp(lateralDistance / rangelimit, -1f, 1f);
 
-            // 3/ Convert this distance to a fraction in [-1 ; +1] if lateral limit represent
-            // the max value to be able to reach ±1
-            float fractionX = xLocal / lateralLimit;
+        // Ensure the movement stays within the spherical boundary
+        bool armFullyExtended = leftArmsBendingValue >= 0.9f;
+        bool notAtRightLimit = fractionX < 1f;
+        bool notAtLeftLimit = fractionX > -1f;
+        bool notAtForwardLimit = leftArmsBendingValue > 0.15f;
+        bool notAtBackwardLimit = leftArmsBendingValue <= 0.9f;
 
-            // 4/ Clamp the fraction to [-1 ; +1]
-            fractionX = Mathf.Clamp(fractionX, -1f, 1f);
+        // Allow movement back toward the center when the arm is fully extended
+        bool canReturnLeft = rightLeft.x < 0f && fractionX < 0f && armFullyExtended;  
+        bool canReturnRight = rightLeft.x > 0f && fractionX > 0f && armFullyExtended; 
 
-            bool notAtRightLimit = (fractionX > -1f);
+        // Compute movement constraints based on the spherical approach
+        canMoveBackward = forwardBackward.y < 0f && notAtBackwardLimit;
+        canMoveForward = forwardBackward.y > 0f && notAtForwardLimit;
 
-            // bool notAtLeftLimit = (fractionX > -1f);
-            bool notAtLeftLimit = (fractionX < 1f);
-           
-            // Vector3 leftLimit = leftIkTarget.transform.position + leftIkTarget.transform.right * lateralLimit;
-            // Vector3 rightLimit = leftIkTarget.transform.position - leftIkTarget.transform.right * lateralLimit;
-            // Vector3 playerPosition = controller.transform.position;
+        // Allow movement only if inside the limits or if returning to center
+        canMoveLeft = rightLeft.x < 0f && notAtLeftLimit && !armFullyExtended || canReturnRight;
+        canMoveRight = rightLeft.x > 0f && notAtRightLimit && !armFullyExtended || canReturnLeft;
 
-            canMoveBackward  = (forwardBackward.y < 0f && leftArmsBendingValue  < 1f && rightArmsBendingValue < 1f);
-            canMoveForward   = (forwardBackward.y > 0f && (leftArmsBendingValue > 0.15f || rightArmsBendingValue > 0.15f));
-            canMoveLeft = (rightLeft.x < 0f  && notAtLeftLimit && leftArmsBendingValue < 0.8f && rightArmsBendingValue < 0.8f); 
-            canMoveRight = (rightLeft.x > 0f && notAtRightLimit && (leftArmsBendingValue > 0.15f || rightArmsBendingValue > 0.15f));
-
-            Debug.Log(
-                            $"PlayerPosition = {playerPosition:F1} (range is -1..1)"
-                        );
-            canMoveLaterally = (canMoveLeft || canMoveRight);
-            // Debug.Log($"[MoveAgainstWall] canMoveLeft = {canMoveLeft}, canMoveRight = {canMoveRight}");
+        canMoveLaterally = canMoveLeft || canMoveRight;
+     
+        
         }     
 
     }

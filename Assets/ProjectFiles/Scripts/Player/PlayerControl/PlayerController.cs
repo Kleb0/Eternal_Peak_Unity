@@ -85,7 +85,6 @@ public class PlayerController : MonoBehaviour
 	public ArmIK leftArmIK;
 	public GameObject leftArmIKTarget;
 	public GameObject leftBendingIKTarget;
-	public GameObject leftHandHoldingGrip;
 	public float leftArmBendingValue;
 	public GameObject leftPalm;
 	public GameObject leftPalmRaycaster;
@@ -98,12 +97,18 @@ public class PlayerController : MonoBehaviour
 	public ArmIK rightArmIK;
 	public GameObject rightArmIKTarget;
 	public GameObject rightBendingIKTarget;
-	public GameObject rightHandHoldingGrip;
 	public float rightArmBendingValue;
 	private InputConnect inputConnect;
 
+	[Header("Climbing Parameters")]
+	[Space(10)]
+
+	public float rangeLimit = 0.5f;
 	public bool leftHandHoldingAGrip = false;
+	public GameObject leftHandHoldingGrip;
+
 	public bool rightHandHoldingAGrip = false;
+	public GameObject rightHandHoldingGrip;
 	public bool bothHandsHoldAGrip = false;
 
 	// -------- State Management -------- //
@@ -294,7 +299,7 @@ public class PlayerController : MonoBehaviour
 
 		if(leftHandHoldingGrip || rightHandHoldingAGrip)
 		{
-			newPlayerState = new PlayerState_AgainstWall(this, controller, leftArmBendingValue, playerSetDirection.GetMoveDirection(), walkSpeed,
+			newPlayerState = new PlayerState_AgainstWall(this, controller, this.rangeLimit, playerSetDirection.GetMoveDirection(), walkSpeed,
 				playerSetDirection.GetMoveDirection(), playerSetDirection.GetForwardDirection(), playerSetDirection.GetRightDirection(),
 				rightArmBendingValue, leftArmBendingValue, leftHandHoldingGrip, rightHandHoldingAGrip, bothHandsHoldAGrip, leftArmIKTarget);
 				// currentSpeed = 0f;			
@@ -318,17 +323,6 @@ public class PlayerController : MonoBehaviour
 			newPlayerState = new PlayerState_isJumping(this, controller, handsStateController, 
 			playerSetDirection.GetMoveDirection(), jumpSpeed, currentSpeed);
 		}
-
-		//we don't really jump here, we start a state that will make the player begin the jump
-		//then the jump state pursue the movement when player is not grounded in the start of the chain
-
-		// if(haspressedJump && isGrounded && currentPlayerState.stateName == "Against Wall")
-		// {
-		// 	// handsStateController.ChangeLeftHandState(new LeftHandState_HoldingGripWhileJumping());
-		// 	// handsStateController.ChangeRightHandState(new RightHandState_HoldingGripWhileJumping());
-		// 	Debug.Log(" now hand state are holding grip while jumping and we don't start jump");
-	
-		// }
 
 
 		else if (haspressedJump && isGrounded)

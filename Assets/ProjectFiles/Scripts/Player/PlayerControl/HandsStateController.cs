@@ -126,6 +126,7 @@ public class HandsStateController : MonoBehaviour
 		{
 			
 			playerController.leftHandHoldingAGrip = false;
+			playerController.leftHandHoldingGrip = null;
 			bool completed = IKArmsControl.DecrementLeftIkWeight(playerController, playerController.leftArmIK, ref currentLeftIkWeight, ref currentLeftIkRotationWeight, 2f);
 	
 
@@ -254,6 +255,7 @@ public class HandsStateController : MonoBehaviour
 		if (currentRightHandState is RightHandState_ComingBack)
 		{
 			playerController.rightHandHoldingAGrip = false;
+			playerController.rightHandHoldingGrip = null;
 			bool completed = IKArmsControl.DecrementRightIkWeight(playerController, playerController.rightArmIK, ref currentRightIkWeight, ref currentRightIkRotationWeight, 2f);
 			
 	

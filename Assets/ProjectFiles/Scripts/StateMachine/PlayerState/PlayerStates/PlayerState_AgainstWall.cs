@@ -17,7 +17,7 @@ public class PlayerState_AgainstWall : PlayerState_Moving
 
 	protected GameObject leftIkTarget;
 
-	protected float lateralLimit;
+	protected float rangeLimit;
 
 	protected bool isLeftHandHoldingGrip;
 	protected bool isRightHandHoldingGrip;
@@ -28,7 +28,7 @@ public class PlayerState_AgainstWall : PlayerState_Moving
 	
 	public PlayerState_AgainstWall(PlayerController playerController, 
 	CharacterController characterController, 
-	float laterallimit,
+	float rangeLimit,
 	Vector2 moveDirection, 
 	float speed, 
 	Vector2 combinedMovement, 
@@ -44,7 +44,7 @@ public class PlayerState_AgainstWall : PlayerState_Moving
 	{
 		this.playerController = playerController;
 		this.Controller = characterController; 
-		this.lateralLimit = laterallimit;
+		this.rangeLimit = rangeLimit;
 		this.rightarmsBendingValue = rightarmsBendingValue;
 		this.leftarmsBendingValue = leftarmsBendingValue;
 		this.playerController = playerController;
@@ -63,8 +63,8 @@ public class PlayerState_AgainstWall : PlayerState_Moving
 	public override void EnterState()
 	{
 		base.EnterState();
-		Debug.Log("Entering Against Wall");
-		Debug.Log($"Left Ik Target: {leftIkTarget}");
+		// Debug.Log("Entering Against Wall");
+		// Debug.Log($"Left Ik Target: {leftIkTarget}");
 		// playerController.isInAir = true;
 	}
 
@@ -77,7 +77,7 @@ public class PlayerState_AgainstWall : PlayerState_Moving
 		PlayerProcessMoveAgainstWall.MoveAgainstWall(
 			this.playerController,
 			this.Controller,
-			lateralLimit,
+			rangeLimit,
 			out canMoveLeft,
 			out canMoveRight,
 			out areBothHandsHoldingGrip,
@@ -96,7 +96,7 @@ public class PlayerState_AgainstWall : PlayerState_Moving
 	}
 	public override void ExitState()
 	{
-		Debug.Log("Exiting Against Wall");
+		// Debug.Log("Exiting Against Wall");
 		// playerController.isInAir = false;
 		base.ExitState();
 	}
