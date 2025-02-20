@@ -7,7 +7,14 @@ public class PlayerStartJump : PlayerMove
 {
 
 	private static float gravity = -9.81f;
-	public static void StartJump(PlayerController playerController, CharacterController controller, HandsStateController handsStateController, Vector2 jumpHeight, Vector2 inputDirection, float jumpSpeed, float currentSpeed)
+	public static void StartJump(
+		PlayerController playerController, 
+		CharacterController controller, 
+		HandsStateController handsStateController, 
+		Vector2 jumpHeight, 
+		Vector2 inputDirection, 
+		float jumpSpeed, 
+		float currentSpeed)
 	{
 	
 		// Début du saut

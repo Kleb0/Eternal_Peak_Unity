@@ -1,8 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerState_StartJumping : PlayerState_Moving
+using System.Collections;
+using System.Collections.Generic;
+
+
+public class PlayerState_StartFalling : PlayerState_Moving
 {
     protected PlayerController playerController;
     protected CharacterController Controller;
@@ -18,7 +20,7 @@ public class PlayerState_StartJumping : PlayerState_Moving
     protected float currentSpeed;
     protected float verticalVelocity;
 
-    public PlayerState_StartJumping(
+    public PlayerState_StartFalling(
         PlayerController playerController,
         CharacterController characterController,
         HandsStateController handsStateController,
@@ -41,13 +43,13 @@ public class PlayerState_StartJumping : PlayerState_Moving
         this.forwardBackward = forwardBackward;
         this.rightLeft = rightLeft;
 
-        stateName = "Start Jumping";
+        stateName = "Start Falling";
     }
 
-    public override void ExecuteState()
+    public override void EnterState()
     {
-        PlayerStartJump.StartJump(playerController, Controller, handsStateController, new Vector2(0, jumpHeight), 
-        moveDirection, jumpSpeed , currentSpeed);
+        Debug.Log("Entering Start Falling State");
+
     }
 
 

@@ -115,7 +115,7 @@ public class HandsStateController : MonoBehaviour
 	
 		if (currentLeftHandState is LeftHandState_IsHoldingAGrip)
 		{
-			playerController.leftHandHoldingAGrip = true;
+			// playerController.leftHandHoldingAGrip = true;
 			distanceBetweenLeftHandAndLeftShoulder = IKArmsControl.CalcDistBetweenLeftHandAndLeftShoulder(playerController.leftArmIK);
 			playerController.leftArmBendingValue = distanceBetweenLeftHandAndLeftShoulder;
 
@@ -246,11 +246,6 @@ public class HandsStateController : MonoBehaviour
 #region  Player Right Hand Loop
 	public void PlayRightHandLoop()
 	{	
-		if (currentLeftHandState is LeftHandState_IsHoldingAGrip)
-		{
-			playerController.rightHandHoldingAGrip = true;
-		
-		}
 			
 		if (currentRightHandState is RightHandState_ComingBack)
 		{

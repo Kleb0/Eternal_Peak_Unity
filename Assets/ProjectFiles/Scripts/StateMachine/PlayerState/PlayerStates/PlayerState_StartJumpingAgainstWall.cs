@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerState_StartJumping : PlayerState_Moving
+public class PlayerState_StartJumpingAgainstWall : PlayerState_Moving
 {
     protected PlayerController playerController;
     protected CharacterController Controller;
@@ -11,14 +11,13 @@ public class PlayerState_StartJumping : PlayerState_Moving
     protected new Vector2 forwardBackward;
     protected new Vector2 rightLeft;
     protected new Vector2 combinedMovement;
-
     protected float jumpHeight;
     protected float jumpSpeed;
-
     protected float currentSpeed;
     protected float verticalVelocity;
 
-    public PlayerState_StartJumping(
+    public PlayerState_StartJumpingAgainstWall
+    (
         PlayerController playerController,
         CharacterController characterController,
         HandsStateController handsStateController,
@@ -28,8 +27,9 @@ public class PlayerState_StartJumping : PlayerState_Moving
         float jumpHeight,
         Vector2 forwardBackward,
         Vector2 rightLeft
+
     )
-        : base(characterController, moveDirection, jumpSpeed, Vector2.zero, forwardBackward, rightLeft)
+        :base(characterController, moveDirection, jumpSpeed, Vector2.zero, forwardBackward, rightLeft)
     {
         this.playerController = playerController;
         Controller = characterController;
@@ -41,13 +41,11 @@ public class PlayerState_StartJumping : PlayerState_Moving
         this.forwardBackward = forwardBackward;
         this.rightLeft = rightLeft;
 
-        stateName = "Start Jumping";
+        stateName = "Start Jumping Against Wall";
     }
 
     public override void ExecuteState()
     {
-        PlayerStartJump.StartJump(playerController, Controller, handsStateController, new Vector2(0, jumpHeight), 
-        moveDirection, jumpSpeed , currentSpeed);
     }
 
 

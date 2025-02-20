@@ -10,7 +10,7 @@ public class RightHandRaycast : MonoBehaviour
 
 	HandsStateController handsStateController;
 	Vector3 rayCastDirection = Vector3.forward;
-	float maxRayDistance = 0.08f;
+	float maxRayDistance = 0.1f;
 
 	void Start()
 	{

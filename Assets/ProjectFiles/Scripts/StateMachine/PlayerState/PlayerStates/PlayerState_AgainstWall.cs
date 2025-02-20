@@ -16,6 +16,7 @@ public class PlayerState_AgainstWall : PlayerState_Moving
 
 
 	protected GameObject leftIkTarget;
+	protected GameObject rightIkTarget;
 
 	protected float rangeLimit;
 
@@ -39,7 +40,8 @@ public class PlayerState_AgainstWall : PlayerState_Moving
 	bool isLeftHandHoldingGrip, 
 	bool isRightHandHoldingGrip, 
 	bool areBothHandsHoldingGrip,
-	GameObject leftIkTarget)
+	GameObject leftIkTarget,
+	GameObject rightIkTarget)
 	: base(characterController, moveDirection, speed, combinedMovement, fowardBackward, rightLeft)
 	{
 		this.playerController = playerController;
@@ -57,6 +59,7 @@ public class PlayerState_AgainstWall : PlayerState_Moving
 		this.rightLeft = rightLeft;
 		this.speed = speed;
 		this.leftIkTarget = playerController.leftHandHoldingGrip;
+		this.rightIkTarget = playerController.rightHandHoldingGrip;
 		stateName = "Against Wall";
 	}
 
@@ -70,7 +73,7 @@ public class PlayerState_AgainstWall : PlayerState_Moving
 
 	public override void ExecuteState()
 	{
-		Vector3 leftIkTargetPosition;
+		Vector3 leftIkTargetPosition; Vector3 rightIkTargetPosition;
 		bool canMoveBackward, canMoveForward, canMoveLaterally;
 
 
@@ -82,10 +85,13 @@ public class PlayerState_AgainstWall : PlayerState_Moving
 			out canMoveRight,
 			out areBothHandsHoldingGrip,
 			out leftIkTargetPosition,
+			out rightIkTargetPosition,
 			out canMoveBackward,
 			out canMoveForward,
 			out canMoveLaterally,
-			leftIkTarget
+			leftIkTarget,
+			rightIkTarget
+	
 		);
 
 		if(canMoveBackward || canMoveForward || canMoveLaterally)

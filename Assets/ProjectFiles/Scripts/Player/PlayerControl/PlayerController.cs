@@ -61,8 +61,8 @@ public class PlayerController : MonoBehaviour
 	[Header("Jumping parameters")]
 	[Space(10)]
 
+	public bool isFalling = false;
 	public bool isGrounded;
-	// public bool isInAir = false;
 	public bool haspressedJump = false;
 
 	public bool isInAir = false;
@@ -102,7 +102,7 @@ public class PlayerController : MonoBehaviour
 
 	[Header("Climbing Parameters")]
 	[Space(10)]
-
+	public bool isalreadyHoldingGrip = false;
 	public float rangeLimit = 0.5f;
 	public bool leftHandHoldingAGrip = false;
 	public GameObject leftHandHoldingGrip;
@@ -198,22 +198,7 @@ public class PlayerController : MonoBehaviour
 		Move();		
 		applyGravity();
 		isGrounded = CheckIsGrounded();
-		// if(isGrounded == false)
-		// {
-		// 	Debug.Log("Not Grounded");
-		// 	isInAir = true;
-		// 	canJump = false;
-		// 	jumpLock = true;
-		// 	haspressedJump = false;			
-		// }		
-		// else
-		// {
-		// 	Debug.Log("Grounded");
-		// 	isInAir = false;
-		// 	canJump = true;
-		// 	jumpLock = false;
-		// 	haspressedJump = false;
-		// }
+		isFalling = CheckIsFalling();
 	}
 
 	#endregion	
@@ -297,14 +282,7 @@ public class PlayerController : MonoBehaviour
 	
 		newPlayerState = null;
 
-		if(leftHandHoldingGrip || rightHandHoldingAGrip)
-		{
-			newPlayerState = new PlayerState_AgainstWall(this, controller, this.rangeLimit, playerSetDirection.GetMoveDirection(), walkSpeed,
-				playerSetDirection.GetMoveDirection(), playerSetDirection.GetForwardDirection(), playerSetDirection.GetRightDirection(),
-				rightArmBendingValue, leftArmBendingValue, leftHandHoldingGrip, rightHandHoldingAGrip, bothHandsHoldAGrip, leftArmIKTarget);
-				// currentSpeed = 0f;			
-		}
-		else if(leftHandHoldingAGrip == false && rightHandHoldingAGrip==false && currentSpeed == 0f && haspressedJump==false)
+		if(leftHandHoldingAGrip == false && rightHandHoldingAGrip==false && currentSpeed == 0f && haspressedJump==false)
 		{
 			// Debug.Log("Idle");
 			newPlayerState = new PlayerState_Idle();
@@ -316,15 +294,15 @@ public class PlayerController : MonoBehaviour
 		}
 
 
+		//---------- Jumping and Falling cycle ----------//
 
-		//begining of our if else if chain
-		if(isGrounded == false)
+		if(isGrounded == false && isFalling == false)
 		{
 			newPlayerState = new PlayerState_isJumping(this, controller, handsStateController, 
 			playerSetDirection.GetMoveDirection(), jumpSpeed, currentSpeed);
 		}
 
-
+		// first we check if the player is grounded if we have press
 		else if (haspressedJump && isGrounded)
 		{	
 			if(currentPlayerState.stateName != "Against Wall")
@@ -333,7 +311,49 @@ public class PlayerController : MonoBehaviour
 				jumpSpeed, currentSpeed, jumpHeight, playerSetDirection.GetForwardDirection(), playerSetDirection.GetRightDirection());
 
 			}	
-		}	
+		}
+
+		else if (haspressedJump == false && isGrounded == false)
+		{
+			newPlayerState = new PlayerState_StartFalling(this, controller, handsStateController, playerSetDirection.GetMoveDirection(),
+			jumpSpeed, currentSpeed, jumpHeight, playerSetDirection.GetForwardDirection(), playerSetDirection.GetRightDirection());	
+		}
+
+		else if(isFalling)
+		{
+			newPlayerState = new PlayerState_Falling(this, controller, handsStateController, playerSetDirection.GetMoveDirection(), jumpSpeed, currentSpeed);
+		}
+
+
+		// //----- Jump against wall cycle -----//
+
+		//---------- Against Wall cycle ----------//
+		if(leftHandHoldingGrip || rightHandHoldingAGrip)
+		{
+			newPlayerState = new PlayerState_AgainstWall(this, controller, this.rangeLimit, playerSetDirection.GetMoveDirection(), walkSpeed,
+				playerSetDirection.GetMoveDirection(), playerSetDirection.GetForwardDirection(), playerSetDirection.GetRightDirection(),
+				rightArmBendingValue, leftArmBendingValue, leftHandHoldingGrip, rightHandHoldingAGrip, bothHandsHoldAGrip, leftHandHoldingGrip, rightHandHoldingGrip);
+				// currentSpeed = 0f;			
+		}
+
+		
+		// else if(isGrounded == false && leftHandHoldingAGrip || rightHandHoldingAGrip)
+		// {
+		// 	// here process the player state jumping against he wall 
+
+		// }
+
+		// else if(haspressedJump && isGrounded)
+		// {
+		// 	if(currentPlayerState.stateName == "Against Wall")
+		// 	{
+		// 		// the new player state is start jumping against the wall
+		// 	}
+
+		// }
+
+	
+		//--------- Movement on ground cycle ---------//
 		else if (Input.GetKey(KeyCode.LeftShift) && currentSpeed > 0f && haspressedJump==false && leftHandHoldingAGrip == false)
 		{
 			currentSpeed = sprintSpeed;
@@ -358,7 +378,8 @@ public class PlayerController : MonoBehaviour
 			playerAnimation.SetRunning(velocity);
 
 		}
-		else if(leftHandHoldingAGrip == false && currentSpeed == 0f && haspressedJump==false)
+		// ---- back to idle state ---- //
+		else if(leftHandHoldingAGrip == false && currentSpeed == 0f && haspressedJump==false && isFalling == false)
 		{
 			// Debug.Log("Idle");
 			newPlayerState = new PlayerState_Idle();
@@ -386,6 +407,7 @@ public class PlayerController : MonoBehaviour
 	#endregion		
 // -------------------------------------- //
 
+
 	public void OnPlayerStateChange()
 	{
 		if (canChangeState)
@@ -411,6 +433,7 @@ public class PlayerController : MonoBehaviour
 
 	// -------------------------------------- //
 
+
 	#region functions returning private variables
 	private bool CheckIsGrounded()
 	{
@@ -431,6 +454,18 @@ public class PlayerController : MonoBehaviour
 		return isGrounded;
 	}
 
+	private bool CheckIsFalling()
+	{
+		if (!isGrounded && verticalVelocity < 0)
+		{
+			isFalling = true;
+		}
+		else
+		{
+			isFalling = false;
+		}
+		return isFalling;
+	}
 
 	#endregion
 }

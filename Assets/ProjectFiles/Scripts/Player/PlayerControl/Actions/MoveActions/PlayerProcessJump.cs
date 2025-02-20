@@ -1,7 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AI;
+
 
 public class PlayerProcessJumping : MonoBehaviour
 {
@@ -42,12 +40,22 @@ public class PlayerProcessJumping : MonoBehaviour
         // Déplacement du joueur
         controller.Move(jumpSpeed * Time.deltaTime * jumpMove);
 
-        // Détection de l'atterrissage
+        if (playerController.verticalVelocity < 0f)
+        {
+            // Debug.Log("Vertical velocity is negative! Player is falling");
+            playerController.isFalling = true;
+            playerController.haspressedJump = false;
+        }
+
+        //here
+
+        // Detect landing
         if (playerController.isGrounded)
         {
             playerController.haspressedJump = false;
             playerController.isInAir = false;
             playerController.jumpEllapsedTime = 0f;
+            playerController.isFalling = false;
         }
     }
 }

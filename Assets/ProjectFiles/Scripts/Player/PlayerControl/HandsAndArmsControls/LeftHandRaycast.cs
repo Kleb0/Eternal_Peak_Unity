@@ -10,7 +10,7 @@ public class LeftHandRaycast : MonoBehaviour
 
 	HandsStateController handsStateController;
 	Vector3 rayCastDirection = Vector3.forward;
-	float maxRayDistance = 0.08f;
+	float maxRayDistance = 0.2f;
 
 	void Start()
 	{
@@ -30,7 +30,7 @@ public class LeftHandRaycast : MonoBehaviour
 	void OnDrawGizmosSelected()
 	{
 		Gizmos.color = Color.green;
-		Gizmos.DrawRay(transform.position, rayCastDirection * 0.10f);
+		Gizmos.DrawRay(transform.position, rayCastDirection * maxRayDistance);
 	}
 
 	public void TryRaycast()

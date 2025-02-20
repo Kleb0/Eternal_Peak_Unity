@@ -42,25 +42,17 @@ public class PlayerState_JumpingAgainstWall : PlayerState_Moving
         this.moveDirection = moveDirection;
         this.forwardBackward = forwardBackward;
         this.rightLeft = rightLeft;
-
-
-        // this.isLeftHandHoldingGrip = false;
-        // this.isRightHandHoldingGrip = false;
-        // this.areBothHandsHoldingGrip = false;
-
         stateName = "Jumping Against Wall";
     }
 
     public override void ExecuteState()
     {
-        // Utilise la logique du saut contre le mur
-        playerController.currentPlayerState = this;
-        // PlayerJump.Jump(playerController, Controller, this.handStateController, new Vector2(0, jumpHeight), moveDirection, jumpSpeed);
+        // PlayerProcessJumpingAgainstWall.blabla
+        
     }
 
     public override void EnterState()
     {
-        base.EnterState();
-        Debug.Log("Enter in state Jumping Against Wall");
+
     }
 }
